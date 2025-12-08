@@ -464,70 +464,6 @@ body {
 }
 
 /* ============================================
-   RESPONSIVIDADE
-   ============================================ */
-@media (max-width: 992px) {
-    .header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-    
-    .header-right {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .navbar {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .metrics-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    }
-    
-    .condominios-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .header {
-        padding: 15px;
-    }
-    
-    .section-header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-    
-    .section-actions {
-        justify-content: center;
-    }
-    
-    .metric-card {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .condominio-footer {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-    
-    .cobertura-info {
-        align-items: center;
-    }
-}
-/* ============================================
    MODAL E FORMULÁRIOS
    ============================================ */
 
@@ -960,175 +896,173 @@ body {
 }
 
 /* ============================================
-   RESPONSIVIDADE MOBILE
+   RESPONSIVIDADE MOBILE - MANTENDO LAYOUT DO PC
    ============================================ */
 
-/* Dispositivos menores que 768px (Tablets e Celulares) */
+/* Para telas menores que 768px - Mantém layout mas ajusta tamanhos */
 @media (max-width: 768px) {
-    /* Container principal */
+    /* Container principal mantém largura, mas ajusta padding */
     .container {
-        padding: 10px !important;
-        width: 100% !important;
-        max-width: 100% !important;
+        padding: 15px;
+        overflow-x: auto; /* Permite scroll horizontal se necessário */
+        min-width: 320px; /* Largura mínima */
     }
     
-    /* Header simplificado */
+    /* Header mais compacto mas mantém layout horizontal */
     .header {
-        padding: 15px !important;
+        padding: 15px 20px;
+        flex-wrap: wrap; /* Permite quebra se necessário */
+    }
+    
+    .logo i {
+        font-size: 1.8rem;
+    }
+    
+    .logo h1 {
+        font-size: 1.3rem;
+    }
+    
+    .logo .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    /* Navbar mantém horizontal, mas itens menores */
+    .navbar {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+    
+    .navbar a {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    /* Métricas em grid 2x2 para melhor visualização */
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .metric-card {
+        padding: 15px;
+        min-height: auto;
+    }
+    
+    .metric-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
+    
+    /* Cards de condomínios mantém grid, mas menor */
+    .condominios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+    }
+    
+    .condominio-card {
+        min-height: auto;
+        transform: none; /* Remove animação hover em mobile */
+    }
+    
+    .condominio-header h3 {
+        font-size: 1rem;
+    }
+    
+    .info-item {
+        font-size: 0.9rem;
+    }
+    
+    /* Botões maiores para touch */
+    .btn-add, .btn-primary, .btn-sair, .btn-salvar, .btn-cancelar {
+        padding: 12px 20px;
+        min-height: 44px;
+        font-size: 0.95rem;
+    }
+    
+    /* Modal ocupa mais espaço na tela */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 10px auto;
+    }
+    
+    .modal-body {
+        padding: 20px;
+        max-height: 70vh;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Tabelas com scroll horizontal */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -15px;
+        padding: 0 15px;
+    }
+    
+    .condominios-table {
+        min-width: 800px; /* Força largura mínima para manter layout */
+    }
+    
+    .table-actions {
+        flex-wrap: nowrap; /* Mantém botões na mesma linha */
+    }
+    
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+    
+    /* Ajustes para inputs em mobile */
+    input, select, textarea {
+        font-size: 16px !important; /* Previne zoom automático no iOS */
+        min-height: 44px;
+    }
+    
+    /* Footer ajustado */
+    .footer {
+        font-size: 0.85rem;
+        padding: 15px;
+    }
+}
+
+/* Para telas muito pequenas (menos que 480px) */
+@media (max-width: 480px) {
+    /* Header vira coluna em telas muito pequenas */
+    .header {
         flex-direction: column;
         text-align: center;
         gap: 15px;
     }
     
-    .logo {
+    .header-right {
+        width: 100%;
         flex-direction: column;
-        text-align: center;
+        gap: 15px;
     }
     
-    .logo i {
-        font-size: 2rem !important;
-    }
-    
-    .logo h1 {
-        font-size: 1.3rem !important;
-    }
-    
-    .navbar {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .navbar a {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-    }
-    
-    /* Métricas em grid 2x2 */
+    /* Métricas em 1 coluna só em telas muito pequenas */
     .metrics-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px;
+        grid-template-columns: 1fr;
     }
     
-    .metric-card {
-        padding: 15px;
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .metric-icon {
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.2rem !important;
-    }
-    
-    .metric-value {
-        font-size: 1.5rem !important;
-    }
-    
-    /* Condomínios em coluna única */
+    /* Cards de condomínios em 1 coluna */
     .condominios-grid {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr;
     }
     
-    .condominio-card {
-        margin-bottom: 15px;
-    }
-    
-    /* Modal mobile */
-    .modal-content {
-        margin: 10px !important;
-        width: calc(100% - 20px) !important;
-        max-height: 90vh !important;
-    }
-    
-    .modal-body {
-        padding: 20px !important;
-        max-height: 70vh !important;
-        overflow-y: auto !important;
-    }
-    
-    .form-grid {
-        grid-template-columns: 1fr !important;
-    }
-    
-    /* Tabela de condomínios com scroll horizontal */
-    .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .condominios-table {
-        min-width: 800px;
-    }
-    
-    .table-actions {
-        flex-wrap: wrap;
-    }
-    
-    .btn-action {
-        width: 30px !important;
-        height: 30px !important;
-    }
-    
-    /* Botões maiores para touch */
-    .btn-add, .btn-primary, .btn-sair, .btn-salvar, .btn-cancelar {
-        padding: 15px 20px !important;
-        min-height: 50px;
-        font-size: 1rem;
-    }
-    
-    /* Formulários mobile */
-    input, select, textarea {
-        font-size: 16px !important; /* Evita zoom no iOS */
-        min-height: 44px !important; /* Tamanho mínimo para touch */
-    }
-    
-    /* Mapa mobile */
-    .map-container {
-        flex-direction: column;
-        height: auto;
-    }
-    
-    .map-controls {
-        width: 100% !important;
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    
-    .map-view {
-        height: 300px !important;
-    }
-    
-    .map-legend {
-        position: relative;
-        bottom: auto;
-        right: auto;
-        margin-top: 10px;
-    }
-    
-    /* Abas mobile */
-    .tab-button {
-        font-size: 0.8rem !important;
-        padding: 10px !important;
-    }
-    
-    /* Footer mobile */
-    .footer {
-        font-size: 0.8rem;
-        padding: 15px;
-    }
-}
-
-/* Dispositivos menores que 480px (Celulares pequenos) */
-@media (max-width: 480px) {
-    .metrics-grid {
-        grid-template-columns: 1fr !important;
-    }
-    
-    .stats-container, .stats-bar {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-    
+    /* Navbar vira coluna em telas muito pequenas */
     .navbar {
         flex-direction: column;
         width: 100%;
@@ -1140,8 +1074,9 @@ body {
         margin: 2px 0;
     }
     
+    /* Ajustes no modal */
     .modal-header h3 {
-        font-size: 1.1rem !important;
+        font-size: 1.1rem;
     }
     
     .form-navigation, .form-actions {
@@ -1155,39 +1090,120 @@ body {
     }
 }
 
-/* Orientação paisagem em celulares */
+/* Melhorias específicas para dispositivos touch */
+@media (hover: none) and (pointer: coarse) {
+    /* Elementos clicáveis maiores para dedos */
+    .btn-add, .btn-primary, .btn-sair, .navbar a, .btn-action, 
+    .condominio-card, .metric-card {
+        min-height: 44px;
+        cursor: pointer;
+    }
+    
+    .btn-action {
+        min-width: 44px;
+        min-height: 44px;
+        width: 44px;
+        height: 44px;
+    }
+    
+    /* Remove hover effects que não funcionam em touch */
+    .condominio-card:hover, .metric-card:hover {
+        transform: none;
+    }
+    
+    /* Feedback visual ao tocar */
+    .condominio-card:active, .metric-card:active, 
+    .btn-add:active, .btn-primary:active, .navbar a:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+    
+    /* Aumenta área de toque para inputs */
+    input, select, textarea {
+        min-height: 44px;
+        padding: 12px 15px !important;
+    }
+    
+    /* Espaçamento entre elementos clicáveis */
+    .navbar a {
+        margin: 5px 0;
+    }
+}
+
+/* Para orientação paisagem em mobile */
 @media (max-width: 768px) and (orientation: landscape) {
-    .map-view {
-        height: 250px !important;
+    .condominios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
     
     .modal-body {
-        max-height: 60vh !important;
+        max-height: 60vh;
     }
 }
 
-/* Dispositivos com notches (iPhone X, etc) */
+/* Dispositivos com notch/safe area (iPhone X, etc) */
 @supports (padding: max(0px)) {
     .container, .header, .modal-content {
-        padding-left: max(10px, env(safe-area-inset-left));
-        padding-right: max(10px, env(safe-area-inset-right));
-        padding-top: max(10px, env(safe-area-inset-top));
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(15px, env(safe-area-inset-right));
+        padding-top: max(15px, env(safe-area-inset-top));
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
     }
 }
 
-/* Touch improvements */
-@media (hover: none) and (pointer: coarse) {
-    /* Melhorar experiência touch */
-    .condominio-card, .metric-card, .filter-option {
-        min-height: 44px; /* Altura mínima para toque */
+/* ============================================
+   CLASSES ESPECÍFICAS PARA MOBILE
+   ============================================ */
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none;
     }
     
-    input, select, button {
-        min-height: 44px;
+    .mobile-only {
+        display: block;
+    }
+}
+
+/* Classe para quando estiver em dispositivo mobile */
+.is-mobile .condominio-card,
+.is-mobile .metric-card {
+    cursor: pointer;
+}
+
+.is-mobile .condominio-card:active,
+.is-mobile .metric-card:active {
+    background-color: #f8f9fa;
+}
+
+/* ============================================
+   ESTILOS PARA SCROLL EM MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+    /* Scroll suave para mobile */
+    .table-container::-webkit-scrollbar {
+        height: 6px;
     }
     
-    .table-actions button {
-        min-width: 44px;
-        min-height: 44px;
+    .table-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    
+    /* Scroll vertical suave */
+    .modal-body {
+        -webkit-overflow-scrolling: touch;
     }
 }
