@@ -1,0 +1,35 @@
+{
+  "condominios": [
+    {
+      "id": 1,
+      "nome": "Condomínio Parque Verde",
+      "torres": 3,
+      "apartamentos": 120,
+      "moradores": 420,
+      "hipertensos": 45,
+      "diabeticos": 28,
+      "gestantes": 12,
+      "cobertura": 85,
+      "prioridade": "alta",
+      "ultima_visita": "2024-01-15"
+    }
+  ],
+  "metricas_gerais": {
+    "total_moradores": 0,
+    "total_hipertensos": 0,
+    "total_diabeticos": 0,
+    "total_gestantes": 0,
+    "cobertura_geral": 0
+  },
+  "acs": [
+    {
+      "id": 1,
+      "nome": "Laio Vasconcelos",
+      "equipe": "equipe3",
+      "condominios": [],
+      "blocos_ativos": "1-13",
+      "total_moradores": 1680,
+      "total_hipertensos": 15
+    }
+  ]
+}
