@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 import json
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'acs_2025'
@@ -13,7 +14,7 @@ EQUIPES = {
 }
 
 # ============================================
-# FUNÇÕES AUXILIARES
+# FUNÇÕES AUXILIARES (DEVEM VIR PRIMEIRO)
 # ============================================
 
 def carregar_dados():
@@ -24,7 +25,6 @@ def carregar_dados():
             
             # Garantir compatibilidade com versões antigas
             for cond in dados.get('condominios', []):
-                # Se o condomínio ainda usa o campo antigo acs_responsavel
                 if 'acs_responsavel' in cond and 'acs_multiplos' not in cond:
                     cond['acs_multiplos'] = []
                     if cond['acs_responsavel']:
@@ -37,7 +37,59 @@ def carregar_dados():
             return dados
     return {"condominios": [], "acs": []}
 
-# E também atualize os dados iniciais:
+def salvar_dados(dados):
+    """Salva dados no JSON"""
+    os.makedirs('data', exist_ok=True)
+    with open('data/dados.json', 'w', encoding='utf-8') as f:
+        json.dump(dados, f, ensure_ascii=False, indent=2)
+
+def filtrar_por_equipe(dados, equipe):
+    """Filtra condomínios pela equipe"""
+    if 'condominios' not in dados:
+        return []
+    return [c for c in dados['condominios'] if c.get('equipe') == equipe]
+
+def calcular_metricas(condominios):
+    """Calcula métricas para os condomínios"""
+    if not condominios:
+        return {
+            'total_moradores': 0,
+            'total_hipertensos': 0,
+            'total_diabeticos': 0,
+            'total_gestantes': 0,
+            'cobertura_geral': 0
+        }
+    
+    total_moradores = sum(c.get('moradores', 0) for c in condominios)
+    total_hipertensos = sum(c.get('hipertensos', 0) for c in condominios)
+    total_diabeticos = sum(c.get('diabeticos', 0) for c in condominios)
+    total_gestantes = sum(c.get('gestantes', 0) for c in condominios)
+    
+    cobertura_geral = sum(c.get('cobertura', 0) for c in condominios) / len(condominios)
+    
+    return {
+        'total_moradores': total_moradores,
+        'total_hipertensos': total_hipertensos,
+        'total_diabeticos': total_diabeticos,
+        'total_gestantes': total_gestantes,
+        'cobertura_geral': round(cobertura_geral, 1)
+    }
+
+def equipe_required(f):
+    """Decorator para exigir que uma equipe tenha sido escolhida"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'equipe' not in session:
+            return jsonify({'error': 'Equipe não selecionada'}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
+# ============================================
+# DADOS INICIAIS (DEPOIS DAS FUNÇÕES)
+# ============================================
+
+# Criar dados iniciais apenas se não existirem
 if not os.path.exists('data/dados.json'):
     dados_iniciais = {
         "condominios": [
@@ -45,35 +97,34 @@ if not os.path.exists('data/dados.json'):
                 "id": 1,
                 "nome": "Condomínio Lucaia",
                 "equipe": "equipe1",
-                "torres": 23,  # Total de blocos
-                "blocos_cobertos": 13,  # Blocos com ACS
-                "blocos_descobertos": 10,  # Blocos sem ACS
-                "acs_responsavel": "Maria Silva",  # Nome do ACS
+                "torres": 23,
+                "blocos_cobertos": 13,
+                "blocos_descobertos": 10,
+                "acs_responsavel": "Maria Silva",
                 "apartamentos": 460,
                 "moradores": 1610,
                 "hipertensos": 85,
                 "diabeticos": 42,
                 "gestantes": 18,
-                "cobertura": 57,  # (13/23 * 100)
-                "status_cobertura": "parcial",  # completo, parcial, descoberto
+                "cobertura": 57,
+                "status_cobertura": "parcial",
                 "prioridade": "alta",
                 "ultima_visita": "2024-01-15"
             }
         ],
-        "acs": [  # ← Nova seção para ACS
+        "acs": [
             {
                 "id": 1,
                 "nome": "Maria Silva",
                 "equipe": "equipe1",
-                "condominios": [1],  # IDs dos condomínios que atende
-                "blocos_ativos": "1-13",  # Blocos que atende no condomínio
+                "condominios": [1],
+                "blocos_ativos": "1-13",
                 "total_moradores": 1610,
                 "total_hipertensos": 85
             }
         ]
     }
     salvar_dados(dados_iniciais)
-
 def salvar_dados(dados):
     """Salva dados no JSON"""
     os.makedirs('data', exist_ok=True)
@@ -695,4 +746,5 @@ if __name__ == '__main__':
     print("👥 Equipes: Equipe 1, Equipe 2, Equipe 3")
     print("=" * 50)
     
+
     app.run(debug=True, port=5000)
