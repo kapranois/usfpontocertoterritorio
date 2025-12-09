@@ -1179,6 +1179,96 @@ body {
     background-color: #f8f9fa;
 }
 
+/* Estilos para elementos de login */
+.user-info {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+}
+
+.btn.disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
+    .btn.disabled:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+/* Indicador de usuário logado */
+.login-indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #2ecc71;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Modal de login necessário */
+.login-required-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-required-modal {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+    .login-required-modal i {
+        font-size: 3rem;
+        color: #3498db;
+        margin-bottom: 20px;
+    }
+
+    .login-required-modal h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .login-required-modal p {
+        color: #7f8c8d;
+        margin-bottom: 20px;
+    }
+
+    .login-required-modal .btn-login {
+        background: #1a73e8;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
 /* ============================================
    ESTILOS PARA SCROLL EM MOBILE
    ============================================ */
@@ -1206,4 +1296,368 @@ body {
     .modal-body {
         -webkit-overflow-scrolling: touch;
     }
+}
+
+/* ============================================
+   MELHORIAS PARA BOTÕES
+   ============================================ */
+
+/* Botões principais com melhor feedback */
+.btn-add, .btn-primary {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-add:hover, .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(26, 115, 232, 0.3);
+        background: linear-gradient(135deg, #0d47a1, #1a73e8);
+    }
+
+    .btn-add:active, .btn-primary:active {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 10px rgba(26, 115, 232, 0.2);
+    }
+
+    /* Efeito de brilho ao passar o mouse */
+    .btn-add::after, .btn-primary::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 20%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(30deg);
+        transition: all 0.5s ease;
+    }
+
+    .btn-add:hover::after, .btn-primary:hover::after {
+        left: 120%;
+    }
+
+/* Botões de ação na tabela */
+.btn-action {
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .btn-action:active {
+        transform: translateY(0);
+    }
+
+    /* Efeito de onda ao clicar */
+    .btn-action::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+
+    .btn-action:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+    }
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+
+    20% {
+        transform: scale(25, 25);
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: scale(40, 40);
+        opacity: 0;
+    }
+}
+
+/* Botões de navegação no modal */
+.btn-prev, .btn-next {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-prev:hover, .btn-next:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn-prev:active, .btn-next:active {
+        transform: translateY(0);
+    }
+
+/* Botões de salvar e cancelar */
+.btn-salvar, .btn-cancelar {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-salvar {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+}
+
+    .btn-salvar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+    }
+
+.btn-cancelar {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+}
+
+    .btn-cancelar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
+        background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+    }
+
+/* Botão de logout/sair */
+.btn-sair {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+    .btn-sair:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Botão de logout vermelho */
+    .btn-sair[style*="background: #e74c3c"] {
+        background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+        border: none;
+    }
+
+        .btn-sair[style*="background: #e74c3c"]:hover {
+            background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+/* Botões desabilitados */
+.btn.disabled, button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+    .btn.disabled:hover, button:disabled:hover {
+        transform: none !important;
+        box-shadow: none !important;
+        background: inherit !important;
+    }
+
+/* ============================================
+   ANIMAÇÕES SUAVES
+   ============================================ */
+
+/* Fade in suave */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Aplicar animação aos cards */
+.metric-card, .condominio-card {
+    animation: fadeInUp 0.6s ease forwards;
+    animation-delay: calc(var(--card-index, 0) * 0.1s);
+    opacity: 0;
+}
+
+/* Efeito de hover nos cards */
+.condominio-card {
+    transition: all 0.3s ease;
+}
+
+    .condominio-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+.metric-card {
+    transition: all 0.3s ease;
+}
+
+    .metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    }
+
+/* ============================================
+   MELHORIAS NO MODAL
+   ============================================ */
+
+.modal-content {
+    animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ============================================
+   BOTÕES COM ÍCONES ANIMADOS
+   ============================================ */
+
+/* Animação de spin para ícones de loading */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Pulsar para ícones importantes */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.btn-add i, .btn-primary i {
+    transition: transform 0.3s ease;
+}
+
+.btn-add:hover i, .btn-primary:hover i {
+    animation: pulse 0.5s ease;
+}
+
+/* ============================================
+   RESPONSIVIDADE PARA BOTÕES
+   ============================================ */
+
+@media (max-width: 768px) {
+    .btn-add, .btn-primary, .btn-salvar, .btn-cancelar {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+
+    .btn-prev, .btn-next {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ============================================
+   ESTADOS DE FOCO (ACESSIBILIDADE)
+   ============================================ */
+
+button:focus,
+.btn-add:focus,
+.btn-primary:focus,
+.btn-action:focus,
+.btn-sair:focus {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+    /* Remove outline quando não é teclado */
+    button:focus:not(:focus-visible),
+    .btn-add:focus:not(:focus-visible),
+    .btn-primary:focus:not(:focus-visible) {
+        outline: none;
+    }
+
+.container, .modal-content, .card {
+    border-radius: 12px;
+}
+.condominio-card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
 }
