@@ -552,15 +552,25 @@
                                 <button class="btn-action btn-view" title="Visualizar Detalhes" onclick="verDetalhes({{ cond.id }})">
                                     <i class="fas fa-eye"></i>
                                 </button>
+                                {% if usuario_logado %}
                                 <button class="btn-action btn-edit" title="Editar Condomínio" onclick="editarCondominio({{ cond.id }})">
                                     <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn-action btn-report" title="Gerar Relatório" onclick="gerarRelatorio({{ cond.id }})">
-                                    <i class="fas fa-file-medical"></i>
                                 </button>
                                 <button class="btn-action btn-delete" title="Excluir Condomínio" onclick="confirmarExclusao({{ cond.id }}, '{{ cond.nome }}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                                {% else %}
+                                <button class="btn-action btn-edit disabled" title="Faça login para editar"
+                                        style="opacity: 0.5; cursor: not-allowed;"
+                                        onclick="alert('Faça login para editar condomínios')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-action btn-delete disabled" title="Faça login para excluir"
+                                        style="opacity: 0.5; cursor: not-allowed;"
+                                        onclick="alert('Faça login para excluir condomínios')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
