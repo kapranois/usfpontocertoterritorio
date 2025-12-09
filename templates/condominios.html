@@ -255,7 +255,7 @@
                 </div>
             </div>
             {% endif %}
-        </section>       
+        </section>
 
         <!-- Tabela -->
         <div class="table-container">
@@ -395,160 +395,12 @@
         </div>
     </div>
 
- <!-- Modal para Adicionar Condomínio -->
-        <div id="modalCondominio" class="modal" style="display: none;">
-            <div class="modal-content" style="max-width: 700px;">
-                <div class="modal-header">
-                    <h3><i class="fas fa-plus-circle"></i> Cadastrar Novo Condomínio</h3>
-                    <span class="close" onclick="fecharModal()">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <form id="formCondominio">
-                        <!-- Passo 1: Informações Básicas -->
-                        <div class="form-step" id="step1">
-                            <h4><i class="fas fa-info-circle"></i> Informações Básicas</h4>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="nomeCondominio"><i class="fas fa-building"></i> Nome do Condomínio*</label>
-                                    <input type="text" id="nomeCondominio" required placeholder="Ex: Condomínio Lucaia">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="torres"><i class="fas fa-layer-group"></i> Total de Blocos/Torres*</label>
-                                    <input type="number" id="torres" min="1" required placeholder="Ex: 23" onchange="calcularCobertura()">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="apartamentos"><i class="fas fa-door-closed"></i> Total de Apartamentos*</label>
-                                    <input type="number" id="apartamentos" min="1" required placeholder="Ex: 460">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="moradores"><i class="fas fa-users"></i> Total de Moradores*</label>
-                                    <input type="number" id="moradores" min="1" required placeholder="Ex: 1610">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Passo 2: Cobertura por ACS -->
-                        <div class="form-step" id="step2" style="display: none;">
-                            <h4><i class="fas fa-user-nurse"></i> Cobertura por ACS</h4>
-
-                            <div class="cobertura-option">
-                                <label class="radio-option">
-                                    <input type="radio" name="tem_acs" value="sim" checked onchange="toggleACSInfo(true)">
-                                    <div class="radio-content">
-                                        <i class="fas fa-user-check"></i>
-                                        <div>
-                                            <strong>Condomínio com ACS</strong>
-                                            <small>Existe ACS trabalhando neste condomínio</small>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="radio-option">
-                                    <input type="radio" name="tem_acs" value="nao" onchange="toggleACSInfo(false)">
-                                    <div class="radio-content">
-                                        <i class="fas fa-user-times"></i>
-                                        <div>
-                                            <strong>Condomínio Descoberto</strong>
-                                            <small>Não há ACS trabalhando neste condomínio</small>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-
-                            <!-- Informações do ACS (aparece apenas se tem ACS) -->
-                            <div id="acsInfo" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="nomeACS"><i class="fas fa-user-md"></i> Nome do ACS*</label>
-                                        <input type="text" id="nomeACS" placeholder="Ex: Maria Silva">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="blocosCobertos"><i class="fas fa-map-marked-alt"></i> Blocos Atendidos*</label>
-                                        <input type="text" id="blocosCobertos" placeholder="Ex: 1-13 ou 1,2,3,5-8" onchange="calcularCobertura()">
-                                        <small style="color: #666; font-size: 0.85rem;">Informe os blocos que o ACS atende</small>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="blocosDescobertos"><i class="fas fa-map-marked"></i> Blocos Descobertos</label>
-                                        <input type="text" id="blocosDescobertos" placeholder="Será calculado automaticamente" readonly>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label><i class="fas fa-chart-pie"></i> Cobertura de Blocos</label>
-                                        <div class="cobertura-display">
-                                            <div class="cobertura-visual">
-                                                <div class="cobertura-bar">
-                                                    <div class="coberto" id="cobertoBar" style="width: 0%"></div>
-                                                    <div class="descoberto" id="descobertoBar" style="width: 100%"></div>
-                                                </div>
-                                                <div class="cobertura-numbers">
-                                                    <span id="cobertoText">0 blocos cobertos (0%)</span>
-                                                    <span id="descobertoText">0 blocos descobertos (0%)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Passo 3: Dados de Saúde -->
-                        <div class="form-step" id="step3" style="display: none;">
-                            <h4><i class="fas fa-heartbeat"></i> Dados de Saúde</h4>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="hipertensos"><i class="fas fa-heartbeat"></i> Hipertensos</label>
-                                    <input type="number" id="hipertensos" min="0" value="0" placeholder="0">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="diabeticos"><i class="fas fa-prescription-bottle"></i> Diabéticos</label>
-                                    <input type="number" id="diabeticos" min="0" value="0" placeholder="0">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="gestantes"><i class="fas fa-female"></i> Gestantes</label>
-                                    <input type="number" id="gestantes" min="0" value="0" placeholder="0">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="prioridade"><i class="fas fa-exclamation-circle"></i> Prioridade</label>
-                                    <select id="prioridade" required>
-                                        <option value="baixa">Baixa</option>
-                                        <option value="media" selected>Média</option>
-                                        <option value="alta">Alta</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Navegação entre passos -->
-                        <div class="form-navigation">
-                            <button type="button" class="btn-prev" onclick="prevStep()" style="display: none;">
-                                <i class="fas fa-arrow-left"></i> Anterior
-                            </button>
-                            <button type="button" class="btn-next" onclick="nextStep()">
-                                Próximo <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-
-                        <!-- Botões finais -->
-                        <div class="form-actions" id="finalActions" style="display: none;">
-                            <button type="button" class="btn-cancelar" onclick="fecharModal()">
-                                <i class="fas fa-times"></i> Cancelar
-                            </button>
-                            <button type="submit" class="btn-salvar">
-                                <i class="fas fa-save"></i> Salvar Condomínio
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <!-- Modal simplificado - será controlado pelo JavaScript -->
+    <div id="modalCondominio" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <!-- O conteúdo será gerado pelo JavaScript -->
         </div>
+    </div>
 
     <!-- JavaScript (arquivos externos) -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -602,8 +454,7 @@
 
         // Função para convidados
         function mostrarModalConvidado() {
-            alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para adicionar ou editar condomínios, faça login como usuário cadastrado.\n\nUsuário: admin / Senha: admin123\nou\nUsuário: acs1 / Senha: acs123');
-            return false;
+            return CondominiosPage.mostrarModalConvidado();
         }
 
         // Função para fechar modal
@@ -611,5 +462,11 @@
             return CondominiosPage.closeModal();
         }
     </script>
+    <!-- Modal para Editar Condomínio -->
+    <div id="modalEditarCondominio" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <!-- Conteúdo será preenchido pelo JavaScript -->
+        </div>
+    </div>
 </body>
 </html>
