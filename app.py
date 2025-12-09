@@ -111,7 +111,9 @@ def calcular_metricas(condominios):
     total_diabeticos = sum(c.get('diabeticos', 0) for c in condominios)
     total_gestantes = sum(c.get('gestantes', 0) for c in condominios)
     
-    cobertura_geral = sum(c.get('cobertura', 0) for c in condominios) / len(condominios)
+    # Calcula cobertura média com base nos valores reais de cobertura
+    cobertura_total = sum(c.get('cobertura', 0) for c in condominios)
+    cobertura_geral = cobertura_total / len(condominios) if condominios else 0
     
     return {
         'total_moradores': total_moradores,
@@ -180,6 +182,64 @@ def verificar_sessao():
         # Se tem usuário na sessão, renova a sessão
         if 'usuario' in session:
             session.permanent = True
+
+def calcular_cobertura(blocos_ativos_texto, total_torres):
+    """
+    Calcula cobertura a partir do texto de blocos ativos
+    Exemplo: "1-5" = 5 blocos cobertos, "1,3,5" = 3 blocos cobertos
+    """
+    if not blocos_ativos_texto or not total_torres or total_torres <= 0:
+        return 0, 0, 0, 'descoberto'
+    
+    blocos_cobertos = 0
+    numeros_cobertos = set()
+    
+    try:
+        # Remove espaços e divide por vírgula ou ponto e vírgula
+        partes = [p.strip() for p in blocos_ativos_texto.replace(';', ',').split(',') if p.strip()]
+        
+        for parte in partes:
+            if '-' in parte:
+                # É uma faixa (ex: 1-5 ou 1 - 5)
+                faixa = [n.strip() for n in parte.split('-') if n.strip()]
+                if len(faixa) == 2:
+                    inicio = int(faixa[0])
+                    fim = int(faixa[1])
+                    
+                    if inicio <= fim:
+                        # Adiciona todos os números da faixa
+                        for i in range(inicio, fim + 1):
+                            if 1 <= i <= total_torres:
+                                numeros_cobertos.add(i)
+            else:
+                # É um número único
+                try:
+                    num = int(parte)
+                    if 1 <= num <= total_torres:
+                        numeros_cobertos.add(num)
+                except ValueError:
+                    continue  # Ignora partes que não são números
+        
+        blocos_cobertos = len(numeros_cobertos)
+        
+    except Exception as e:
+        print(f"Erro ao calcular cobertura: {e}")
+        blocos_cobertos = 0
+    
+    # Calcula valores
+    blocos_cobertos = min(blocos_cobertos, total_torres)
+    blocos_descobertos = total_torres - blocos_cobertos
+    cobertura = round((blocos_cobertos / total_torres) * 100) if total_torres > 0 else 0
+    
+    # Determina status
+    if cobertura == 0:
+        status = 'descoberto'
+    elif cobertura == 100:
+        status = 'completo'
+    else:
+        status = 'parcial'
+    
+    return blocos_cobertos, blocos_descobertos, cobertura, status
 
 # ============================================
 # ROTAS PRINCIPAIS
@@ -403,25 +463,48 @@ def novo_condominio():
         dados = carregar_dados()
         novo = request.json
         
+        print(f"DEBUG: Dados recebidos: {novo}")
+        
         # Validações
         if not novo.get('nome') or not novo.get('nome').strip():
             return jsonify({'status': 'erro', 'mensagem': 'Nome do condomínio é obrigatório'}), 400
         
-        if novo.get('torres', 0) <= 0:
+        torres = novo.get('torres', 0)
+        if torres <= 0:
             return jsonify({'status': 'erro', 'mensagem': 'Número de blocos inválido'}), 400
         
-        # Garantir campos de cobertura
-        if 'blocos_cobertos' not in novo:
-            novo['blocos_cobertos'] = 0
+        # CALCULAR COBERTURA NO BACKEND
+        blocos_ativos = novo.get('blocos_ativos', '')
+        blocos_cobertos, blocos_descobertos, cobertura, status_cobertura = calcular_cobertura(blocos_ativos, torres)
         
-        if 'blocos_descobertos' not in novo:
-            novo['blocos_descobertos'] = novo['torres']
+        print(f"DEBUG Cálculo: torres={torres}, blocos_ativos='{blocos_ativos}'")
+        print(f"DEBUG Resultado: cobertos={blocos_cobertos}, descobertos={blocos_descobertos}, cobertura={cobertura}%, status={status_cobertura}")
         
-        if 'status_cobertura' not in novo:
+        # Garantir campos de cobertura (usar valores calculados)
+        novo['blocos_cobertos'] = blocos_cobertos
+        novo['blocos_descobertos'] = blocos_descobertos
+        novo['cobertura'] = cobertura
+        novo['status_cobertura'] = status_cobertura
+        
+        # Se não tem ACS, garantir que status seja 'descoberto'
+        if not novo.get('acs_responsavel'):
             novo['status_cobertura'] = 'descoberto'
+            novo['cobertura'] = 0
+            novo['blocos_cobertos'] = 0
+            novo['blocos_descobertos'] = torres
         
         # Pertence à equipe atual
         novo['equipe'] = session['equipe']
+        
+        # Garantir que tem data de última visita
+        if 'ultima_visita' not in novo or not novo['ultima_visita']:
+            novo['ultima_visita'] = datetime.now().strftime('%Y-%m-%d')
+        
+        # Garantir campos de saúde com valor padrão
+        novo['hipertensos'] = novo.get('hipertensos', 0)
+        novo['diabeticos'] = novo.get('diabeticos', 0)
+        novo['gestantes'] = novo.get('gestantes', 0)
+        novo['prioridade'] = novo.get('prioridade', 'media')
         
         # Gerar ID
         if dados['condominios']:
@@ -430,14 +513,15 @@ def novo_condominio():
             novo['id'] = 1
         
         # Se tem ACS, registrar também na lista de ACS
-        if novo.get('acs_responsavel'):
+        acs_responsavel = novo.get('acs_responsavel')
+        if acs_responsavel:
             if 'acs' not in dados:
                 dados['acs'] = []
             
             # Verificar se ACS já existe
             acs_existente = None
             for acs in dados.get('acs', []):
-                if acs['nome'] == novo['acs_responsavel'] and acs['equipe'] == session['equipe']:
+                if acs['nome'] == acs_responsavel and acs['equipe'] == session['equipe']:
                     acs_existente = acs
                     break
             
@@ -447,14 +531,15 @@ def novo_condominio():
                     acs_existente['condominios'] = []
                 if novo['id'] not in acs_existente['condominios']:
                     acs_existente['condominios'].append(novo['id'])
+                acs_existente['blocos_ativos'] = blocos_ativos
             else:
                 # Criar novo ACS
                 novo_acs = {
                     'id': len(dados['acs']) + 1,
-                    'nome': novo['acs_responsavel'],
+                    'nome': acs_responsavel,
                     'equipe': session['equipe'],
                     'condominios': [novo['id']],
-                    'blocos_ativos': novo.get('blocos_ativos', ''),
+                    'blocos_ativos': blocos_ativos,
                     'total_moradores': novo.get('moradores', 0),
                     'total_hipertensos': novo.get('hipertensos', 0)
                 }
@@ -464,15 +549,23 @@ def novo_condominio():
         dados['condominios'].append(novo)
         salvar_dados(dados)
         
+        print(f"DEBUG: Condomínio salvo com ID {novo['id']}")
+        print(f"DEBUG: Cobertura calculada: {cobertura}% ({blocos_cobertos}/{torres} blocos)")
+        
         return jsonify({
             'status': 'sucesso',
             'mensagem': 'Condomínio cadastrado com informações de cobertura!',
             'id': novo['id'],
-            'status_cobertura': novo['status_cobertura']
+            'status_cobertura': novo['status_cobertura'],
+            'cobertura': novo['cobertura'],
+            'blocos_cobertos': novo['blocos_cobertos'],
+            'blocos_descobertos': novo['blocos_descobertos']
         })
         
     except Exception as e:
         print(f"DEBUG ERRO: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'status': 'erro', 'mensagem': f'Erro interno: {str(e)}'}), 500
 
 @app.route('/api/condominio/<int:condominio_id>')
@@ -497,6 +590,9 @@ def atualizar_condominio(condominio_id):
         atualizacoes = request.json
         equipe_atual = session['equipe']
         
+        print(f"DEBUG ATUALIZAÇÃO: Recebendo atualizações para condomínio {condominio_id}")
+        print(f"DEBUG ATUALIZAÇÃO: Dados recebidos: {atualizacoes}")
+        
         for i, cond in enumerate(dados['condominios']):
             if cond['id'] == condominio_id:
                 # Verificar se pertence à equipe atual
@@ -506,38 +602,97 @@ def atualizar_condominio(condominio_id):
                         'mensagem': 'Você não tem permissão para modificar este condomínio'
                     }), 403
                 
-                # Atualizar campos permitidos
-                campos_permitidos = ['nome', 'torres', 'apartamentos', 'moradores',
-                                   'hipertensos', 'diabeticos', 'gestantes', 'prioridade',
-                                   'cobertura', 'ultima_visita', 'acs_responsavel', 
-                                   'blocos_ativos', 'blocos_cobertos', 'blocos_descobertos',
-                                   'status_cobertura']
+                print(f"DEBUG: Condomínio encontrado - Antes: {cond}")
                 
-                for campo in campos_permitidos:
+                # Atualizar campos básicos
+                campos_basicos = ['nome', 'torres', 'apartamentos', 'moradores',
+                                 'hipertensos', 'diabeticos', 'gestantes', 'prioridade',
+                                 'ultima_visita', 'acs_responsavel', 'blocos_ativos']
+                
+                for campo in campos_basicos:
                     if campo in atualizacoes:
                         dados['condominios'][i][campo] = atualizacoes[campo]
                 
-                # Recalcular cobertura se necessário
-                if 'torres' in atualizacoes or 'blocos_cobertos' in atualizacoes:
-                    torres = dados['condominios'][i]['torres']
-                    blocos_cobertos = dados['condominios'][i].get('blocos_cobertos', 0)
-                    
-                    if torres > 0:
-                        cobertura = round((blocos_cobertos / torres) * 100)
-                        dados['condominios'][i]['cobertura'] = cobertura
+                # SEMPRE RECALCULAR COBERTURA (não confiar nos valores enviados)
+                # Obter valores atuais
+                torres = dados['condominios'][i]['torres']
+                blocos_ativos = dados['condominios'][i].get('blocos_ativos', '')
+                
+                # Usar a função calcular_cobertura que já temos
+                blocos_cobertos, blocos_descobertos, cobertura, status_cobertura = calcular_cobertura(
+                    blocos_ativos, 
+                    torres
+                )
+                
+                print(f"DEBUG CÁLCULO: torres={torres}, blocos_ativos='{blocos_ativos}'")
+                print(f"DEBUG CÁLCULO: Resultado - cobertos={blocos_cobertos}, descobertos={blocos_descobertos}, cobertura={cobertura}%")
+                
+                # Atualizar campos calculados
+                dados['condominios'][i]['blocos_cobertos'] = blocos_cobertos
+                dados['condominios'][i]['blocos_descobertos'] = blocos_descobertos
+                dados['condominios'][i]['cobertura'] = cobertura
+                dados['condominios'][i]['status_cobertura'] = status_cobertura
+                
+                # Se não tem ACS, garantir status 'descoberto'
+                if not dados['condominios'][i].get('acs_responsavel'):
+                    dados['condominios'][i]['status_cobertura'] = 'descoberto'
+                    dados['condominios'][i]['cobertura'] = 0
+                    dados['condominios'][i]['blocos_cobertos'] = 0
+                    dados['condominios'][i]['blocos_descobertos'] = torres
+                
+                print(f"DEBUG: Condomínio atualizado - Depois: {dados['condominios'][i]}")
+                
+                # Atualizar também na lista de ACS se o nome do ACS mudou
+                acs_novo = dados['condominios'][i].get('acs_responsavel')
+                acs_antigo = cond.get('acs_responsavel')
+                
+                if acs_novo != acs_antigo or 'acs' in dados:
+                    if 'acs' in dados:
+                        # Remover do ACS antigo (se existir)
+                        if acs_antigo:
+                            for acs in dados['acs']:
+                                if acs['nome'] == acs_antigo and acs['equipe'] == equipe_atual:
+                                    if 'condominios' in acs and condominio_id in acs['condominios']:
+                                        acs['condominios'].remove(condominio_id)
                         
-                        # Atualizar status
-                        if blocos_cobertos == 0:
-                            dados['condominios'][i]['status_cobertura'] = 'descoberto'
-                        elif blocos_cobertos == torres:
-                            dados['condominios'][i]['status_cobertura'] = 'completo'
-                        else:
-                            dados['condominios'][i]['status_cobertura'] = 'parcial'
+                        # Adicionar ao novo ACS (se existir)
+                        if acs_novo:
+                            # Verificar se ACS já existe
+                            acs_existente = None
+                            for acs in dados['acs']:
+                                if acs['nome'] == acs_novo and acs['equipe'] == equipe_atual:
+                                    acs_existente = acs
+                                    break
+                            
+                            if acs_existente:
+                                # Atualizar ACS existente
+                                if 'condominios' not in acs_existente:
+                                    acs_existente['condominios'] = []
+                                if condominio_id not in acs_existente['condominios']:
+                                    acs_existente['condominios'].append(condominio_id)
+                                acs_existente['blocos_ativos'] = blocos_ativos
+                            else:
+                                # Criar novo ACS
+                                novo_acs = {
+                                    'id': len(dados['acs']) + 1,
+                                    'nome': acs_novo,
+                                    'equipe': equipe_atual,
+                                    'condominios': [condominio_id],
+                                    'blocos_ativos': blocos_ativos,
+                                    'total_moradores': dados['condominios'][i].get('moradores', 0),
+                                    'total_hipertensos': dados['condominios'][i].get('hipertensos', 0)
+                                }
+                                dados['acs'].append(novo_acs)
                 
                 salvar_dados(dados)
+                
                 return jsonify({
                     'status': 'sucesso',
-                    'mensagem': 'Condomínio atualizado com sucesso'
+                    'mensagem': 'Condomínio atualizado com sucesso',
+                    'blocos_cobertos': blocos_cobertos,
+                    'blocos_descobertos': blocos_descobertos,
+                    'cobertura': cobertura,
+                    'status_cobertura': status_cobertura
                 })
         
         return jsonify({
@@ -546,6 +701,9 @@ def atualizar_condominio(condominio_id):
         }), 404
         
     except Exception as e:
+        print(f"DEBUG ERRO ATUALIZAÇÃO: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'status': 'erro',
             'mensagem': f'Erro interno: {str(e)}'
