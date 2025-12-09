@@ -2,12 +2,15 @@
 // VARIÁVEIS GLOBAIS
 // ============================================
 
-// Esta variável será definida pelo template
-// O template index.html define window.USUARIO_LOGADO
+// Estas variáveis serão definidas pelo template
+// O template index.html define window.USUARIO_LOGADO e window.NIVEL_USUARIO
 var USUARIO_LOGADO = window.USUARIO_LOGADO || false;
+var NIVEL_USUARIO = window.NIVEL_USUARIO || '';
 
 console.log('DEBUG script.js: USUARIO_LOGADO =', USUARIO_LOGADO);
+console.log('DEBUG script.js: NIVEL_USUARIO =', NIVEL_USUARIO);
 console.log('DEBUG script.js: window.USUARIO_LOGADO =', window.USUARIO_LOGADO);
+console.log('DEBUG script.js: window.NIVEL_USUARIO =', window.NIVEL_USUARIO);
 
 // ============================================
 // FUNÇÕES GERAIS DO SISTEMA
@@ -27,8 +30,14 @@ function atualizarData() {
 }
 
 // ============================================
-// FUNÇÕES DO MODAL
+// FUNÇÕES DO MODAL (ATUALIZADAS PARA CONVIDADOS)
 // ============================================
+
+// Função para mostrar mensagem de convidado
+function mostrarModalConvidado() {
+    alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para adicionar ou editar condomínios, faça login como usuário cadastrado.\n\nUsuário: admin / Senha: admin123\nou\nUsuário: acs1 / Senha: acs123');
+    return false;
+}
 
 // Função ORIGINAL mostrarModal - apenas abre o modal
 function mostrarModalOriginal() {
@@ -39,9 +48,15 @@ function mostrarModalOriginal() {
     return true;
 }
 
-// Função PROTEGIDA mostrarModal - verifica login antes
+// Função PROTEGIDA mostrarModal - verifica login e nível antes
 function mostrarModal() {
-    console.log('DEBUG: mostrarModal protegida chamada, USUARIO_LOGADO =', USUARIO_LOGADO);
+    console.log('DEBUG: mostrarModal protegida chamada, NIVEL_USUARIO =', NIVEL_USUARIO);
+
+    // Verificar se é convidado
+    if (NIVEL_USUARIO === 'convidado') {
+        mostrarModalConvidado();
+        return false;
+    }
 
     if (!USUARIO_LOGADO) {
         alert('Para adicionar um novo condomínio, é necessário fazer login no sistema.');
@@ -271,11 +286,17 @@ function updateCoberturaVisual(total, cobertos) {
 }
 
 // ============================================
-// FORMULÁRIO DE ENVIO
+// FORMULÁRIO DE ENVIO (ATUALIZADO PARA CONVIDADOS)
 // ============================================
 
 async function enviarFormulario() {
-    console.log("DEBUG: enviarFormulario chamado, USUARIO_LOGADO =", USUARIO_LOGADO);
+    console.log("DEBUG: enviarFormulario chamado, NIVEL_USUARIO =", NIVEL_USUARIO);
+
+    // Verificar se é convidado antes de enviar
+    if (NIVEL_USUARIO === 'convidado') {
+        mostrarModalConvidado();
+        return false;
+    }
 
     // Verificar login antes de enviar
     if (!USUARIO_LOGADO) {
@@ -398,6 +419,7 @@ async function enviarFormulario() {
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DEBUG: DOMContentLoaded, USUARIO_LOGADO =', USUARIO_LOGADO);
+    console.log('DEBUG: DOMContentLoaded, NIVEL_USUARIO =', NIVEL_USUARIO);
 
     // Atualizar data
     atualizarData();
@@ -490,8 +512,18 @@ function filtrarPorPrioridade(prioridade) {
     });
 }
 
+// Função para bloquear ações de convidado em outras páginas
+function bloquearAcaoConvidado() {
+    if (window.NIVEL_USUARIO === 'convidado') {
+        alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para realizar esta ação, faça login como usuário cadastrado.');
+        return true;
+    }
+    return false;
+}
+
 // Exportar para uso global
 window.mostrarModal = mostrarModal;
+window.mostrarModalConvidado = mostrarModalConvidado;
 window.fecharModal = fecharModal;
 window.nextStep = nextStep;
 window.prevStep = prevStep;
@@ -499,6 +531,7 @@ window.toggleACSInfo = toggleACSInfo;
 window.calcularCobertura = calcularCobertura;
 window.filtrarPorPrioridade = filtrarPorPrioridade;
 window.formatarNumero = formatarNumero;
+window.bloquearAcaoConvidado = bloquearAcaoConvidado;
 
 // ============================================
 // FUNÇÕES PARA MOBILE (mantenha as existentes)
