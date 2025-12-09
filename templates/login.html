@@ -146,34 +146,68 @@
             font-size: 0.9rem;
         }
 
-        .demo-credentials {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: #6c757d;
+        /* NOVOS ESTILOS PARA CONVIDADO */
+        .guest-login {
+            margin-top: 25px;
         }
 
-            .demo-credentials h4 {
-                color: #2c3e50;
-                margin-bottom: 10px;
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #95a5a6;
+        }
+
+            .separator::before,
+            .separator::after {
+                content: '';
+                flex: 1;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .separator span {
+                padding: 0 15px;
                 font-size: 0.9rem;
             }
 
-            .demo-credentials ul {
-                list-style: none;
-                padding-left: 0;
+        .btn-guest {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+            .btn-guest:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+                background: linear-gradient(135deg, #5a6268, #6c757d);
             }
 
-            .demo-credentials li {
-                margin-bottom: 5px;
-                padding: 5px;
-                border-bottom: 1px dashed #dee2e6;
-            }
+        .guest-info {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid #95a5a6;
+        }
 
-            .demo-credentials strong {
-                color: #1a73e8;
+            .guest-info i {
+                color: #6c757d;
             }
 
         @media (max-width: 480px) {
@@ -209,7 +243,7 @@
             </div>
             {% endif %}
 
-            <form action="/login" method="POST">
+            <form action="/login" method="POST" id="loginForm">
                 <div class="form-group">
                     <label for="usuario">Usuário</label>
                     <div class="input-with-icon">
@@ -226,24 +260,31 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-login">
+                <button type="submit" class="btn-login" id="btnLogin">
                     <i class="fas fa-sign-in-alt"></i>
                     Entrar no Sistema
                 </button>
+
+                <!-- BOTÃO DE CONVIDADO -->
+                <div class="guest-login">
+                    <div class="separator">
+                        <span>ou</span>
+                    </div>
+                    <button type="button" onclick="loginComoConvidado()" class="btn-guest">
+                        <i class="fas fa-user-clock"></i>
+                        Entrar como Visitante
+                    </button>
+                    <div class="guest-info">
+                        <i class="fas fa-info-circle"></i>
+                        <small>
+                            Modo de visualização apenas. Não é possível adicionar ou editar dados.
+                        </small>
+                    </div>
+                </div>
             </form>
 
-            <div class="demo-credentials">
-                <h4><i class="fas fa-info-circle"></i> Credenciais de Demonstração:</h4>
-                <ul>
-                    <li><strong>admin</strong> / admin123 (Acesso total)</li>
-                    <li><strong>acs1</strong> / acs123 (Equipe 1)</li>
-                    <li><strong>acs2</strong> / acs456 (Equipe 2)</li>
-                    <li><strong>acs3</strong> / acs789 (Equipe 3)</li>
-                </ul>
-            </div>
-
             <div class="login-footer">
-                <p>USF - Unidade de Saúde da Família</p>
+                <p>USF - Ponto Certo</p>
                 <p>Sistema v1.0 | Área Restrita</p>
             </div>
         </div>
@@ -255,12 +296,16 @@
             document.getElementById('usuario').focus();
 
             // Prevenir envio duplo
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function () {
-                const btn = this.querySelector('.btn-login');
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
-            });
+            const form = document.getElementById('loginForm');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    const btn = this.querySelector('#btnLogin');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+                    }
+                });
+            }
         });
 
         // Mostrar/ocultar senha com double-click no ícone
@@ -277,6 +322,35 @@
                     this.className = 'fas fa-lock';
                 }
             });
+        }
+
+        // Função para login como convidado
+        function loginComoConvidado() {
+            // Desabilitar botão
+            const btnGuest = document.querySelector('.btn-guest');
+            btnGuest.disabled = true;
+            btnGuest.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando como visitante...';
+
+            // Criar formulário oculto para login de convidado
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/login';
+            form.style.display = 'none';
+
+            const usuarioInput = document.createElement('input');
+            usuarioInput.type = 'hidden';
+            usuarioInput.name = 'usuario';
+            usuarioInput.value = 'convidado';
+
+            const senhaInput = document.createElement('input');
+            senhaInput.type = 'hidden';
+            senhaInput.name = 'senha';
+            senhaInput.value = 'convidado';
+
+            form.appendChild(usuarioInput);
+            form.appendChild(senhaInput);
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 </body>
