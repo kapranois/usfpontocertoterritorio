@@ -10,7 +10,111 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos específicos para o modal multi-etapa */
+        /* BANDEIRA DE CONVIDADO */
+        .convidado-banner {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: pulse 2s infinite;
+        }
+
+        .convidado-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .convidado-banner i {
+            font-size: 1.5rem;
+        }
+
+        .convidado-banner button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+            .convidado-banner button:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+            }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.9;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.9;
+            }
+        }
+
+        /* BOTÕES DESABILITADOS PARA CONVIDADO */
+        .btn-convidado-disabled {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+            cursor: not-allowed !important;
+            position: relative;
+            opacity: 0.8;
+        }
+
+            .btn-convidado-disabled:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+
+            .btn-convidado-disabled::after {
+                content: "🔒";
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                background: #e74c3c;
+                color: white;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8rem;
+            }
+
+        /* BADGE DE CONVIDADO NO CABEÇALHO */
+        .convidado-badge {
+            background: #ff9800;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Resto dos estilos permanece igual... */
         .form-step {
             margin-bottom: 30px;
             padding-bottom: 20px;
@@ -279,8 +383,32 @@
 </head>
 <body>
     <div class="container">
-        <!-- Cabeçalho CORRIGIDO - apenas UM header-right -->
+        <!-- BANDEIRA DE CONVIDADO (APARECE APENAS SE FOR CONVIDADO) -->
+        {% if nivel_usuario == 'convidado' %}
+        <div class="convidado-banner">
+            <div class="convidado-banner-content">
+                <i class="fas fa-user-clock"></i>
+                <div>
+                    <strong>Modo Visitante</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">
+                        Você está no modo de visualização apenas. Para adicionar ou editar dados, faça login como usuário cadastrado.
+                    </p>
+                </div>
+            </div>
+            <a href="/login" style="text-decoration: none;">
+                <button>
+                    <i class="fas fa-sign-in-alt"></i> Fazer Login
+                </button>
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Cabeçalho ATUALIZADO - Design Moderno -->
         <header class="header">
+            <!-- Efeito de fundo -->
+            <div class="header-bg-effect"></div>
+
+            <!-- Logo -->
             <div class="logo">
                 <i class="fas fa-map-marked-alt"></i>
                 <div>
@@ -288,162 +416,556 @@
                     <p class="subtitle">Dashboard de Territorialização</p>
                 </div>
             </div>
+
+            <!-- Lado direito do cabeçalho -->
             <div class="header-right">
+                <!-- Equipe Atual -->
                 <div class="equipe-info">
-                    <i class="fas fa-users"></i> {{ nome_equipe }}
+                    <i class="fas fa-users"></i>
+                    <span>{{ nome_equipe }}</span>
                 </div>
+
+                <!-- Usuário -->
                 {% if usuario_logado %}
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i> {{ nome_usuario }}
+                <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %} {% if nivel_usuario != 'convidado' %}user-highlight{% endif %}">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ nome_usuario }}</span>
+                    {% if nivel_usuario == 'convidado' %}
+                    <span class="convidado-badge">Visitante</span>
+                    {% endif %}
+                    {% if nivel_usuario != 'convidado' %}
+                    <div class="convidado-indicator" style="display: none;"></div>
+                    {% endif %}
                 </div>
                 {% endif %}
+
+                <!-- Navegação -->
                 <nav class="navbar">
-                    <a href="/dashboard" class="active"><i class="fas fa-home"></i> Início</a>
-                    <a href="/mapa"><i class="fas fa-map"></i> Mapa</a>
-                    <a href="/condominios"><i class="fas fa-building"></i> Condomínios</a>
-                    <a href="/relatorios"><i class="fas fa-chart-bar"></i> Relatórios</a>
+                    <a href="/dashboard" class="active">
+                        <i class="fas fa-home"></i>
+                        <span>Início</span>
+                    </a>
+                    <a href="/mapa">
+                        <i class="fas fa-map"></i>
+                        <span>Mapa</span>
+                    </a>
+                    <a href="/condominios">
+                        <i class="fas fa-building"></i>
+                        <span>Condomínios</span>
+                    </a>
+                    <a href="/relatorios">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Relatórios</span>
+                    </a>
+
+                    <!-- Botões de ação -->
                     {% if usuario_logado %}
-                    <a href="/trocar-equipe" class="btn-sair"><i class="fas fa-exchange-alt"></i> Trocar Equipe</a>
+                    <a href="/trocar-equipe" class="btn-sair">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Trocar Equipe</span>
+                    </a>
                     <a href="/logout" class="btn-sair" style="background: #e74c3c;">
-                        <i class="fas fa-sign-out-alt"></i> Sair
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Sair</span>
                     </a>
                     {% else %}
-                    <a href="/login" class="btn-sair"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="/login" class="btn-sair">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
                     {% endif %}
                 </nav>
+                {% if is_mobile %}
+                <button class="mobile-menu-btn" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                {% endif %}
+
+                <!-- Logo após o header-right -->
+                {% if is_mobile %}
+                <div class="mobile-menu-expanded">
+                    <a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">
+                        <i class="fas fa-home"></i>
+                        <span>Início</span>
+                    </a>
+                    <a href="/mapa" class="{% if request.path == '/mapa' %}active{% endif %}">
+                        <i class="fas fa-map"></i>
+                        <span>Mapa</span>
+                    </a>
+                    <a href="/condominios" class="{% if request.path == '/condominios' %}active{% endif %}">
+                        <i class="fas fa-building"></i>
+                        <span>Condomínios</span>
+                    </a>
+                    <a href="/relatorios" class="{% if request.path == '/relatorios' %}active{% endif %}">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Relatórios</span>
+                    </a>
+                    {% if usuario_logado %}
+                    <a href="/trocar-equipe">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Trocar Equipe</span>
+                    </a>
+                    <a href="/logout" style="color: #e74c3c;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Sair</span>
+                    </a>
+                    {% else %}
+                    <a href="/login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
         </header>
 
         <!-- Métricas -->
+        <!-- Resumo do Território - DESIGN MODERNO -->
         <section class="metrics">
-            <h2><i class="fas fa-chart-line"></i> Resumo do Território</h2>
+            <h2>
+                <i class="fas fa-chart-pie"></i>
+                Resumo do Território
+                <span style="font-size: 0.9rem; color: #95a5a6; margin-left: auto; font-weight: 400;">
+                    Atualizado em tempo real
+                </span>
+            </h2>
+
             <div class="metrics-grid">
-                <div class="metric-card card-total">
-                    <div class="metric-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="metric-info">
-                        <h3>Total de Moradores</h3>
-                        <p class="metric-value">{{ metricas.total_moradores }}</p>
-                    </div>
-                </div>
-
-                <div class="metric-card card-hipertensos">
-                    <div class="metric-icon">
-                        <i class="fas fa-heartbeat"></i>
-                    </div>
-                    <div class="metric-info">
-                        <h3>Hipertensos</h3>
-                        <p class="metric-value">{{ metricas.total_hipertensos }}</p>
-                    </div>
-                </div>
-
-                <div class="metric-card card-diabeticos">
-                    <div class="metric-icon">
-                        <i class="fas fa-prescription-bottle"></i>
-                    </div>
-                    <div class="metric-info">
-                        <h3>Diabéticos</h3>
-                        <p class="metric-value">{{ metricas.total_diabeticos }}</p>
-                    </div>
-                </div>
-
-                <div class="metric-card card-gestantes">
-                    <div class="metric-icon">
-                        <i class="fas fa-female"></i>
-                    </div>
-                    <div class="metric-info">
-                        <h3>Gestantes</h3>
-                        <p class="metric-value">{{ metricas.total_gestantes }}</p>
-                    </div>
-                </div>
-
-                <div class="metric-card card-cobertura">
-                    <div class="metric-icon">
-                        <i class="fas fa-chart-pie"></i>
-                    </div>
-                    <div class="metric-info">
-                        <h3>Cobertura Geral</h3>
-                        <p class="metric-value">{{ metricas.cobertura_geral|default(0) }}%</p>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: {{ metricas.cobertura_geral|default(0) }}%"></div>
+                <!-- Total de Moradores -->
+                <div class="metric-card card-total" style="--card-index: 0">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Total de Moradores</h3>
+                            <div class="metric-value" id="totalMoradores">
+                                {{ metricas.total_moradores }}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Nova métrica: Condomínios Cobertos -->
-                <div class="metric-card card-status">
-                    <div class="metric-icon" style="background: #2ecc71;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
                     <div class="metric-info">
-                        <h3>Cobertos</h3>
-                        <p class="metric-value">
-                            {% set cobertos = condominios|selectattr('status_cobertura', 'equalto', 'completo')|list|length %}
-                            {{ cobertos }}
+                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
+                            <i class="fas fa-home" style="margin-right: 5px;"></i>
+                            População atendida
                         </p>
                     </div>
-                </div>
 
-                <!-- Nova métrica: Condomínios Parciais -->
-                <div class="metric-card card-status">
-                    <div class="metric-icon" style="background: #f39c12;">
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div class="metric-status">
+                        <span class="status-badge">
+                            <i class="fas fa-chart-line"></i>
+                            Base populacional
+                        </span>
                     </div>
-                    <div class="metric-info">
-                        <h3>Parciais</h3>
-                        <p class="metric-value">
-                            {% set parciais = condominios|selectattr('status_cobertura', 'equalto', 'parcial')|list|length %}
-                            {{ parciais }}
-                        </p>
+
+                    <div class="metric-tooltip">
+                        População total do território
                     </div>
                 </div>
 
-                <!-- Nova métrica: Condomínios Descobertos -->
-                <div class="metric-card card-status">
-                    <div class="metric-icon" style="background: #e74c3c;">
-                        <i class="fas fa-times-circle"></i>
+                <!-- Hipertensos -->
+                <div class="metric-card card-hipertensos" style="--card-index: 1">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Hipertensos</h3>
+                            <div class="metric-value" id="totalHipertensos">
+                                {{ metricas.total_hipertensos }}
+                            </div>
+                        </div>
                     </div>
+
                     <div class="metric-info">
-                        <h3>Descobertos</h3>
-                        <p class="metric-value">
-                            {% set descobertos = condominios|selectattr('status_cobertura', 'equalto', 'descoberto')|list|length %}
-                            {{ descobertos }}
-                        </p>
+                        <div class="metric-progress">
+                            <div class="progress-info">
+                                <span class="progress-label">Prevalência</span>
+                                <span class="progress-percent" id="prevHipertensos">
+                                    {% if metricas.total_moradores > 0 %}
+                                    {{ ((metricas.total_hipertensos / metricas.total_moradores) * 100)|round(1) }}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width:
+                                     {% if metricas.total_moradores>
+                                    0 %}
+                                    {{ ((metricas.total_hipertensos / metricas.total_moradores) * 100)|round(1) }}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                    ">
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="metric-status">
+                        <span class="status-badge">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Condição crônica
+                        </span>
+                    </div>
+
+                    <div class="metric-tooltip">
+                        Pacientes com hipertensão arterial
+                    </div>
+                </div>
+
+                <!-- Diabéticos -->
+                <div class="metric-card card-diabeticos" style="--card-index: 2">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-prescription-bottle"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Diabéticos</h3>
+                            <div class="metric-value" id="totalDiabeticos">
+                                {{ metricas.total_diabeticos }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-info">
+                        <div class="metric-progress">
+                            <div class="progress-info">
+                                <span class="progress-label">Prevalência</span>
+                                <span class="progress-percent" id="prevDiabeticos">
+                                    {% if metricas.total_moradores > 0 %}
+                                    {{ ((metricas.total_diabeticos / metricas.total_moradores) * 100)|round(1) }}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width:
+                                     {% if metricas.total_moradores>
+                                    0 %}
+                                    {{ ((metricas.total_diabeticos / metricas.total_moradores) * 100)|round(1) }}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                    ">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-status">
+                        <span class="status-badge">
+                            <i class="fas fa-stethoscope"></i>
+                            Acompanhamento necessário
+                        </span>
+                    </div>
+
+                    <div class="metric-tooltip">
+                        Pacientes com diabetes mellitus
+                    </div>
+                </div>
+
+                <!-- Gestantes -->
+                <div class="metric-card card-gestantes" style="--card-index: 3">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-female"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Gestantes</h3>
+                            <div class="metric-value" id="totalGestantes">
+                                {{ metricas.total_gestantes }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-info">
+                        <div class="metric-progress">
+                            <div class="progress-info">
+                                <span class="progress-label">Proporção</span>
+                                <span class="progress-percent" id="prevGestantes">
+                                    {% if metricas.total_moradores > 0 %}
+                                    {{ ((metricas.total_gestantes / metricas.total_moradores) * 100)|round(2) }}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width:
+                                     {% if metricas.total_moradores>
+                                    0 %}
+                                    {{ ((metricas.total_gestantes / metricas.total_moradores) * 100)|round(2) }}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                    ">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-status">
+                        <span class="status-badge">
+                            <i class="fas fa-baby"></i>
+                            Pré-natal essencial
+                        </span>
+                    </div>
+
+                    <div class="metric-tooltip">
+                        Mulheres em acompanhamento pré-natal
+                    </div>
+                </div>
+
+                <!-- Cobertura Geral -->
+                <div class="metric-card card-cobertura" style="--card-index: 4">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Cobertura Geral</h3>
+                            <div class="metric-value" id="coberturaGeral">
+                                {{ metricas.cobertura_geral|default(0) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-info">
+                        <div class="metric-progress">
+                            <div class="progress-info">
+                                <span class="progress-label">Cobertura do território</span>
+                                <span class="progress-percent">{{ metricas.cobertura_geral|default(0) }}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: {{ metricas.cobertura_geral|default(0) }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-status">
+                        <span class="status-badge">
+                            <i class="fas fa-check-circle"></i>
+                            {{ 'Ótima cobertura' if metricas.cobertura_geral|default(0) >= 80 else 'Necessita atenção' if metricas.cobertura_geral|default(0) >= 50 else 'Cobertura crítica' }}
+                        </span>
+                    </div>
+
+                    <div class="metric-tooltip">
+                        Percentual de cobertura da equipe
+                    </div>
+                </div>
+
+                <!-- Condomínios Cobertos -->
+                <div class="metric-card card-status" style="--card-index: 5">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Cobertos</h3>
+                            <div class="metric-value" id="totalCobertos">
+                                {% set cobertos = condominios|selectattr('status_cobertura', 'equalto', 'completo')|list|length %}
+                                {{ cobertos }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-info">
+                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
+                            <i class="fas fa-building" style="margin-right: 5px;"></i>
+                            {{ (cobertos / condominios|length * 100)|round(1) if condominios|length > 0 else 0 }}% dos condomínios
+                        </p>
+
+                        <!-- Mini gráfico -->
+                        <div class="mini-chart">
+                            {% for i in range(5) %}
+                            <div class="chart-bar">
+                                <div class="chart-fill" style="height:
+                                     {% if i < (cobertos / condominios|length * 5 if condominios|length > 0 else 0) %}
+                                100%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        "></div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="metric-tooltip">
+                        Condomínios com cobertura total
+                    </div>
+                </div>
+
+                <!-- Condomínios Parciais -->
+                <div class="metric-card card-status" style="--card-index: 6">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Parciais</h3>
+                            <div class="metric-value" id="totalParciais">
+                                {% set parciais = condominios|selectattr('status_cobertura', 'equalto', 'parcial')|list|length %}
+                                {{ parciais }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-info">
+                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
+                            <i class="fas fa-building" style="margin-right: 5px;"></i>
+                            {{ (parciais / condominios|length * 100)|round(1) if condominios|length > 0 else 0 }}% dos condomínios
+                        </p>
+
+                        <!-- Mini gráfico -->
+                        <div class="mini-chart">
+                            {% for i in range(5) %}
+                            <div class="chart-bar">
+                                <div class="chart-fill" style="height:
+                                     {% if i < (parciais / condominios|length * 5 if condominios|length > 0 else 0) %}
+                                100%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        "></div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="metric-tooltip">
+                        Condomínios com cobertura parcial
+                    </div>
+                </div>
+
+                <!-- Condomínios Descobertos -->
+                <div class="metric-card card-status" style="--card-index: 7">
+                    <div class="metric-header">
+                        <div class="metric-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="metric-title">
+                            <h3>Descobertos</h3>
+                            <div class="metric-value" id="totalDescobertos">
+                                {% set descobertos = condominios|selectattr('status_cobertura', 'equalto', 'descoberto')|list|length %}
+                                {{ descobertos }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-info">
+                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
+                            <i class="fas fa-building" style="margin-right: 5px;"></i>
+                            {{ (descobertos / condominios|length * 100)|round(1) if condominios|length > 0 else 0 }}% dos condomínios
+                        </p>
+
+                        <!-- Mini gráfico -->
+                        <div class="mini-chart">
+                            {% for i in range(5) %}
+                            <div class="chart-bar">
+                                <div class="chart-fill" style="height:
+                                     {% if i < (descobertos / condominios|length * 5 if condominios|length > 0 else 0) %}
+                                100%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        "></div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="metric-status">
+                        <span class="status-badge" style="background: rgba(231, 76, 60, 0.15);">
+                            <i class="fas fa-exclamation-circle"></i>
+                            Necessitam atenção
+                        </span>
+                    </div>
+
+                    <div class="metric-tooltip">
+                        Condomínios sem cobertura
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumo rápido -->
+            <div class="metrics-summary" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #7f8c8d;">
+                <div>
+                    <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                    <strong>Resumo:</strong>
+                    {{ condominios|length }} condomínios •
+                    {{ metricas.total_moradores }} moradores •
+                    {{ metricas.cobertura_geral|default(0) }}% de cobertura
+                </div>
+                <div>
+                    <i class="fas fa-sync-alt" style="margin-right: 5px; cursor: pointer;" onclick="atualizarMetricas()" title="Atualizar dados"></i>
+                    Última atualização: <span id="lastUpdateTime">{{ now.strftime('%H:%M') if now else '--:--' }}</span>
                 </div>
             </div>
         </section>
 
         <!-- Condomínios -->
+        <!-- Seção de Condomínios - DESIGN MODERNO -->
         <section class="condominios">
             <div class="section-header">
-                <h2><i class="fas fa-building"></i> Condomínios do Território</h2>
+                <h2>
+                    <i class="fas fa-building"></i>
+                    Condomínios do Território
+                    <span class="condominios-count" style="font-size: 0.9rem; color: #95a5a6; margin-left: 10px; font-weight: 400;">
+                        {{ condominios|length }} unidade{% if condominios|length != 1 %}s{% endif %}
+                    </span>
+                </h2>
+
                 <div class="section-actions">
-                    {% if usuario_logado %}
+                    {% if usuario_logado and nivel_usuario != 'convidado' %}
                     <button class="btn-add" onclick="mostrarModal()">
-                        <i class="fas fa-plus"></i> Novo Condomínio
+                        <i class="fas fa-plus"></i>
+                        <span>Novo Condomínio</span>
                     </button>
                     {% else %}
-                    <button class="btn-add disabled" onclick="alert('Faça login para adicionar condomínios'); window.location.href='/login';"
-                            style="position: relative;">
-                        <i class="fas fa-plus"></i> Novo Condomínio
-                        <span style="position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
-                            <i class="fas fa-lock"></i>
-                        </span>
+                    <button class="btn-add btn-convidado-disabled"
+                            onclick="mostrarModalConvidado()"
+                            title="Modo visitante: apenas visualização">
+                        <i class="fas fa-plus"></i>
+                        <span>Novo Condomínio</span>
                     </button>
                     {% endif %}
+
+                    <!-- Filtros rápidos -->
+                    <div class="quick-filters" style="display: flex; gap: 8px;">
+                        <button class="filter-btn active" onclick="filtrarCondominios('todos')" title="Mostrar todos">
+                            <i class="fas fa-layer-group"></i>
+                        </button>
+                        <button class="filter-btn" onclick="filtrarCondominios('alta')" title="Alta prioridade" style="color: #e74c3c;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </button>
+                        <button class="filter-btn" onclick="filtrarCondominios('cobertura')" title="Ordenar por cobertura">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             {% if condominios %}
             <div class="condominios-grid">
                 {% for cond in condominios %}
-                <div class="condominio-card priority-{{ cond.prioridade }} status-{{ cond.status_cobertura }}">
+                {% set cobertura_percent = cond.cobertura|default(0)|int %}
+                <div class="condominio-card priority-{{ cond.prioridade }} status-{{ cond.status_cobertura }}"
+                     data-cobertura="{{ cobertura_percent }}"
+                     data-prioridade="{{ cond.prioridade }}"
+                     style="--card-index: {{ loop.index0 }}">
+
+                    <!-- Cabeçalho -->
                     <div class="condominio-header">
                         <h3>{{ cond.nome }}</h3>
                         <div class="condominio-badges">
                             <span class="badge priority-{{ cond.prioridade }}">
+                                <i class="fas fa-flag"></i>
                                 {{ cond.prioridade|upper }}
                             </span>
                             <span class="badge status-{{ cond.status_cobertura }}">
@@ -458,102 +980,189 @@
                         </div>
                     </div>
 
+                    <!-- Informações principais -->
                     <div class="condominio-info">
-                        <!-- Informações básicas -->
-                        <div class="info-item">
-                            <i class="fas fa-layer-group"></i>
-                            <span>{{ cond.torres }} blocos total</span>
+                        <div class="info-grid">
+                            <!-- Blocos -->
+                            <div class="info-item">
+                                <i class="fas fa-layer-group"></i>
+                                <span>Blocos:</span>
+                                <span class="info-value">{{ cond.torres }}</span>
+                            </div>
+
+                            <!-- Apartamentos -->
+                            <div class="info-item">
+                                <i class="fas fa-door-closed"></i>
+                                <span>Apartamentos:</span>
+                                <span class="info-value">{{ cond.apartamentos }}</span>
+                            </div>
+
+                            <!-- Moradores -->
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>Moradores:</span>
+                                <span class="info-value">{{ cond.moradores }}</span>
+                            </div>
+
+                            <!-- ACS Responsável -->
+                            <div class="info-item">
+                                <i class="fas fa-user-md"></i>
+                                <span>ACS:</span>
+                                <span class="info-value">
+                                    {% if cond.acs_responsavel %}
+                                    {{ cond.acs_responsavel|truncate(15) }}
+                                    {% else %}
+                                    <span style="color: #e74c3c; font-style: italic;">Sem ACS</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Blocos Cobertos -->
+                            <div class="info-item">
+                                <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                                <span>Cobertos:</span>
+                                <span class="info-value" style="color: #27ae60;">{{ cond.blocos_cobertos }}</span>
+                            </div>
+
+                            <!-- Blocos Descobertos -->
+                            <div class="info-item">
+                                <i class="fas fa-times-circle" style="color: #e74c3c;"></i>
+                                <span>Descobertos:</span>
+                                <span class="info-value" style="color: #e74c3c;">{{ cond.blocos_descobertos }}</span>
+                            </div>
                         </div>
 
-                        <div class="info-item">
-                            <i class="fas fa-door-closed"></i>
-                            <span>{{ cond.apartamentos }} apartamentos</span>
+                        <!-- Dados de Saúde -->
+                        <div class="saude-mini-chart">
+                            <div class="saude-chart-title">
+                                <i class="fas fa-heartbeat"></i>
+                                Dados de Saúde
+                            </div>
+                            <div class="saude-chart-bars">
+                                <div class="saude-bar"
+                                     data-value="{{ cond.hipertensos }}"
+                                     style="height: {{ (cond.hipertensos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"
+                                     title="Hipertensos: {{ cond.hipertensos }}">
+                                </div>
+                                <div class="saude-bar"
+                                     data-value="{{ cond.diabeticos }}"
+                                     style="height: {{ (cond.diabeticos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"
+                                     title="Diabéticos: {{ cond.diabeticos }}">
+                                </div>
+                                <div class="saude-bar"
+                                     data-value="{{ cond.gestantes }}"
+                                     style="height: {{ (cond.gestantes / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"
+                                     title="Gestantes: {{ cond.gestantes }}">
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #95a5a6; margin-top: 5px;">
+                                <span style="color: #e74c3c;">{{ cond.hipertensos }} Hipertensos</span>
+                                <span style="color: #f39c12;">{{ cond.diabeticos }} Diabéticos</span>
+                                <span style="color: #9b59b6;">{{ cond.gestantes }} Gestantes</span>
+                            </div>
                         </div>
 
-                        <div class="info-item">
-                            <i class="fas fa-users"></i>
-                            <span>{{ cond.moradores }} moradores</span>
-                        </div>
+                        <!-- Barra de Cobertura -->
+                        <div class="cobertura-condominio">
+                            <div class="cobertura-header">
+                                <div class="cobertura-label">
+                                    <i class="fas fa-chart-pie"></i>
+                                    Cobertura de Blocos
+                                </div>
+                                <div class="cobertura-percent">{{ cond.cobertura }}%</div>
+                            </div>
 
-                        <!-- Cobertura por ACS -->
-                        <div class="info-item">
-                            <i class="fas fa-user-md"></i>
-                            <span>
-                                {% if cond.acs_responsavel %}
-                                ACS: {{ cond.acs_responsavel }}
+                            <div class="cobertura-barra-container">
+                                <div class="cobertura-barra">
+                                    <div class="coberto" style="width: {{ cond.cobertura }}%"></div>
+                                    <div class="descoberto" style="width: {{ 100 - cond.cobertura }}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="cobertura-numbers">
+                                <span>{{ cond.blocos_cobertos }} blocos cobertos</span>
+                                <span>{{ cond.blocos_descobertos }} blocos descobertos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rodapé -->
+                    <div class="condominio-footer">
+                        <div class="cobertura-info">
+                            <span class="status-indicator">
+                                {% if cond.status_cobertura == 'completo' %}
+                                <i class="fas fa-check-circle"></i> COBERTO
+                                {% elif cond.status_cobertura == 'parcial' %}
+                                <i class="fas fa-exclamation-triangle"></i> PARCIAL
                                 {% else %}
-                                Sem ACS alocado
+                                <i class="fas fa-times-circle"></i> DESCOBERTO
                                 {% endif %}
                             </span>
                         </div>
 
-                        <!-- Blocos cobertos vs descobertos -->
-                        <div class="info-item">
-                            <i class="fas fa-check-circle" style="color: #27ae60;"></i>
-                            <span>{{ cond.blocos_cobertos }} blocos cobertos</span>
-                        </div>
-
-                        <div class="info-item">
-                            <i class="fas fa-times-circle" style="color: #e74c3c;"></i>
-                            <span>{{ cond.blocos_descobertos }} blocos descobertos</span>
-                        </div>
-
-                        <!-- Dados de saúde -->
-                        <div class="info-item">
-                            <i class="fas fa-heartbeat" style="color: #e74c3c;"></i>
-                            <span>{{ cond.hipertensos }} hipertensos</span>
-                        </div>
-
-                        <div class="info-item">
-                            <i class="fas fa-prescription-bottle" style="color: #f39c12;"></i>
-                            <span>{{ cond.diabeticos }} diabéticos</span>
-                        </div>
-
-                        <div class="info-item">
-                            <i class="fas fa-female" style="color: #9b59b6;"></i>
-                            <span>{{ cond.gestantes }} gestantes</span>
-                        </div>
-
-                        <!-- Barra de cobertura -->
-                        <div class="cobertura-condominio">
-                            <div class="cobertura-label">Cobertura de Blocos:</div>
-                            <div class="cobertura-barra">
-                                <div class="coberto" style="width: {{ cond.cobertura }}%"></div>
-                                <div class="descoberto" style="width: {{ 100 - cond.cobertura }}%"></div>
-                            </div>
-                            <div class="cobertura-percent">{{ cond.cobertura }}%</div>
+                        <div class="ultima-visita">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>{{ cond.ultima_visita }}</span>
                         </div>
                     </div>
 
-                    <div class="condominio-footer">
-                        <div class="cobertura-info">
-                            <span>Última visita: {{ cond.ultima_visita }}</span>
-                        </div>
-                        <div class="ultima-visita">
-                            <i class="far fa-calendar"></i>
-                            <span>{{ cond.ultima_visita }}</span>
-                        </div>
+                    <!-- Botões de ação (hover) -->
+                    <div class="card-actions" style="position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; opacity: 0; transition: opacity 0.3s ease;">
+                        {% if usuario_logado and nivel_usuario != 'convidado' %}
+                        <button class="action-btn" title="Editar" onclick="editarCondominio({{ cond.id }}, event)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn" title="Visualizar" onclick="verDetalhes({{ cond.id }}, event)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
+            <!-- Estado Vazio -->
             <div class="empty-state">
-                <i class="fas fa-building fa-3x"></i>
+                <i class="fas fa-building"></i>
                 <h3>Nenhum condomínio cadastrado</h3>
-                <p>Adicione condomínios para começar o monitoramento</p>
-                {% if usuario_logado %}
+                <p>Comece adicionando condomínios para monitorar a cobertura da sua equipe no território.</p>
+                {% if usuario_logado and nivel_usuario != 'convidado' %}
                 <button class="btn-primary" onclick="mostrarModal()">
-                    <i class="fas fa-plus"></i> Adicionar Primeiro Condomínio
+                    <i class="fas fa-plus"></i>
+                    Adicionar Primeiro Condomínio
                 </button>
                 {% else %}
-                <button class="btn-primary" onclick="alert('Faça login para adicionar condomínios'); window.location.href='/login';">
-                    <i class="fas fa-plus"></i> Adicionar Primeiro Condomínio
-                    <span style="margin-left: 8px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">
-                        <i class="fas fa-lock"></i> Login necessário
-                    </span>
+                <button class="btn-primary btn-convidado-disabled"
+                        onclick="mostrarModalConvidado()"
+                        title="Modo visitante: apenas visualização">
+                    <i class="fas fa-plus"></i>
+                    Adicionar Primeiro Condomínio
                 </button>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #95a5a6;">
+                    <i class="fas fa-info-circle"></i>
+                    Faça login como usuário cadastrado para adicionar condomínios.
+                </p>
                 {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Resumo da seção -->
+            {% if condominios %}
+            <div class="section-summary" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #7f8c8d;">
+                <div>
+                    <i class="fas fa-chart-bar" style="margin-right: 8px;"></i>
+                    <strong>Resumo:</strong>
+                    {% set cobertos = condominios|selectattr('status_cobertura', 'equalto', 'completo')|list|length %}
+                    {% set parciais = condominios|selectattr('status_cobertura', 'equalto', 'parcial')|list|length %}
+                    {% set descobertos = condominios|selectattr('status_cobertura', 'equalto', 'descoberto')|list|length %}
+                    <span style="color: #2ecc71;">{{ cobertos }} cobertos</span> •
+                    <span style="color: #f39c12;">{{ parciais }} parciais</span> •
+                    <span style="color: #e74c3c;">{{ descobertos }} descobertos</span>
+                </div>
+                <div>
+                    <i class="fas fa-filter" style="margin-right: 5px; cursor: pointer;" onclick="toggleFiltrosAvancados()" title="Filtros avançados"></i>
+                    Mostrando {{ condominios|length }} condomínio{% if condominios|length != 1 %}s{% endif %}
+                </div>
             </div>
             {% endif %}
         </section>
@@ -715,8 +1324,8 @@
 
         <!-- Rodapé -->
         <footer class="footer">
-            <p>© 2024 Territorialização USF | {{ nome_equipe }}</p>
-            <p class="version">Sistema v1.0 | Última atualização: <span id="currentDate"></span></p>
+            <p>© 2025 Territorialização USF PontoCerto| {{ nome_equipe }}</p>
+            <p class="version">Sistema desenvolvido por Agentes Comun. de Saúde"</span></p>
         </footer>
     </div>
 
@@ -725,10 +1334,13 @@
         // Variáveis globais para verificar login
         window.USUARIO_LOGADO = {% if usuario_logado %}true{% else %}false{% endif %};
         window.NOME_USUARIO = "{{ nome_usuario|default('Visitante') }}";
+        window.NIVEL_USUARIO = "{{ nivel_usuario|default('') }}";
 
         console.log('DEBUG TEMPLATE: usuario_logado =', {% if usuario_logado %}true{% else %}false{% endif %});
         console.log('DEBUG TEMPLATE: nome_usuario =', "{{ nome_usuario|default('') }}");
+        console.log('DEBUG TEMPLATE: nivel_usuario =', "{{ nivel_usuario|default('') }}");
         console.log('DEBUG TEMPLATE: USUARIO_LOGADO =', window.USUARIO_LOGADO);
+        console.log('DEBUG TEMPLATE: NIVEL_USUARIO =', window.NIVEL_USUARIO);
     </script>
 
     <!-- Segundo: Carregar o script.js principal -->
@@ -752,16 +1364,30 @@
         });
 
         // ============================================
-        // SOBRESCREVER FUNÇÃO mostrarModal PARA VERIFICAR LOGIN
+        // FUNÇÃO PARA BLOQUEAR AÇÕES DE CONVIDADO
+        // ============================================
+        function mostrarModalConvidado() {
+            alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para adicionar ou editar condomínios, faça login como usuário cadastrado.\n\nUsuário: admin / Senha: admin123\nou\nUsuário: acs1 / Senha: acs123');
+        }
+
+        // ============================================
+        // SOBRESCREVER FUNÇÃO mostrarModal PARA VERIFICAR LOGIN E NÍVEL
         // ============================================
         (function () {
             // Guardar a função original
             var mostrarModalOriginal = window.mostrarModal;
 
             if (typeof mostrarModalOriginal === 'function') {
-                // Criar nova função com verificação de login
+                // Criar nova função com verificação de login e nível
                 window.mostrarModal = function () {
                     console.log('DEBUG: mostrarModal chamado, USUARIO_LOGADO:', window.USUARIO_LOGADO);
+                    console.log('DEBUG: NIVEL_USUARIO:', window.NIVEL_USUARIO);
+
+                    // Verificar se é convidado
+                    if (window.NIVEL_USUARIO === 'convidado') {
+                        mostrarModalConvidado();
+                        return false;
+                    }
 
                     if (!window.USUARIO_LOGADO) {
                         alert('Para adicionar um novo condomínio, é necessário fazer login no sistema.');
@@ -780,6 +1406,11 @@
 
                 // Se não existe, criar uma básica
                 window.mostrarModal = function () {
+                    if (window.NIVEL_USUARIO === 'convidado') {
+                        mostrarModalConvidado();
+                        return false;
+                    }
+
                     if (!window.USUARIO_LOGADO) {
                         alert('Para adicionar um novo condomínio, é necessário fazer login no sistema.');
                         window.location.href = '/login';
@@ -806,7 +1437,7 @@
         }
 
         // ============================================
-        // FORM SUBMIT
+        // FORM SUBMIT (ATUALIZADO PARA VERIFICAR CONVIDADO)
         // ============================================
         document.addEventListener('DOMContentLoaded', function () {
             // Formulário de envio
@@ -814,6 +1445,12 @@
             if (formCondominio) {
                 formCondominio.addEventListener('submit', async function (e) {
                     e.preventDefault();
+
+                    // Verificar se é convidado
+                    if (window.NIVEL_USUARIO === 'convidado') {
+                        mostrarModalConvidado();
+                        return;
+                    }
 
                     // Verificar login antes de enviar
                     if (!window.USUARIO_LOGADO) {
@@ -933,7 +1570,7 @@
             document.querySelectorAll('button, .btn-action, .btn-add, .btn-primary').forEach(button => {
                 button.addEventListener('click', function (e) {
                     // Adicionar efeito visual de clique
-                    if (!this.classList.contains('disabled') && !this.disabled) {
+                    if (!this.classList.contains('disabled') && !this.disabled && !this.classList.contains('btn-convidado-disabled')) {
                         this.style.transform = 'scale(0.98)';
                         setTimeout(() => {
                             this.style.transform = '';
@@ -943,5 +1580,697 @@
             });
         });
     </script>
+    <script>
+// ============================================
+// ANIMAÇÕES E INTERATIVIDADE DAS MÉTRICAS
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Animar barras de progresso
+    setTimeout(() => {
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+
+        // Animar mini gráficos
+        document.querySelectorAll('.chart-fill').forEach(fill => {
+            const height = fill.style.height;
+            fill.style.height = '0%';
+            setTimeout(() => {
+                fill.style.height = height;
+            }, 500);
+        });
+    }, 500);
+
+    // Efeito de contagem nos valores
+    function animateValue(element, start, end, duration) {
+        if (start === end) return;
+
+        const range = end - start;
+        const increment = end > start ? 1 : -1;
+        const stepTime = Math.abs(Math.floor(duration / range));
+        let current = start;
+
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = current.toLocaleString('pt-BR');
+
+            if (current === end) {
+                clearInterval(timer);
+                element.classList.add('updated');
+                setTimeout(() => element.classList.remove('updated'), 500);
+            }
+        }, stepTime);
+    }
+
+    // Animar valores numéricos
+    const valueElements = document.querySelectorAll('.metric-value');
+    valueElements.forEach(el => {
+        const value = parseInt(el.textContent.replace(/\./g, '')) || 0;
+        if (value > 0) {
+            animateValue(el, 0, value, 2000);
+        }
+    });
+
+    // Atualizar hora da última atualização
+    function updateLastUpdateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('lastUpdateTime').textContent = timeString;
+    }
+
+    updateLastUpdateTime();
+    setInterval(updateLastUpdateTime, 60000); // Atualizar a cada minuto
+
+    // Efeitos de hover nos cards
+    const metricCards = document.querySelectorAll('.metric-card');
+    metricCards.forEach((card, index) => {
+        card.style.setProperty('--card-index', index);
+
+        card.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+        });
+    });
+
+    // Atualizar métricas (simulação)
+    window.atualizarMetricas = function() {
+        const updateBtn = document.querySelector('.fa-sync-alt');
+        updateBtn.classList.add('fa-spin');
+
+        setTimeout(() => {
+            updateBtn.classList.remove('fa-spin');
+            updateLastUpdateTime();
+
+            // Simular pequena atualização nos valores
+            document.querySelectorAll('.metric-value').forEach(el => {
+                const current = parseInt(el.textContent.replace(/\./g, '')) || 0;
+                const change = Math.floor(Math.random() * 5) - 2; // -2 a +2
+                const newValue = Math.max(0, current + change);
+
+                if (change !== 0) {
+                    animateValue(el, current, newValue, 1000);
+                }
+            });
+
+            // Mostrar notificação
+            showNotification('Métricas atualizadas com sucesso!', 'success');
+        }, 1500);
+    };
+
+    // Função para mostrar notificação
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Estilos para notificação
+    const style = document.createElement('style');
+    style.textContent = `
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .notification-success {
+            border-left-color: #2ecc71;
+        }
+
+        .notification i {
+            font-size: 1.2rem;
+            color: #2ecc71;
+        }
+
+        .notification button {
+            background: none;
+            border: none;
+            color: #95a5a6;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 10px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Calcular e mostrar estatísticas adicionais
+    function calcularEstatisticas() {
+        const totalMoradores = parseInt('{{ metricas.total_moradores }}') || 0;
+        const totalCondominios = {{ condominios|length }} || 0;
+
+        if (totalCondominios > 0 && totalMoradores > 0) {
+            const mediaPorCondominio = Math.round(totalMoradores / totalCondominios);
+
+            // Adicionar estatística extra se houver espaço
+            const extraStats = document.createElement('div');
+            extraStats.className = 'extra-stats';
+            extraStats.style.cssText = `
+                margin-top: 15px;
+                padding: 12px;
+                background: #f8f9fa;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                color: #5a6268;
+                display: flex;
+                justify-content: space-between;
+            `;
+            extraStats.innerHTML = `
+                <div>
+                    <i class="fas fa-calculator"></i>
+                    Média: ${mediaPorCondominio} moradores/condomínio
+                </div>
+                <div>
+                    <i class="fas fa-chart-bar"></i>
+                    ${totalCondominios} condomínios monitorados
+                </div>
+            `;
+
+            document.querySelector('.metrics-summary').parentNode.insertBefore(
+                extraStats,
+                document.querySelector('.metrics-summary')
+            );
+        }
+    }
+
+    calcularEstatisticas();
+});
+    </script>
+
+    <!-- Estilos adicionais para as métricas -->
+    <style>
+        /* Efeito de brilho nos ícones */
+        .metric-icon i {
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Badge para destaque de prioridade */
+        .priority-highlight {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        /* Efeito de gradiente para valores altos */
+        .metric-value.high-value {
+            background: linear-gradient(135deg, var(--card-color), var(--card-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Responsividade adicional */
+        @media (max-width: 1200px) {
+            .metrics-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-summary {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+    <script>
+        // ============================================
+        // FUNÇÕES PARA A SEÇÃO DE CONDOMÍNIOS
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Animar barras de saúde
+            setTimeout(() => {
+                document.querySelectorAll('.saude-bar').forEach(bar => {
+                    const height = bar.style.height;
+                    bar.style.height = '0%';
+                    setTimeout(() => {
+                        bar.style.height = height;
+                    }, 500 + (Math.random() * 500));
+                });
+
+                // Animar barras de cobertura
+                document.querySelectorAll('.cobertura-barra').forEach(bar => {
+                    const coberto = bar.querySelector('.coberto');
+                    const width = coberto.style.width;
+                    coberto.style.width = '0%';
+                    setTimeout(() => {
+                        coberto.style.width = width;
+                    }, 800);
+                });
+            }, 300);
+
+            // Mostrar botões de ação no hover
+            const condominioCards = document.querySelectorAll('.condominio-card');
+            condominioCards.forEach(card => {
+                const actions = card.querySelector('.card-actions');
+
+                card.addEventListener('mouseenter', function () {
+                    if (actions) {
+                        actions.style.opacity = '1';
+                    }
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    if (actions) {
+                        actions.style.opacity = '0';
+                    }
+                });
+            });
+
+            // Adicionar índice para animação
+            condominioCards.forEach((card, index) => {
+                card.style.setProperty('--card-index', index);
+            });
+
+            // Filtros rápidos
+            window.filtrarCondominios = function (filtro) {
+                const cards = document.querySelectorAll('.condominio-card');
+                const filterBtns = document.querySelectorAll('.filter-btn');
+
+                // Atualizar botões ativos
+                filterBtns.forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    let mostrar = true;
+
+                    switch (filtro) {
+                        case 'alta':
+                            mostrar = card.classList.contains('priority-alta');
+                            break;
+                        case 'cobertura':
+                            // Ordenar por cobertura
+                            const container = card.parentElement;
+                            const sortedCards = Array.from(container.children)
+                                .sort((a, b) => {
+                                    const coberturaA = parseInt(a.getAttribute('data-cobertura') || 0);
+                                    const coberturaB = parseInt(b.getAttribute('data-cobertura') || 0);
+                                    return coberturaB - coberturaA;
+                                });
+
+                            sortedCards.forEach((sortedCard, index) => {
+                                sortedCard.style.order = index;
+                            });
+                            return;
+                        case 'todos':
+                        default:
+                            mostrar = true;
+                    }
+
+                    if (mostrar) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Atualizar contador
+                const countElement = document.querySelector('.condominios-count');
+                if (countElement) {
+                    countElement.textContent = `${visibleCount} unidade${visibleCount !== 1 ? 's' : ''}`;
+                }
+            };
+
+            // Toggle filtros avançados
+            window.toggleFiltrosAvancados = function () {
+                const filtrosSection = document.querySelector('.filtros-avancados');
+                if (!filtrosSection) {
+                    criarFiltrosAvancados();
+                } else {
+                    filtrosSection.style.display = filtrosSection.style.display === 'none' ? 'block' : 'none';
+                }
+            };
+
+            // Criar filtros avançados
+            function criarFiltrosAvancados() {
+                const filtrosHTML = `
+                <div class="filtros-avancados" style="
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin-top: 20px;
+                    border: 1px solid #e9ecef;
+                    animation: slideDown 0.3s ease;
+                ">
+                    <h4 style="color: #2c3e50; margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-filter"></i> Filtros Avançados
+                    </h4>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <!-- Filtro por status -->
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #5a6268; font-size: 0.9rem;">
+                                Status de Cobertura
+                            </label>
+                            <select id="filtroStatus" onchange="aplicarFiltrosAvancados()" style="
+                                width: 100%;
+                                padding: 10px 15px;
+                                border: 2px solid #e0e0e0;
+                                border-radius: 8px;
+                                font-size: 0.9rem;
+                                background: white;
+                            ">
+                                <option value="todos">Todos os status</option>
+                                <option value="completo">Completamente Coberto</option>
+                                <option value="parcial">Parcialmente Coberto</option>
+                                <option value="descoberto">Descoberto</option>
+                            </select>
+                        </div>
+
+                        <!-- Filtro por prioridade -->
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #5a6268; font-size: 0.9rem;">
+                                Nível de Prioridade
+                            </label>
+                            <select id="filtroPrioridade" onchange="aplicarFiltrosAvancados()" style="
+                                width: 100%;
+                                padding: 10px 15px;
+                                border: 2px solid #e0e0e0;
+                                border-radius: 8px;
+                                font-size: 0.9rem;
+                                background: white;
+                            ">
+                                <option value="todos">Todas as prioridades</option>
+                                <option value="alta">Alta Prioridade</option>
+                                <option value="media">Média Prioridade</option>
+                                <option value="baixa">Baixa Prioridade</option>
+                            </select>
+                        </div>
+
+                        <!-- Filtro por cobertura mínima -->
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #5a6268; font-size: 0.9rem;">
+                                Cobertura Mínima
+                            </label>
+                            <select id="filtroCobertura" onchange="aplicarFiltrosAvancados()" style="
+                                width: 100%;
+                                padding: 10px 15px;
+                                border: 2px solid #e0e0e0;
+                                border-radius: 8px;
+                                font-size: 0.9rem;
+                                background: white;
+                            ">
+                                <option value="0">Qualquer cobertura</option>
+                                <option value="50">50% ou mais</option>
+                                <option value="75">75% ou mais</option>
+                                <option value="90">90% ou mais</option>
+                                <option value="100">100% (completo)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <button onclick="resetarFiltros()" style="
+                            padding: 8px 16px;
+                            background: #95a5a6;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 500;
+                            font-size: 0.9rem;
+                        ">
+                            <i class="fas fa-redo"></i> Limpar Filtros
+                        </button>
+
+                        <span id="filtroResultado" style="font-size: 0.9rem; color: #7f8c8d;">
+                            Mostrando todos os condomínios
+                        </span>
+                    </div>
+                </div>
+            `;
+
+                const section = document.querySelector('.condominios');
+                const summary = document.querySelector('.section-summary');
+                section.insertBefore(createElementFromHTML(filtrosHTML), summary);
+            }
+
+            // Função auxiliar para criar elemento do HTML
+            function createElementFromHTML(htmlString) {
+                const div = document.createElement('div');
+                div.innerHTML = htmlString.trim();
+                return div.firstChild;
+            }
+
+            // Aplicar filtros avançados
+            window.aplicarFiltrosAvancados = function () {
+                const status = document.getElementById('filtroStatus')?.value || 'todos';
+                const prioridade = document.getElementById('filtroPrioridade')?.value || 'todos';
+                const coberturaMin = parseInt(document.getElementById('filtroCobertura')?.value || 0);
+
+                const cards = document.querySelectorAll('.condominio-card');
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    const cardStatus = card.classList.contains('status-completo') ? 'completo' :
+                        card.classList.contains('status-parcial') ? 'parcial' : 'descoberto';
+                    const cardPrioridade = card.classList.contains('priority-alta') ? 'alta' :
+                        card.classList.contains('priority-media') ? 'media' : 'baixa';
+                    const cardCobertura = parseInt(card.getAttribute('data-cobertura') || 0);
+
+                    let mostrar = true;
+
+                    // Aplicar filtros
+                    if (status !== 'todos' && cardStatus !== status) mostrar = false;
+                    if (prioridade !== 'todos' && cardPrioridade !== prioridade) mostrar = false;
+                    if (cardCobertura < coberturaMin) mostrar = false;
+
+                    if (mostrar) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Atualizar resultados
+                const resultadoElement = document.getElementById('filtroResultado');
+                if (resultadoElement) {
+                    resultadoElement.textContent = `Mostrando ${visibleCount} de ${cards.length} condomínios`;
+                }
+
+                // Atualizar contador principal
+                const countElement = document.querySelector('.condominios-count');
+                if (countElement) {
+                    countElement.textContent = `${visibleCount} unidade${visibleCount !== 1 ? 's' : ''}`;
+                }
+            };
+
+            // Resetar filtros
+            window.resetarFiltros = function () {
+                const selects = document.querySelectorAll('.filtros-avancados select');
+                selects.forEach(select => {
+                    select.value = select.querySelector('option').value;
+                });
+
+                aplicarFiltrosAvancados();
+            };
+
+            // Funções de ação
+            window.verDetalhes = function (id, event) {
+                event.stopPropagation();
+                alert(`Visualizando detalhes do condomínio ID: ${id}\n\nEm breve: Modal com todos os detalhes!`);
+            };
+
+            window.editarCondominio = function (id, event) {
+                event.stopPropagation();
+                alert(`Editando condomínio ID: ${id}\n\nEm breve: Modal de edição!`);
+            };
+
+            // Efeito de clique nos cards
+            condominioCards.forEach(card => {
+                card.addEventListener('click', function (e) {
+                    if (!e.target.closest('.action-btn') && !e.target.closest('.filter-btn')) {
+                        this.style.transform = 'scale(0.98)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+
+                        // Aqui pode abrir modal de detalhes
+                        const id = this.querySelector('.action-btn')?.getAttribute('onclick')?.match(/\d+/)?.[0];
+                        if (id) {
+                            verDetalhes(id, { stopPropagation: () => { } });
+                        }
+                    }
+                });
+            });
+
+            // Estatísticas em tempo real
+            function calcularEstatisticasCondominios() {
+                const cards = document.querySelectorAll('.condominio-card');
+                let totalMoradores = 0;
+                let totalHipertensos = 0;
+                let totalDiabeticos = 0;
+                let totalGestantes = 0;
+                let totalCobertura = 0;
+
+                cards.forEach(card => {
+                    const moradores = parseInt(card.querySelector('.info-item:nth-child(3) .info-value')?.textContent || 0);
+                    const cobertura = parseInt(card.getAttribute('data-cobertura') || 0);
+
+                    totalMoradores += moradores;
+                    totalCobertura += cobertura;
+                });
+
+                // Atualizar métricas rápidas
+                const quickStats = document.querySelector('.section-summary');
+                if (quickStats && cards.length > 0) {
+                    const avgCobertura = Math.round(totalCobertura / cards.length);
+                    const statsHTML = `
+                    <div>
+                        <i class="fas fa-chart-bar" style="margin-right: 8px;"></i>
+                        <strong>Resumo:</strong>
+                        <span style="color: #3498db;">${totalMoradores.toLocaleString('pt-BR')} moradores</span> •
+                        <span style="color: #2ecc71;">${avgCobertura}% cobertura média</span>
+                    </div>
+                `;
+                    quickStats.querySelector('div').innerHTML = statsHTML;
+                }
+            }
+
+            calcularEstatisticasCondominios();
+        });
+
+        // Estilos para os botões de ação
+        const actionStyles = document.createElement('style');
+        actionStyles.textContent = `
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #5a6268;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .action-btn:nth-child(1):hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn:nth-child(2):hover {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .filter-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #95a5a6;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #3498db;
+            color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            border-color: #3498db;
+            color: white;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+`;
+        document.head.appendChild(actionStyles);
+    </script>
+
 </body>
 </html>
