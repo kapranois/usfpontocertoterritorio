@@ -114,270 +114,209 @@
             }
         }
 
-        /* Resto dos estilos permanece igual... */
-        .form-step {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
+        /* Animações de entrada para cards */
+        .metric-card, .condominio-card {
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
         }
 
-            .form-step:last-child {
-                border-bottom: none;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
 
-            .form-step h4 {
-                color: #2c3e50;
-                margin-bottom: 20px;
-                font-size: 1.1rem;
-                display: flex;
-                align-items: center;
-                gap: 10px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-
-                .form-step h4 i {
-                    color: #1a73e8;
-                }
-
-        .cobertura-option {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
         }
 
-        .radio-option {
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .metric-card:nth-child(1) {
+            animation-delay: 0.1s;
         }
 
-            .radio-option:hover {
-                border-color: #1a73e8;
-                background: #f0f7ff;
-            }
-
-            .radio-option input[type="radio"] {
-                display: none;
-            }
-
-                .radio-option input[type="radio"]:checked + .radio-content {
-                    color: #1a73e8;
-                }
-
-        .radio-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .metric-card:nth-child(2) {
+            animation-delay: 0.2s;
         }
 
-            .radio-content i {
-                font-size: 1.5rem;
-                color: #666;
-            }
-
-        .radio-option input[type="radio"]:checked + .radio-content i {
-            color: #1a73e8;
+        .metric-card:nth-child(3) {
+            animation-delay: 0.3s;
         }
 
-        .radio-content div {
-            flex: 1;
+        .metric-card:nth-child(4) {
+            animation-delay: 0.4s;
         }
 
-        .radio-content strong {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
+        .metric-card:nth-child(5) {
+            animation-delay: 0.5s;
         }
 
-        .radio-content small {
-            color: #666;
-            font-size: 0.85rem;
+        .metric-card:nth-child(6) {
+            animation-delay: 0.6s;
         }
 
-        .cobertura-display {
-            margin-top: 10px;
+        .metric-card:nth-child(7) {
+            animation-delay: 0.7s;
         }
 
-        .cobertura-visual {
+        .metric-card:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        /* Estilo para notificações */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .cobertura-bar {
-            height: 20px;
+            padding: 15px 20px;
             border-radius: 10px;
-            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             display: flex;
-            margin-bottom: 10px;
-            background: #f0f0f0;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid #2ecc71;
         }
 
-        .coberto {
-            background: linear-gradient(90deg, #2ecc71, #27ae60);
-            height: 100%;
-            transition: width 0.5s ease;
+        .notification-success {
+            border-left-color: #2ecc71;
         }
 
-        .descoberto {
-            background: linear-gradient(90deg, #e74c3c, #c0392b);
-            height: 100%;
-            transition: width 0.5s ease;
+        .notification-info {
+            border-left-color: #3498db;
         }
 
-        .cobertura-numbers {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
+        .notification i {
+            font-size: 1.2rem;
         }
 
-            .cobertura-numbers span:first-child {
-                color: #27ae60;
-                font-weight: 500;
-            }
-
-            .cobertura-numbers span:last-child {
-                color: #e74c3c;
-                font-weight: 500;
-            }
-
-        .form-navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
+        .notification-success i {
+            color: #2ecc71;
         }
 
-        .btn-prev, .btn-next {
-            padding: 10px 25px;
+        .notification-info i {
+            color: #3498db;
+        }
+
+        .notification button {
+            background: none;
             border: none;
-            border-radius: 8px;
+            color: #95a5a6;
             cursor: pointer;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
+            padding: 0;
+            margin-left: 10px;
         }
 
-        .btn-prev {
-            background: #95a5a6;
-            color: white;
-        }
-
-            .btn-prev:hover {
-                background: #7f8c8d;
-                transform: translateY(-2px);
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
 
-        .btn-next {
-            background: #1a73e8;
-            color: white;
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-            .btn-next:hover {
-                background: #0d47a1;
-                transform: translateY(-2px);
-            }
-
-        .range-display {
+        /* Mini gráficos */
+        .mini-chart {
             display: flex;
-            align-items: center;
-            gap: 15px;
+            gap: 3px;
+            height: 40px;
+            align-items: flex-end;
             margin-top: 10px;
         }
 
-            .range-display input[type="range"] {
-                flex: 1;
-                height: 6px;
-                border-radius: 3px;
-                background: #e0e0e0;
-                outline: none;
-            }
-
-                .range-display input[type="range"]::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    width: 20px;
-                    height: 20px;
-                    border-radius: 50%;
-                    background: #1a73e8;
-                    cursor: pointer;
-                }
-
-        /* Estilos para badges de status no card */
-        .condominio-badges {
-            display: flex;
-            gap: 8px;
-        }
-
-        .badge.status-completo {
-            background: #2ecc71;
-            color: white;
-        }
-
-        .badge.status-parcial {
-            background: #f39c12;
-            color: white;
-        }
-
-        .badge.status-descoberto {
-            background: #e74c3c;
-            color: white;
-        }
-
-        /* Barra de cobertura no card */
-        .cobertura-condominio {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .cobertura-label {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .cobertura-barra {
-            height: 8px;
-            border-radius: 4px;
+        .chart-bar {
+            flex: 1;
+            background: #e9ecef;
+            border-radius: 3px;
             overflow: hidden;
-            display: flex;
-            margin-bottom: 5px;
+            height: 100%;
+            position: relative;
         }
 
-            .cobertura-barra .coberto {
-                background: #2ecc71;
-                height: 100%;
-            }
+        .chart-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, var(--card-color), var(--card-light));
+            transition: height 1s ease-out;
+        }
 
-            .cobertura-barra .descoberto {
-                background: #e74c3c;
-                height: 100%;
-            }
-
-        .cobertura-percent {
-            text-align: right;
+        /* Estatísticas extras */
+        .extra-stats {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
             font-size: 0.85rem;
-            color: #666;
+            color: #5a6268;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Responsividade para métricas */
+        @media (max-width: 1200px) {
+            .metrics-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-summary {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .extra-stats {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+
+        /* Efeito de brilho nos ícones */
+        .metric-icon i {
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Badge para destaque de prioridade */
+        .priority-highlight {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: 600;
+            animation: pulse 2s infinite;
         }
 
-        /* Cores para cards por status */
-        .condominio-card.status-completo {
-            border-left: 5px solid #2ecc71;
-        }
-
-        .condominio-card.status-parcial {
-            border-left: 5px solid #f39c12;
-        }
-
-        .condominio-card.status-descoberto {
-            border-left: 5px solid #e74c3c;
+        /* Efeito de gradiente para valores altos */
+        .metric-value.high-value {
+            background: linear-gradient(135deg, var(--card-color), var(--card-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     </style>
 </head>
@@ -481,7 +420,7 @@
                 </button>
                 {% endif %}
 
-                <!-- Logo após o header-right -->
+                <!-- Menu mobile -->
                 {% if is_mobile %}
                 <div class="mobile-menu-expanded">
                     <a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">
@@ -592,15 +531,7 @@
                                 </span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar" style="width:
-                                     {% if metricas.total_moradores>
-                                    0 %}
-                                    {{ ((metricas.total_hipertensos / metricas.total_moradores) * 100)|round(1) }}%
-                                    {% else %}
-                                    0%
-                                    {% endif %}
-                                    ">
-                                </div>
+                                <div class="progress-bar" style="width: {% if metricas.total_moradores > 0 %}{{ ((metricas.total_hipertensos / metricas.total_moradores) * 100)|round(1) }}%{% else %}0%{% endif %}"></div>
                             </div>
                         </div>
                     </div>
@@ -644,15 +575,7 @@
                                 </span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar" style="width:
-                                     {% if metricas.total_moradores>
-                                    0 %}
-                                    {{ ((metricas.total_diabeticos / metricas.total_moradores) * 100)|round(1) }}%
-                                    {% else %}
-                                    0%
-                                    {% endif %}
-                                    ">
-                                </div>
+                                <div class="progress-bar" style="width: {% if metricas.total_moradores > 0 %}{{ ((metricas.total_diabeticos / metricas.total_moradores) * 100)|round(1) }}%{% else %}0%{% endif %}"></div>
                             </div>
                         </div>
                     </div>
@@ -696,15 +619,7 @@
                                 </span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar" style="width:
-                                     {% if metricas.total_moradores>
-                                    0 %}
-                                    {{ ((metricas.total_gestantes / metricas.total_moradores) * 100)|round(2) }}%
-                                    {% else %}
-                                    0%
-                                    {% endif %}
-                                    ">
-                                </div>
+                                <div class="progress-bar" style="width: {% if metricas.total_moradores > 0 %}{{ ((metricas.total_gestantes / metricas.total_moradores) * 100)|round(2) }}%{% else %}0%{% endif %}"></div>
                             </div>
                         </div>
                     </div>
@@ -784,13 +699,7 @@
                         <div class="mini-chart">
                             {% for i in range(5) %}
                             <div class="chart-bar">
-                                <div class="chart-fill" style="height:
-                                     {% if i < (cobertos / condominios|length * 5 if condominios|length > 0 else 0) %}
-                                100%
-                            {% else %}
-                                0%
-                            {% endif %}
-                        "></div>
+                                <div class="chart-fill" style="height: {% if i < (cobertos / condominios|length * 5 if condominios|length > 0 else 0) %}100%{% else %}0%{% endif %};"></div>
                             </div>
                             {% endfor %}
                         </div>
@@ -826,13 +735,7 @@
                         <div class="mini-chart">
                             {% for i in range(5) %}
                             <div class="chart-bar">
-                                <div class="chart-fill" style="height:
-                                     {% if i < (parciais / condominios|length * 5 if condominios|length > 0 else 0) %}
-                                100%
-                            {% else %}
-                                0%
-                            {% endif %}
-                        "></div>
+                                <div class="chart-fill" style="height: {% if i < (parciais / condominios|length * 5 if condominios|length > 0 else 0) %}100%{% else %}0%{% endif %};"></div>
                             </div>
                             {% endfor %}
                         </div>
@@ -868,13 +771,7 @@
                         <div class="mini-chart">
                             {% for i in range(5) %}
                             <div class="chart-bar">
-                                <div class="chart-fill" style="height:
-                                     {% if i < (descobertos / condominios|length * 5 if condominios|length > 0 else 0) %}
-                                100%
-                            {% else %}
-                                0%
-                            {% endif %}
-                        "></div>
+                                <div class="chart-fill" style="height: {% if i < (descobertos / condominios|length * 5 if condominios|length > 0 else 0) %}100%{% else %}0%{% endif %};"></div>
                             </div>
                             {% endfor %}
                         </div>
@@ -909,1367 +806,244 @@
             </div>
         </section>
 
-        <!-- Condomínios -->
-        <!-- Seção de Condomínios - DESIGN MODERNO -->
-        <section class="condominios">
-            <div class="section-header">
-                <h2>
-                    <i class="fas fa-building"></i>
-                    Condomínios do Território
-                    <span class="condominios-count" style="font-size: 0.9rem; color: #95a5a6; margin-left: 10px; font-weight: 400;">
-                        {{ condominios|length }} unidade{% if condominios|length != 1 %}s{% endif %}
-                    </span>
-                </h2>
-
-                <div class="section-actions">
-                    {% if usuario_logado and nivel_usuario != 'convidado' %}
-                    <button class="btn-add" onclick="mostrarModal()">
-                        <i class="fas fa-plus"></i>
-                        <span>Novo Condomínio</span>
-                    </button>
-                    {% else %}
-                    <button class="btn-add btn-convidado-disabled"
-                            onclick="mostrarModalConvidado()"
-                            title="Modo visitante: apenas visualização">
-                        <i class="fas fa-plus"></i>
-                        <span>Novo Condomínio</span>
-                    </button>
-                    {% endif %}
-
-                    <!-- Filtros rápidos -->
-                    <div class="quick-filters" style="display: flex; gap: 8px;">
-                        <button class="filter-btn active" onclick="filtrarCondominios('todos')" title="Mostrar todos">
-                            <i class="fas fa-layer-group"></i>
-                        </button>
-                        <button class="filter-btn" onclick="filtrarCondominios('alta')" title="Alta prioridade" style="color: #e74c3c;">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </button>
-                        <button class="filter-btn" onclick="filtrarCondominios('cobertura')" title="Ordenar por cobertura">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {% if condominios %}
-            <div class="condominios-grid">
-                {% for cond in condominios %}
-                {% set cobertura_percent = cond.cobertura|default(0)|int %}
-                <div class="condominio-card priority-{{ cond.prioridade }} status-{{ cond.status_cobertura }}"
-                     data-cobertura="{{ cobertura_percent }}"
-                     data-prioridade="{{ cond.prioridade }}"
-                     style="--card-index: {{ loop.index0 }}">
-
-                    <!-- Cabeçalho -->
-                    <div class="condominio-header">
-                        <h3>{{ cond.nome }}</h3>
-                        <div class="condominio-badges">
-                            <span class="badge priority-{{ cond.prioridade }}">
-                                <i class="fas fa-flag"></i>
-                                {{ cond.prioridade|upper }}
-                            </span>
-                            <span class="badge status-{{ cond.status_cobertura }}">
-                                {% if cond.status_cobertura == 'completo' %}
-                                <i class="fas fa-check-circle"></i> COBERTO
-                                {% elif cond.status_cobertura == 'parcial' %}
-                                <i class="fas fa-exclamation-triangle"></i> PARCIAL
-                                {% else %}
-                                <i class="fas fa-times-circle"></i> DESCOBERTO
-                                {% endif %}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Informações principais -->
-                    <div class="condominio-info">
-                        <div class="info-grid">
-                            <!-- Blocos -->
-                            <div class="info-item">
-                                <i class="fas fa-layer-group"></i>
-                                <span>Blocos:</span>
-                                <span class="info-value">{{ cond.torres }}</span>
-                            </div>
-
-                            <!-- Apartamentos -->
-                            <div class="info-item">
-                                <i class="fas fa-door-closed"></i>
-                                <span>Apartamentos:</span>
-                                <span class="info-value">{{ cond.apartamentos }}</span>
-                            </div>
-
-                            <!-- Moradores -->
-                            <div class="info-item">
-                                <i class="fas fa-users"></i>
-                                <span>Moradores:</span>
-                                <span class="info-value">{{ cond.moradores }}</span>
-                            </div>
-
-                            <!-- ACS Responsável -->
-                            <div class="info-item">
-                                <i class="fas fa-user-md"></i>
-                                <span>ACS:</span>
-                                <span class="info-value">
-                                    {% if cond.acs_responsavel %}
-                                    {{ cond.acs_responsavel|truncate(15) }}
-                                    {% else %}
-                                    <span style="color: #e74c3c; font-style: italic;">Sem ACS</span>
-                                    {% endif %}
-                                </span>
-                            </div>
-
-                            <!-- Blocos Cobertos -->
-                            <div class="info-item">
-                                <i class="fas fa-check-circle" style="color: #27ae60;"></i>
-                                <span>Cobertos:</span>
-                                <span class="info-value" style="color: #27ae60;">{{ cond.blocos_cobertos }}</span>
-                            </div>
-
-                            <!-- Blocos Descobertos -->
-                            <div class="info-item">
-                                <i class="fas fa-times-circle" style="color: #e74c3c;"></i>
-                                <span>Descobertos:</span>
-                                <span class="info-value" style="color: #e74c3c;">{{ cond.blocos_descobertos }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Dados de Saúde -->
-                        <div class="saude-mini-chart">
-                            <div class="saude-chart-title">
-                                <i class="fas fa-heartbeat"></i>
-                                Dados de Saúde
-                            </div>
-                            <div class="saude-chart-bars">
-                                <div class="saude-bar"
-                                     data-value="{{ cond.hipertensos }}"
-                                     style="height: {{ (cond.hipertensos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"
-                                     title="Hipertensos: {{ cond.hipertensos }}">
-                                </div>
-                                <div class="saude-bar"
-                                     data-value="{{ cond.diabeticos }}"
-                                     style="height: {{ (cond.diabeticos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"
-                                     title="Diabéticos: {{ cond.diabeticos }}">
-                                </div>
-                                <div class="saude-bar"
-                                     data-value="{{ cond.gestantes }}"
-                                     style="height: {{ (cond.gestantes / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"
-                                     title="Gestantes: {{ cond.gestantes }}">
-                                </div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #95a5a6; margin-top: 5px;">
-                                <span style="color: #e74c3c;">{{ cond.hipertensos }} Hipertensos</span>
-                                <span style="color: #f39c12;">{{ cond.diabeticos }} Diabéticos</span>
-                                <span style="color: #9b59b6;">{{ cond.gestantes }} Gestantes</span>
-                            </div>
-                        </div>
-
-                        <!-- Barra de Cobertura -->
-                        <div class="cobertura-condominio">
-                            <div class="cobertura-header">
-                                <div class="cobertura-label">
-                                    <i class="fas fa-chart-pie"></i>
-                                    Cobertura de Blocos
-                                </div>
-                                <div class="cobertura-percent">{{ cond.cobertura }}%</div>
-                            </div>
-
-                            <div class="cobertura-barra-container">
-                                <div class="cobertura-barra">
-                                    <div class="coberto" style="width: {{ cond.cobertura }}%"></div>
-                                    <div class="descoberto" style="width: {{ 100 - cond.cobertura }}%"></div>
-                                </div>
-                            </div>
-
-                            <div class="cobertura-numbers">
-                                <span>{{ cond.blocos_cobertos }} blocos cobertos</span>
-                                <span>{{ cond.blocos_descobertos }} blocos descobertos</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rodapé -->
-                    <div class="condominio-footer">
-                        <div class="cobertura-info">
-                            <span class="status-indicator">
-                                {% if cond.status_cobertura == 'completo' %}
-                                <i class="fas fa-check-circle"></i> COBERTO
-                                {% elif cond.status_cobertura == 'parcial' %}
-                                <i class="fas fa-exclamation-triangle"></i> PARCIAL
-                                {% else %}
-                                <i class="fas fa-times-circle"></i> DESCOBERTO
-                                {% endif %}
-                            </span>
-                        </div>
-
-                        <div class="ultima-visita">
-                            <i class="far fa-calendar-alt"></i>
-                            <span>{{ cond.ultima_visita }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Botões de ação (hover) -->
-                    <div class="card-actions" style="position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; opacity: 0; transition: opacity 0.3s ease;">
-                        {% if usuario_logado and nivel_usuario != 'convidado' %}
-                        <button class="action-btn" title="Editar" onclick="editarCondominio({{ cond.id }}, event)">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn" title="Visualizar" onclick="verDetalhes({{ cond.id }}, event)">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <!-- Estado Vazio -->
-            <div class="empty-state">
-                <i class="fas fa-building"></i>
-                <h3>Nenhum condomínio cadastrado</h3>
-                <p>Comece adicionando condomínios para monitorar a cobertura da sua equipe no território.</p>
-                {% if usuario_logado and nivel_usuario != 'convidado' %}
-                <button class="btn-primary" onclick="mostrarModal()">
-                    <i class="fas fa-plus"></i>
-                    Adicionar Primeiro Condomínio
-                </button>
-                {% else %}
-                <button class="btn-primary btn-convidado-disabled"
-                        onclick="mostrarModalConvidado()"
-                        title="Modo visitante: apenas visualização">
-                    <i class="fas fa-plus"></i>
-                    Adicionar Primeiro Condomínio
-                </button>
-                <p style="margin-top: 15px; font-size: 0.9rem; color: #95a5a6;">
-                    <i class="fas fa-info-circle"></i>
-                    Faça login como usuário cadastrado para adicionar condomínios.
-                </p>
-                {% endif %}
-            </div>
-            {% endif %}
-
-            <!-- Resumo da seção -->
-            {% if condominios %}
-            <div class="section-summary" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #7f8c8d;">
+        <!-- Seção de Ação Rápida -->
+        <section class="quick-actions" style="margin-top: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; color: white; position: relative; overflow: hidden;">
+            <div class="action-bg"></div>
+            <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <i class="fas fa-chart-bar" style="margin-right: 8px;"></i>
-                    <strong>Resumo:</strong>
-                    {% set cobertos = condominios|selectattr('status_cobertura', 'equalto', 'completo')|list|length %}
-                    {% set parciais = condominios|selectattr('status_cobertura', 'equalto', 'parcial')|list|length %}
-                    {% set descobertos = condominios|selectattr('status_cobertura', 'equalto', 'descoberto')|list|length %}
-                    <span style="color: #2ecc71;">{{ cobertos }} cobertos</span> •
-                    <span style="color: #f39c12;">{{ parciais }} parciais</span> •
-                    <span style="color: #e74c3c;">{{ descobertos }} descobertos</span>
+                    <h3 style="margin: 0 0 10px 0; color: white; font-size: 1.4rem;">
+                        <i class="fas fa-rocket"></i> Ações Rápidas
+                    </h3>
+                    <p style="margin: 0; opacity: 0.9; font-size: 0.95rem;">
+                        Gerencie seu território de forma eficiente
+                    </p>
                 </div>
-                <div>
-                    <i class="fas fa-filter" style="margin-right: 5px; cursor: pointer;" onclick="toggleFiltrosAvancados()" title="Filtros avançados"></i>
-                    Mostrando {{ condominios|length }} condomínio{% if condominios|length != 1 %}s{% endif %}
+                <div style="display: flex; gap: 15px;">
+                    <a href="/condominios" class="btn-action" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: white;">
+                        <i class="fas fa-building"></i> Ver Condomínios
+                    </a>
+                    <a href="/mapa" class="btn-action" style="background: white; color: #667eea;">
+                        <i class="fas fa-map"></i> Visualizar Mapa
+                    </a>
                 </div>
             </div>
-            {% endif %}
         </section>
-
-        <!-- Modal para Adicionar Condomínio -->
-        <div id="modalCondominio" class="modal" style="display: none;">
-            <div class="modal-content" style="max-width: 700px;">
-                <div class="modal-header">
-                    <h3><i class="fas fa-plus-circle"></i> Cadastrar Novo Condomínio</h3>
-                    <span class="close" onclick="fecharModal()">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <form id="formCondominio">
-                        <!-- Passo 1: Informações Básicas -->
-                        <div class="form-step" id="step1">
-                            <h4><i class="fas fa-info-circle"></i> Informações Básicas</h4>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="nomeCondominio"><i class="fas fa-building"></i> Nome do Condomínio*</label>
-                                    <input type="text" id="nomeCondominio" required placeholder="Ex: Condomínio Lucaia">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="torres"><i class="fas fa-layer-group"></i> Total de Blocos/Torres*</label>
-                                    <input type="number" id="torres" min="1" required placeholder="Ex: 23" onchange="calcularCobertura()">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="apartamentos"><i class="fas fa-door-closed"></i> Total de Apartamentos*</label>
-                                    <input type="number" id="apartamentos" min="1" required placeholder="Ex: 460">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="moradores"><i class="fas fa-users"></i> Total de Moradores*</label>
-                                    <input type="number" id="moradores" min="1" required placeholder="Ex: 1610">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Passo 2: Cobertura por ACS -->
-                        <div class="form-step" id="step2" style="display: none;">
-                            <h4><i class="fas fa-user-nurse"></i> Cobertura por ACS</h4>
-
-                            <div class="cobertura-option">
-                                <label class="radio-option">
-                                    <input type="radio" name="tem_acs" value="sim" checked onchange="toggleACSInfo(true)">
-                                    <div class="radio-content">
-                                        <i class="fas fa-user-check"></i>
-                                        <div>
-                                            <strong>Condomínio com ACS</strong>
-                                            <small>Existe ACS trabalhando neste condomínio</small>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="radio-option">
-                                    <input type="radio" name="tem_acs" value="nao" onchange="toggleACSInfo(false)">
-                                    <div class="radio-content">
-                                        <i class="fas fa-user-times"></i>
-                                        <div>
-                                            <strong>Condomínio Descoberto</strong>
-                                            <small>Não há ACS trabalhando neste condomínio</small>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-
-                            <!-- Informações do ACS (aparece apenas se tem ACS) -->
-                            <div id="acsInfo" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="nomeACS"><i class="fas fa-user-md"></i> Nome do ACS*</label>
-                                        <input type="text" id="nomeACS" placeholder="Ex: Maria Silva">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="blocosCobertos"><i class="fas fa-map-marked-alt"></i> Blocos Atendidos*</label>
-                                        <input type="text" id="blocosCobertos" placeholder="Ex: 1-13 ou 1,2,3,5-8" onchange="calcularCobertura()">
-                                        <small style="color: #666; font-size: 0.85rem;">Informe os blocos que o ACS atende</small>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="blocosDescobertos"><i class="fas fa-map-marked"></i> Blocos Descobertos</label>
-                                        <input type="text" id="blocosDescobertos" placeholder="Será calculado automaticamente" readonly>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label><i class="fas fa-chart-pie"></i> Cobertura de Blocos</label>
-                                        <div class="cobertura-display">
-                                            <div class="cobertura-visual">
-                                                <div class="cobertura-bar">
-                                                    <div class="coberto" id="cobertoBar" style="width: 0%"></div>
-                                                    <div class="descoberto" id="descobertoBar" style="width: 100%"></div>
-                                                </div>
-                                                <div class="cobertura-numbers">
-                                                    <span id="cobertoText">0 blocos cobertos (0%)</span>
-                                                    <span id="descobertoText">0 blocos descobertos (0%)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Passo 3: Dados de Saúde -->
-                        <div class="form-step" id="step3" style="display: none;">
-                            <h4><i class="fas fa-heartbeat"></i> Dados de Saúde</h4>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="hipertensos"><i class="fas fa-heartbeat"></i> Hipertensos</label>
-                                    <input type="number" id="hipertensos" min="0" value="0" placeholder="0">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="diabeticos"><i class="fas fa-prescription-bottle"></i> Diabéticos</label>
-                                    <input type="number" id="diabeticos" min="0" value="0" placeholder="0">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="gestantes"><i class="fas fa-female"></i> Gestantes</label>
-                                    <input type="number" id="gestantes" min="0" value="0" placeholder="0">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="prioridade"><i class="fas fa-exclamation-circle"></i> Prioridade</label>
-                                    <select id="prioridade" required>
-                                        <option value="baixa">Baixa</option>
-                                        <option value="media" selected>Média</option>
-                                        <option value="alta">Alta</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Navegação entre passos -->
-                        <div class="form-navigation">
-                            <button type="button" class="btn-prev" onclick="prevStep()" style="display: none;">
-                                <i class="fas fa-arrow-left"></i> Anterior
-                            </button>
-                            <button type="button" class="btn-next" onclick="nextStep()">
-                                Próximo <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-
-                        <!-- Botões finais -->
-                        <div class="form-actions" id="finalActions" style="display: none;">
-                            <button type="button" class="btn-cancelar" onclick="fecharModal()">
-                                <i class="fas fa-times"></i> Cancelar
-                            </button>
-                            <button type="submit" class="btn-salvar">
-                                <i class="fas fa-save"></i> Salvar Condomínio
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
         <!-- Rodapé -->
         <footer class="footer">
-            <p>© 2025 Territorialização USF PontoCerto| {{ nome_equipe }}</p>
-            <p class="version">Sistema desenvolvido por Agentes Comun. de Saúde"</span></p>
+            <p>© 2025 Territorialização USF PontoCerto | {{ nome_equipe }}</p>
+            <p class="version">Sistema desenvolvido por Agentes Comun. de Saúde</p>
         </footer>
     </div>
 
-    <!-- Primeiro: Passar variáveis do template para JavaScript -->
+    <!-- Configuração do usuário para JavaScript -->
     <script>
         // Variáveis globais para verificar login
-        window.USUARIO_LOGADO = {% if usuario_logado %}true{% else %}false{% endif %};
-        window.NOME_USUARIO = "{{ nome_usuario|default('Visitante') }}";
-        window.NIVEL_USUARIO = "{{ nivel_usuario|default('') }}";
-
-        console.log('DEBUG TEMPLATE: usuario_logado =', {% if usuario_logado %}true{% else %}false{% endif %});
-        console.log('DEBUG TEMPLATE: nome_usuario =', "{{ nome_usuario|default('') }}");
-        console.log('DEBUG TEMPLATE: nivel_usuario =', "{{ nivel_usuario|default('') }}");
-        console.log('DEBUG TEMPLATE: USUARIO_LOGADO =', window.USUARIO_LOGADO);
-        console.log('DEBUG TEMPLATE: NIVEL_USUARIO =', window.NIVEL_USUARIO);
+        window.APP_CONFIG = {
+            usuario_logado: {% if usuario_logado %}true{% else %}false{% endif %},
+            nome_usuario: {{ nome_usuario|default('Visitante')|tojson }},
+            nivel_usuario: {{ nivel_usuario|default('')|tojson }},
+            nome_equipe: {{ nome_equipe|tojson }},
+            condominios_count: {{ condominios|length }}
+        };
     </script>
 
-    <!-- Segundo: Carregar o script.js principal -->
+    <!-- Carregar script.js principal -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-    <!-- Terceiro: Scripts específicos da página -->
+    <!-- Scripts específicos da página de dashboard -->
     <script>
-        // Data atual
+        // Data atual no rodapé
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('pt-BR');
 
-        // Animações de entrada
+        // Inicializar animações
         document.addEventListener('DOMContentLoaded', function () {
-            const cards = document.querySelectorAll('.metric-card, .condominio-card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.classList.add('fade-in');
+            // Animar barras de progresso
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar').forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 300);
+                });
+
+                // Animar mini gráficos
+                document.querySelectorAll('.chart-fill').forEach(fill => {
+                    const height = fill.style.height;
+                    fill.style.height = '0%';
+                    setTimeout(() => {
+                        fill.style.height = height;
+                    }, 500);
+                });
+            }, 500);
+
+            // Efeito de contagem nos valores
+            function animateValue(element, start, end, duration) {
+                if (start === end) return;
+
+                const range = end - start;
+                const increment = end > start ? 1 : -1;
+                const stepTime = Math.abs(Math.floor(duration / range));
+                let current = start;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    element.textContent = current.toLocaleString('pt-BR');
+
+                    if (current === end) {
+                        clearInterval(timer);
+                        element.classList.add('updated');
+                        setTimeout(() => element.classList.remove('updated'), 500);
+                    }
+                }, stepTime);
+            }
+
+            // Animar valores numéricos
+            const valueElements = document.querySelectorAll('.metric-value');
+            valueElements.forEach(el => {
+                const value = parseInt(el.textContent.replace(/\./g, '')) || 0;
+                if (value > 0) {
+                    animateValue(el, 0, value, 2000);
+                }
             });
 
-            // Verificar se a função mostrarModal foi carregada
-            console.log('DEBUG: mostrarModal carregada?', typeof mostrarModal);
-        });
-
-        // ============================================
-        // FUNÇÃO PARA BLOQUEAR AÇÕES DE CONVIDADO
-        // ============================================
-        function mostrarModalConvidado() {
-            alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para adicionar ou editar condomínios, faça login como usuário cadastrado.\n\nUsuário: admin / Senha: admin123\nou\nUsuário: acs1 / Senha: acs123');
-        }
-
-        // ============================================
-        // SOBRESCREVER FUNÇÃO mostrarModal PARA VERIFICAR LOGIN E NÍVEL
-        // ============================================
-        (function () {
-            // Guardar a função original
-            var mostrarModalOriginal = window.mostrarModal;
-
-            if (typeof mostrarModalOriginal === 'function') {
-                // Criar nova função com verificação de login e nível
-                window.mostrarModal = function () {
-                    console.log('DEBUG: mostrarModal chamado, USUARIO_LOGADO:', window.USUARIO_LOGADO);
-                    console.log('DEBUG: NIVEL_USUARIO:', window.NIVEL_USUARIO);
-
-                    // Verificar se é convidado
-                    if (window.NIVEL_USUARIO === 'convidado') {
-                        mostrarModalConvidado();
-                        return false;
-                    }
-
-                    if (!window.USUARIO_LOGADO) {
-                        alert('Para adicionar um novo condomínio, é necessário fazer login no sistema.');
-                        window.location.href = '/login';
-                        return false;
-                    }
-
-                    // Chamar função original
-                    console.log('DEBUG: Chamando função original mostrarModal');
-                    return mostrarModalOriginal();
-                };
-
-                console.log('DEBUG: mostrarModal sobrescrita com sucesso');
-            } else {
-                console.error('DEBUG: Função mostrarModal não encontrada para sobrescrever');
-
-                // Se não existe, criar uma básica
-                window.mostrarModal = function () {
-                    if (window.NIVEL_USUARIO === 'convidado') {
-                        mostrarModalConvidado();
-                        return false;
-                    }
-
-                    if (!window.USUARIO_LOGADO) {
-                        alert('Para adicionar um novo condomínio, é necessário fazer login no sistema.');
-                        window.location.href = '/login';
-                        return false;
-                    }
-
-                    document.getElementById('modalCondominio').style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-
-                    // Resetar passos se existir
-                    if (typeof resetFormSteps === 'function') {
-                        resetFormSteps();
-                    }
-                };
-            }
-        })();
-
-        // ============================================
-        // FUNÇÕES DO MODAL MULTI-ETAPA (apenas as que não estão no script.js)
-        // ============================================
-
-        function mostrarMensagem(tipo, texto) {
-            alert(`[${tipo.toUpperCase()}] ${texto}`);
-        }
-
-        // ============================================
-        // FORM SUBMIT (ATUALIZADO PARA VERIFICAR CONVIDADO)
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function () {
-            // Formulário de envio
-            const formCondominio = document.getElementById('formCondominio');
-            if (formCondominio) {
-                formCondominio.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-
-                    // Verificar se é convidado
-                    if (window.NIVEL_USUARIO === 'convidado') {
-                        mostrarModalConvidado();
-                        return;
-                    }
-
-                    // Verificar login antes de enviar
-                    if (!window.USUARIO_LOGADO) {
-                        alert('Você precisa estar logado para adicionar condomínios.');
-                        window.location.href = '/login';
-                        return;
-                    }
-
-                    const temACS = document.querySelector('input[name="tem_acs"]:checked').value === 'sim';
-                    const totalTorres = parseInt(document.getElementById('torres').value) || 0;
-                    const blocosCobertosStr = document.getElementById('blocosCobertos').value || '';
-
-                    // Calcular cobertura real
-                    let blocosCobertos = 0;
-                    let statusCobertura = 'descoberto';
-
-                    if (temACS && blocosCobertosStr) {
-                        const partes = blocosCobertosStr.split(',');
-                        for (let parte of partes) {
-                            parte = parte.trim();
-                            if (parte.includes('-')) {
-                                const [inicio, fim] = parte.split('-').map(Number);
-                                if (!isNaN(inicio) && !isNaN(fim) && inicio <= fim) {
-                                    blocosCobertos += (fim - inicio + 1);
-                                }
-                            } else if (!isNaN(Number(parte))) {
-                                blocosCobertos += 1;
-                            }
-                        }
-
-                        if (blocosCobertos === 0) {
-                            statusCobertura = 'descoberto';
-                        } else if (blocosCobertos === totalTorres) {
-                            statusCobertura = 'completo';
-                        } else {
-                            statusCobertura = 'parcial';
-                        }
-                    } else {
-                        statusCobertura = 'descoberto';
-                    }
-
-                    const percentCobertura = totalTorres > 0 ? Math.round((blocosCobertos / totalTorres) * 100) : 0;
-
-                    const condominio = {
-                        nome: document.getElementById('nomeCondominio').value,
-                        torres: totalTorres,
-                        blocos_cobertos: blocosCobertos,
-                        blocos_descobertos: totalTorres - blocosCobertos,
-                        acs_responsavel: temACS ? document.getElementById('nomeACS').value : null,
-                        blocos_ativos: temACS ? blocosCobertosStr : null,
-                        apartamentos: parseInt(document.getElementById('apartamentos').value),
-                        moradores: parseInt(document.getElementById('moradores').value),
-                        hipertensos: parseInt(document.getElementById('hipertensos').value),
-                        diabeticos: parseInt(document.getElementById('diabeticos').value),
-                        gestantes: parseInt(document.getElementById('gestantes').value),
-                        cobertura: percentCobertura,
-                        status_cobertura: statusCobertura,
-                        prioridade: document.getElementById('prioridade').value,
-                        ultima_visita: new Date().toISOString().split('T')[0]
-                    };
-
-                    console.log('DEBUG: Enviando condomínio:', condominio);
-
-                    try {
-                        const btnSalvar = this.querySelector('.btn-salvar');
-                        btnSalvar.disabled = true;
-                        btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-
-                        const response = await fetch('/api/novo-condominio', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(condominio)
-                        });
-
-                        const result = await response.json();
-
-                        if (result.status === 'sucesso') {
-                            alert('✅ Condomínio adicionado com sucesso!');
-                            fecharModal();
-
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1500);
-                        } else {
-                            alert('❌ Erro: ' + result.mensagem);
-                            btnSalvar.disabled = false;
-                            btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar Condomínio';
-                        }
-                    } catch (error) {
-                        alert('❌ Erro de conexão: ' + error.message);
-                        const btnSalvar = document.querySelector('.btn-salvar');
-                        btnSalvar.disabled = false;
-                        btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar Condomínio';
-                    }
+            // Atualizar hora da última atualização
+            function updateLastUpdateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
+                document.getElementById('lastUpdateTime').textContent = timeString;
             }
-        });
-    </script>
-    <script>
-        // Adicionar índice para animação dos cards
-        document.addEventListener('DOMContentLoaded', function () {
-            // Animar cards de métricas
+
+            updateLastUpdateTime();
+            setInterval(updateLastUpdateTime, 60000); // Atualizar a cada minuto
+
+            // Efeitos de hover nos cards
             const metricCards = document.querySelectorAll('.metric-card');
             metricCards.forEach((card, index) => {
                 card.style.setProperty('--card-index', index);
-            });
 
-            // Animar cards de condomínios
-            const condominioCards = document.querySelectorAll('.condominio-card');
-            condominioCards.forEach((card, index) => {
-                card.style.setProperty('--card-index', index);
-            });
+                card.addEventListener('mouseenter', function() {
+                    this.style.zIndex = '10';
+                });
 
-            // Adicionar efeito de clique nos botões
-            document.querySelectorAll('button, .btn-action, .btn-add, .btn-primary').forEach(button => {
-                button.addEventListener('click', function (e) {
-                    // Adicionar efeito visual de clique
-                    if (!this.classList.contains('disabled') && !this.disabled && !this.classList.contains('btn-convidado-disabled')) {
-                        this.style.transform = 'scale(0.98)';
-                        setTimeout(() => {
-                            this.style.transform = '';
-                        }, 150);
-                    }
+                card.addEventListener('mouseleave', function() {
+                    this.style.zIndex = '1';
                 });
             });
-        });
-    </script>
-    <script>
-// ============================================
-// ANIMAÇÕES E INTERATIVIDADE DAS MÉTRICAS
-// ============================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Animar barras de progresso
-    setTimeout(() => {
-        document.querySelectorAll('.progress-bar').forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 300);
-        });
+            // Calcular e mostrar estatísticas adicionais
+            function calcularEstatisticas() {
+                const totalMoradores = parseInt('{{ metricas.total_moradores }}') || 0;
+                const totalCondominios = {{ condominios|length }} || 0;
 
-        // Animar mini gráficos
-        document.querySelectorAll('.chart-fill').forEach(fill => {
-            const height = fill.style.height;
-            fill.style.height = '0%';
-            setTimeout(() => {
-                fill.style.height = height;
-            }, 500);
-        });
-    }, 500);
+                if (totalCondominios > 0 && totalMoradores > 0) {
+                    const mediaPorCondominio = Math.round(totalMoradores / totalCondominios);
 
-    // Efeito de contagem nos valores
-    function animateValue(element, start, end, duration) {
-        if (start === end) return;
+                    // Adicionar estatística extra se não existir
+                    if (!document.querySelector('.extra-stats')) {
+                        const extraStats = document.createElement('div');
+                        extraStats.className = 'extra-stats';
+                        extraStats.innerHTML = `
+                            <div>
+                                <i class="fas fa-calculator"></i>
+                                Média: ${mediaPorCondominio} moradores/condomínio
+                            </div>
+                            <div>
+                                <i class="fas fa-chart-bar"></i>
+                                ${totalCondominios} condomínios monitorados
+                            </div>
+                        `;
 
-        const range = end - start;
-        const increment = end > start ? 1 : -1;
-        const stepTime = Math.abs(Math.floor(duration / range));
-        let current = start;
-
-        const timer = setInterval(() => {
-            current += increment;
-            element.textContent = current.toLocaleString('pt-BR');
-
-            if (current === end) {
-                clearInterval(timer);
-                element.classList.add('updated');
-                setTimeout(() => element.classList.remove('updated'), 500);
-            }
-        }, stepTime);
-    }
-
-    // Animar valores numéricos
-    const valueElements = document.querySelectorAll('.metric-value');
-    valueElements.forEach(el => {
-        const value = parseInt(el.textContent.replace(/\./g, '')) || 0;
-        if (value > 0) {
-            animateValue(el, 0, value, 2000);
-        }
-    });
-
-    // Atualizar hora da última atualização
-    function updateLastUpdateTime() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('pt-BR', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        document.getElementById('lastUpdateTime').textContent = timeString;
-    }
-
-    updateLastUpdateTime();
-    setInterval(updateLastUpdateTime, 60000); // Atualizar a cada minuto
-
-    // Efeitos de hover nos cards
-    const metricCards = document.querySelectorAll('.metric-card');
-    metricCards.forEach((card, index) => {
-        card.style.setProperty('--card-index', index);
-
-        card.addEventListener('mouseenter', function() {
-            this.style.zIndex = '10';
-        });
-
-        card.addEventListener('mouseleave', function() {
-            this.style.zIndex = '1';
-        });
-    });
-
-    // Atualizar métricas (simulação)
-    window.atualizarMetricas = function() {
-        const updateBtn = document.querySelector('.fa-sync-alt');
-        updateBtn.classList.add('fa-spin');
-
-        setTimeout(() => {
-            updateBtn.classList.remove('fa-spin');
-            updateLastUpdateTime();
-
-            // Simular pequena atualização nos valores
-            document.querySelectorAll('.metric-value').forEach(el => {
-                const current = parseInt(el.textContent.replace(/\./g, '')) || 0;
-                const change = Math.floor(Math.random() * 5) - 2; // -2 a +2
-                const newValue = Math.max(0, current + change);
-
-                if (change !== 0) {
-                    animateValue(el, current, newValue, 1000);
+                        document.querySelector('.metrics-summary').parentNode.insertBefore(
+                            extraStats,
+                            document.querySelector('.metrics-summary')
+                        );
+                    }
                 }
-            });
-
-            // Mostrar notificação
-            showNotification('Métricas atualizadas com sucesso!', 'success');
-        }, 1500);
-    };
-
-    // Função para mostrar notificação
-    function showNotification(message, type) {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
-            <span>${message}</span>
-            <button onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-
-    // Estilos para notificação
-    const style = document.createElement('style');
-    style.textContent = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            animation: slideInRight 0.3s ease;
-            border-left: 4px solid #2ecc71;
-        }
-
-        .notification-success {
-            border-left-color: #2ecc71;
-        }
-
-        .notification i {
-            font-size: 1.2rem;
-            color: #2ecc71;
-        }
-
-        .notification button {
-            background: none;
-            border: none;
-            color: #95a5a6;
-            cursor: pointer;
-            padding: 0;
-            margin-left: 10px;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
             }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    `;
-    document.head.appendChild(style);
 
-    // Calcular e mostrar estatísticas adicionais
-    function calcularEstatisticas() {
-        const totalMoradores = parseInt('{{ metricas.total_moradores }}') || 0;
-        const totalCondominios = {{ condominios|length }} || 0;
+            calcularEstatisticas();
+        });
 
-        if (totalCondominios > 0 && totalMoradores > 0) {
-            const mediaPorCondominio = Math.round(totalMoradores / totalCondominios);
+        // Função para atualizar métricas (simulação)
+        window.atualizarMetricas = function() {
+            const updateBtn = document.querySelector('.fa-sync-alt');
+            updateBtn.classList.add('fa-spin');
 
-            // Adicionar estatística extra se houver espaço
-            const extraStats = document.createElement('div');
-            extraStats.className = 'extra-stats';
-            extraStats.style.cssText = `
-                margin-top: 15px;
-                padding: 12px;
-                background: #f8f9fa;
-                border-radius: 10px;
-                font-size: 0.85rem;
-                color: #5a6268;
-                display: flex;
-                justify-content: space-between;
-            `;
-            extraStats.innerHTML = `
-                <div>
-                    <i class="fas fa-calculator"></i>
-                    Média: ${mediaPorCondominio} moradores/condomínio
-                </div>
-                <div>
-                    <i class="fas fa-chart-bar"></i>
-                    ${totalCondominios} condomínios monitorados
-                </div>
+            setTimeout(() => {
+                updateBtn.classList.remove('fa-spin');
+
+                // Atualizar hora
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('lastUpdateTime').textContent = timeString;
+
+                // Simular pequena atualização nos valores
+                document.querySelectorAll('.metric-value').forEach(el => {
+                    const current = parseInt(el.textContent.replace(/\./g, '')) || 0;
+                    const change = Math.floor(Math.random() * 5) - 2; // -2 a +2
+                    const newValue = Math.max(0, current + change);
+
+                    if (change !== 0) {
+                        // Animar apenas se houver mudança
+                        el.textContent = newValue.toLocaleString('pt-BR');
+                        el.classList.add('updated');
+                        setTimeout(() => el.classList.remove('updated'), 500);
+                    }
+                });
+
+                // Mostrar notificação
+                showNotification('Métricas atualizadas com sucesso!', 'success');
+            }, 1500);
+        };
+
+        // Função para mostrar notificação
+        function showNotification(message, type) {
+            // Remover notificações existentes
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
             `;
 
-            document.querySelector('.metrics-summary').parentNode.insertBefore(
-                extraStats,
-                document.querySelector('.metrics-summary')
-            );
-        }
-    }
+            document.body.appendChild(notification);
 
-    calcularEstatisticas();
-});
-    </script>
-
-    <!-- Estilos adicionais para as métricas -->
-    <style>
-        /* Efeito de brilho nos ícones */
-        .metric-icon i {
-            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        /* Badge para destaque de prioridade */
-        .priority-highlight {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #ff6b6b;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            animation: pulse 2s infinite;
-        }
-
-        /* Efeito de gradiente para valores altos */
-        .metric-value.high-value {
-            background: linear-gradient(135deg, var(--card-color), var(--card-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Responsividade adicional */
-        @media (max-width: 1200px) {
-            .metrics-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 992px) {
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .metrics-summary {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-        }
-    </style>
-    <script>
-        // ============================================
-        // FUNÇÕES PARA A SEÇÃO DE CONDOMÍNIOS
-        // ============================================
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Animar barras de saúde
             setTimeout(() => {
-                document.querySelectorAll('.saude-bar').forEach(bar => {
-                    const height = bar.style.height;
-                    bar.style.height = '0%';
-                    setTimeout(() => {
-                        bar.style.height = height;
-                    }, 500 + (Math.random() * 500));
-                });
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
 
-                // Animar barras de cobertura
-                document.querySelectorAll('.cobertura-barra').forEach(bar => {
-                    const coberto = bar.querySelector('.coberto');
-                    const width = coberto.style.width;
-                    coberto.style.width = '0%';
-                    setTimeout(() => {
-                        coberto.style.width = width;
-                    }, 800);
-                });
-            }, 300);
+        // Função para mostrar mensagem de convidado
+        window.mostrarModalConvidado = function() {
+            alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para adicionar ou editar condomínios, faça login como usuário cadastrado.\n\nUsuário: admin / Senha: admin123\nou\nUsuário: acs1 / Senha: acs123');
+        };
 
-            // Mostrar botões de ação no hover
-            const condominioCards = document.querySelectorAll('.condominio-card');
-            condominioCards.forEach(card => {
-                const actions = card.querySelector('.card-actions');
-
-                card.addEventListener('mouseenter', function () {
-                    if (actions) {
-                        actions.style.opacity = '1';
-                    }
-                });
-
-                card.addEventListener('mouseleave', function () {
-                    if (actions) {
-                        actions.style.opacity = '0';
-                    }
-                });
-            });
-
-            // Adicionar índice para animação
-            condominioCards.forEach((card, index) => {
-                card.style.setProperty('--card-index', index);
-            });
-
-            // Filtros rápidos
-            window.filtrarCondominios = function (filtro) {
-                const cards = document.querySelectorAll('.condominio-card');
-                const filterBtns = document.querySelectorAll('.filter-btn');
-
-                // Atualizar botões ativos
-                filterBtns.forEach(btn => btn.classList.remove('active'));
-                event.target.classList.add('active');
-
-                let visibleCount = 0;
-
-                cards.forEach(card => {
-                    let mostrar = true;
-
-                    switch (filtro) {
-                        case 'alta':
-                            mostrar = card.classList.contains('priority-alta');
-                            break;
-                        case 'cobertura':
-                            // Ordenar por cobertura
-                            const container = card.parentElement;
-                            const sortedCards = Array.from(container.children)
-                                .sort((a, b) => {
-                                    const coberturaA = parseInt(a.getAttribute('data-cobertura') || 0);
-                                    const coberturaB = parseInt(b.getAttribute('data-cobertura') || 0);
-                                    return coberturaB - coberturaA;
-                                });
-
-                            sortedCards.forEach((sortedCard, index) => {
-                                sortedCard.style.order = index;
-                            });
-                            return;
-                        case 'todos':
-                        default:
-                            mostrar = true;
-                    }
-
-                    if (mostrar) {
-                        card.style.display = 'flex';
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                // Atualizar contador
-                const countElement = document.querySelector('.condominios-count');
-                if (countElement) {
-                    countElement.textContent = `${visibleCount} unidade${visibleCount !== 1 ? 's' : ''}`;
-                }
-            };
-
-            // Toggle filtros avançados
-            window.toggleFiltrosAvancados = function () {
-                const filtrosSection = document.querySelector('.filtros-avancados');
-                if (!filtrosSection) {
-                    criarFiltrosAvancados();
-                } else {
-                    filtrosSection.style.display = filtrosSection.style.display === 'none' ? 'block' : 'none';
-                }
-            };
-
-            // Criar filtros avançados
-            function criarFiltrosAvancados() {
-                const filtrosHTML = `
-                <div class="filtros-avancados" style="
-                    background: #f8f9fa;
-                    padding: 20px;
-                    border-radius: 12px;
-                    margin-top: 20px;
-                    border: 1px solid #e9ecef;
-                    animation: slideDown 0.3s ease;
-                ">
-                    <h4 style="color: #2c3e50; margin-bottom: 15px; font-size: 1rem;">
-                        <i class="fas fa-filter"></i> Filtros Avançados
-                    </h4>
-
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                        <!-- Filtro por status -->
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #5a6268; font-size: 0.9rem;">
-                                Status de Cobertura
-                            </label>
-                            <select id="filtroStatus" onchange="aplicarFiltrosAvancados()" style="
-                                width: 100%;
-                                padding: 10px 15px;
-                                border: 2px solid #e0e0e0;
-                                border-radius: 8px;
-                                font-size: 0.9rem;
-                                background: white;
-                            ">
-                                <option value="todos">Todos os status</option>
-                                <option value="completo">Completamente Coberto</option>
-                                <option value="parcial">Parcialmente Coberto</option>
-                                <option value="descoberto">Descoberto</option>
-                            </select>
-                        </div>
-
-                        <!-- Filtro por prioridade -->
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #5a6268; font-size: 0.9rem;">
-                                Nível de Prioridade
-                            </label>
-                            <select id="filtroPrioridade" onchange="aplicarFiltrosAvancados()" style="
-                                width: 100%;
-                                padding: 10px 15px;
-                                border: 2px solid #e0e0e0;
-                                border-radius: 8px;
-                                font-size: 0.9rem;
-                                background: white;
-                            ">
-                                <option value="todos">Todas as prioridades</option>
-                                <option value="alta">Alta Prioridade</option>
-                                <option value="media">Média Prioridade</option>
-                                <option value="baixa">Baixa Prioridade</option>
-                            </select>
-                        </div>
-
-                        <!-- Filtro por cobertura mínima -->
-                        <div>
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #5a6268; font-size: 0.9rem;">
-                                Cobertura Mínima
-                            </label>
-                            <select id="filtroCobertura" onchange="aplicarFiltrosAvancados()" style="
-                                width: 100%;
-                                padding: 10px 15px;
-                                border: 2px solid #e0e0e0;
-                                border-radius: 8px;
-                                font-size: 0.9rem;
-                                background: white;
-                            ">
-                                <option value="0">Qualquer cobertura</option>
-                                <option value="50">50% ou mais</option>
-                                <option value="75">75% ou mais</option>
-                                <option value="90">90% ou mais</option>
-                                <option value="100">100% (completo)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-                        <button onclick="resetarFiltros()" style="
-                            padding: 8px 16px;
-                            background: #95a5a6;
-                            color: white;
-                            border: none;
-                            border-radius: 8px;
-                            cursor: pointer;
-                            font-weight: 500;
-                            font-size: 0.9rem;
-                        ">
-                            <i class="fas fa-redo"></i> Limpar Filtros
-                        </button>
-
-                        <span id="filtroResultado" style="font-size: 0.9rem; color: #7f8c8d;">
-                            Mostrando todos os condomínios
-                        </span>
-                    </div>
-                </div>
-            `;
-
-                const section = document.querySelector('.condominios');
-                const summary = document.querySelector('.section-summary');
-                section.insertBefore(createElementFromHTML(filtrosHTML), summary);
+        // Função para verificar login antes de mostrar modal
+        window.mostrarModal = function() {
+            if (!window.APP_CONFIG || !window.APP_CONFIG.usuario_logado) {
+                alert('Para adicionar um novo condomínio, é necessário fazer login no sistema.');
+                window.location.href = '/login';
+                return false;
             }
 
-            // Função auxiliar para criar elemento do HTML
-            function createElementFromHTML(htmlString) {
-                const div = document.createElement('div');
-                div.innerHTML = htmlString.trim();
-                return div.firstChild;
-            }
-
-            // Aplicar filtros avançados
-            window.aplicarFiltrosAvancados = function () {
-                const status = document.getElementById('filtroStatus')?.value || 'todos';
-                const prioridade = document.getElementById('filtroPrioridade')?.value || 'todos';
-                const coberturaMin = parseInt(document.getElementById('filtroCobertura')?.value || 0);
-
-                const cards = document.querySelectorAll('.condominio-card');
-                let visibleCount = 0;
-
-                cards.forEach(card => {
-                    const cardStatus = card.classList.contains('status-completo') ? 'completo' :
-                        card.classList.contains('status-parcial') ? 'parcial' : 'descoberto';
-                    const cardPrioridade = card.classList.contains('priority-alta') ? 'alta' :
-                        card.classList.contains('priority-media') ? 'media' : 'baixa';
-                    const cardCobertura = parseInt(card.getAttribute('data-cobertura') || 0);
-
-                    let mostrar = true;
-
-                    // Aplicar filtros
-                    if (status !== 'todos' && cardStatus !== status) mostrar = false;
-                    if (prioridade !== 'todos' && cardPrioridade !== prioridade) mostrar = false;
-                    if (cardCobertura < coberturaMin) mostrar = false;
-
-                    if (mostrar) {
-                        card.style.display = 'flex';
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                // Atualizar resultados
-                const resultadoElement = document.getElementById('filtroResultado');
-                if (resultadoElement) {
-                    resultadoElement.textContent = `Mostrando ${visibleCount} de ${cards.length} condomínios`;
-                }
-
-                // Atualizar contador principal
-                const countElement = document.querySelector('.condominios-count');
-                if (countElement) {
-                    countElement.textContent = `${visibleCount} unidade${visibleCount !== 1 ? 's' : ''}`;
-                }
-            };
-
-            // Resetar filtros
-            window.resetarFiltros = function () {
-                const selects = document.querySelectorAll('.filtros-avancados select');
-                selects.forEach(select => {
-                    select.value = select.querySelector('option').value;
-                });
-
-                aplicarFiltrosAvancados();
-            };
-
-            // Funções de ação
-            window.verDetalhes = function (id, event) {
-                event.stopPropagation();
-                alert(`Visualizando detalhes do condomínio ID: ${id}\n\nEm breve: Modal com todos os detalhes!`);
-            };
-
-            window.editarCondominio = function (id, event) {
-                event.stopPropagation();
-                alert(`Editando condomínio ID: ${id}\n\nEm breve: Modal de edição!`);
-            };
-
-            // Efeito de clique nos cards
-            condominioCards.forEach(card => {
-                card.addEventListener('click', function (e) {
-                    if (!e.target.closest('.action-btn') && !e.target.closest('.filter-btn')) {
-                        this.style.transform = 'scale(0.98)';
-                        setTimeout(() => {
-                            this.style.transform = '';
-                        }, 150);
-
-                        // Aqui pode abrir modal de detalhes
-                        const id = this.querySelector('.action-btn')?.getAttribute('onclick')?.match(/\d+/)?.[0];
-                        if (id) {
-                            verDetalhes(id, { stopPropagation: () => { } });
-                        }
-                    }
-                });
-            });
-
-            // Estatísticas em tempo real
-            function calcularEstatisticasCondominios() {
-                const cards = document.querySelectorAll('.condominio-card');
-                let totalMoradores = 0;
-                let totalHipertensos = 0;
-                let totalDiabeticos = 0;
-                let totalGestantes = 0;
-                let totalCobertura = 0;
-
-                cards.forEach(card => {
-                    const moradores = parseInt(card.querySelector('.info-item:nth-child(3) .info-value')?.textContent || 0);
-                    const cobertura = parseInt(card.getAttribute('data-cobertura') || 0);
-
-                    totalMoradores += moradores;
-                    totalCobertura += cobertura;
-                });
-
-                // Atualizar métricas rápidas
-                const quickStats = document.querySelector('.section-summary');
-                if (quickStats && cards.length > 0) {
-                    const avgCobertura = Math.round(totalCobertura / cards.length);
-                    const statsHTML = `
-                    <div>
-                        <i class="fas fa-chart-bar" style="margin-right: 8px;"></i>
-                        <strong>Resumo:</strong>
-                        <span style="color: #3498db;">${totalMoradores.toLocaleString('pt-BR')} moradores</span> •
-                        <span style="color: #2ecc71;">${avgCobertura}% cobertura média</span>
-                    </div>
-                `;
-                    quickStats.querySelector('div').innerHTML = statsHTML;
-                }
-            }
-
-            calcularEstatisticasCondominios();
-        });
-
-        // Estilos para os botões de ação
-        const actionStyles = document.createElement('style');
-        actionStyles.textContent = `
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            border-radius: 8px;
-            background: white;
-            color: #5a6268;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        }
-
-        .action-btn:nth-child(1):hover {
-            background: #3498db;
-            color: white;
-        }
-
-        .action-btn:nth-child(2):hover {
-            background: #2ecc71;
-            color: white;
-        }
-
-        .filter-btn {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            color: #95a5a6;
-            transition: all 0.3s ease;
-        }
-
-        .filter-btn:hover {
-            border-color: #3498db;
-            color: #3498db;
-            transform: translateY(-2px);
-        }
-
-        .filter-btn.active {
-            background: #3498db;
-            border-color: #3498db;
-            color: white;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-`;
-        document.head.appendChild(actionStyles);
+            // Redirecionar para página de condomínios
+            window.location.href = '/condominios';
+            return true;
+        };
     </script>
 
 </body>
