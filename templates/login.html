@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5, user-scalable=yes">
+    <meta charset="UTF-8">
+    <title>Territorialização USF - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+            .login-header i {
+                font-size: 4rem;
+                margin-bottom: 20px;
+            }
+
+            .login-header h1 {
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+
+            .login-header p {
+                font-size: 1rem;
+                opacity: 0.9;
+            }
+
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+            .login-card h2 {
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 25px;
+                font-size: 1.5rem;
+            }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #5a6268;
+                font-weight: 500;
+            }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+            .input-with-icon i {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #6c757d;
+            }
+
+            .input-with-icon input {
+                width: 100%;
+                padding: 12px 15px 12px 45px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 1rem;
+                transition: all 0.3s;
+            }
+
+                .input-with-icon input:focus {
+                    outline: none;
+                    border-color: #1a73e8;
+                    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+                }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+            .btn-login:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+            }
+
+        .error-message {
+            background: #ffeaea;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .demo-credentials {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+            .demo-credentials h4 {
+                color: #2c3e50;
+                margin-bottom: 10px;
+                font-size: 0.9rem;
+            }
+
+            .demo-credentials ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            .demo-credentials li {
+                margin-bottom: 5px;
+                padding: 5px;
+                border-bottom: 1px dashed #dee2e6;
+            }
+
+            .demo-credentials strong {
+                color: #1a73e8;
+            }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 25px 20px;
+            }
+
+            .login-header h1 {
+                font-size: 1.7rem;
+            }
+
+            .login-header i {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-map-marked-alt"></i>
+            <h1>Territorialização USF</h1>
+            <p>Sistema de Gestão Territorial</p>
+        </div>
+
+        <div class="login-card">
+            <h2>Acesso ao Sistema</h2>
+
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="usuario">Usuário</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="usuario" name="usuario" placeholder="Digite seu usuário" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Entrar no Sistema
+                </button>
+            </form>
+
+            <div class="demo-credentials">
+                <h4><i class="fas fa-info-circle"></i> Credenciais de Demonstração:</h4>
+                <ul>
+                    <li><strong>admin</strong> / admin123 (Acesso total)</li>
+                    <li><strong>acs1</strong> / acs123 (Equipe 1)</li>
+                    <li><strong>acs2</strong> / acs456 (Equipe 2)</li>
+                    <li><strong>acs3</strong> / acs789 (Equipe 3)</li>
+                </ul>
+            </div>
+
+            <div class="login-footer">
+                <p>USF - Unidade de Saúde da Família</p>
+                <p>Sistema v1.0 | Área Restrita</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Foco no campo usuário ao carregar
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('usuario').focus();
+
+            // Prevenir envio duplo
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function () {
+                const btn = this.querySelector('.btn-login');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            });
+        });
+
+        // Mostrar/ocultar senha com double-click no ícone
+        const senhaInput = document.getElementById('senha');
+        const lockIcon = document.querySelector('.fa-lock');
+
+        if (lockIcon) {
+            lockIcon.addEventListener('dblclick', function () {
+                if (senhaInput.type === 'password') {
+                    senhaInput.type = 'text';
+                    this.className = 'fas fa-unlock';
+                } else {
+                    senhaInput.type = 'password';
+                    this.className = 'fas fa-lock';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
