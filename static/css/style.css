@@ -1013,68 +1013,11 @@ body {
 /* ============================================
    SEÇÃO DE CONDOMÍNIOS - DESIGN MODERNO
    ============================================ */
-.condominios {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f5f5f5;
-}
-
-    .section-header h2 {
-        color: #2c3e50;
-        font-size: 1.6rem;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        font-weight: 700;
-    }
-
-        .section-header h2 i {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            padding: 12px;
-            border-radius: 14px;
-            color: white;
-            font-size: 1.3rem;
-            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.2);
-        }
-
-.section-actions {
-    display: flex;
-    gap: 12px;
-}
 
 /* ============================================
    CARDS DE CONDOMÍNIOS MODERNOS
    ============================================ */
-.condominios-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 25px;
-}
 
-.condominio-card {
-    background: white;
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-    border: 1px solid #f0f0f0;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
 
     .condominio-card::before {
         content: '';
@@ -1113,26 +1056,6 @@ body {
         flex: 1;
     }
 
-/* Badges modernos */
-.condominio-badges {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-end;
-}
-
-.badge {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-}
 
     .badge.priority-alta {
         background: linear-gradient(135deg, #e74c3c, #c0392b);
@@ -1165,13 +1088,6 @@ body {
     }
 
 /* Corpo do card */
-.condominio-info {
-    padding: 25px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
 
 /* Grid de informações */
 .info-grid {
@@ -1181,15 +1097,6 @@ body {
     margin-bottom: 15px;
 }
 
-.info-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-}
 
     .info-item:hover {
         background: #f0f0f0;
@@ -1260,11 +1167,6 @@ body {
 /* Gestantes */
 
 /* Barra de cobertura moderna */
-.cobertura-condominio {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 2px dashed #eee;
-}
 
 .cobertura-header {
     display: flex;
@@ -1469,12 +1371,6 @@ body {
 }
 
 /* Mini gráfico de saúde */
-.saude-mini-chart {
-    margin-top: 15px;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 10px;
-}
 
 .saude-chart-title {
     font-size: 0.85rem;
@@ -1541,15 +1437,6 @@ body {
 /* ============================================
    ESTADO VAZIO
    ============================================ */
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #7f8c8d;
-    background: #f9f9f9;
-    border-radius: 15px;
-    border: 2px dashed #e0e0e0;
-    margin: 20px 0;
-}
 
     .empty-state i {
         font-size: 4rem;
@@ -1577,11 +1464,6 @@ body {
 /* ============================================
    ANIMAÇÕES
    ============================================ */
-@keyframes cardAppear {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
 
     to {
         opacity: 1;
@@ -1595,32 +1477,9 @@ body {
     opacity: 0;
 }
 
-@keyframes pulseBadge {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.05);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-.badge.priority-alta {
-    animation: pulseBadge 2s infinite;
-}
-
 /* ============================================
    RESPONSIVIDADE
    ============================================ */
-@media (max-width: 1200px) {
-    .condominios-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
 
 @media (max-width: 992px) {
     .condominios {
@@ -2241,3 +2100,164 @@ body {
 .rounded-3xl {
     border-radius: 24px;
 }
+
+/* ============================================
+   MELHORIAS ESPECÍFICAS PARA PÁGINA DE CONDOMÍNIOS
+   ============================================ */
+
+/* Ajustes para colunas da tabela */
+.condominios-table td:nth-child(1) { /* Condomínio */
+    min-width: 180px;
+    max-width: 250px;
+}
+
+.condominios-table td:nth-child(4) { /* ACS */
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.condominios-table td:nth-child(5) { /* Blocos */
+    min-width: 100px;
+}
+
+.condominios-table td:nth-child(6) { /* Cobertura */
+    min-width: 100px;
+}
+
+.condominios-table td:nth-child(7) { /* Moradores */
+    min-width: 80px;
+}
+
+.condominios-table td:nth-child(8) { /* Saúde */
+    min-width: 150px;
+}
+
+.condominios-table td:nth-child(9) { /* Ações */
+    min-width: 120px;
+}
+
+/* Garantir que as células não quebrem */
+.condominios-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    /* Ajustar células que precisam de mais espaço */
+    .condominios-table td:nth-child(1) {
+        white-space: normal;
+    }
+
+/* Melhor visualização para os dados de saúde */
+.saude-indicadores > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.hipertensos, .diabeticos, .gestantes {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+/* Ajustes para o botão de excluir na tabela */
+.table-actions .btn-delete {
+    color: #e74c3c !important;
+    border-color: #e74c3c !important;
+}
+
+    .table-actions .btn-delete:hover {
+        background-color: #e74c3c !important;
+        color: white !important;
+    }
+
+/* Garantir que todos os botões de ação tenham o mesmo tamanho */
+.table-actions .btn-action,
+.card-actions .action-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+}
+
+/* Melhor visibilidade dos botões flutuantes nos cards */
+.card-actions {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltips para botões */
+.btn-action[title]::before,
+.action-btn[title]::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+}
+
+.btn-action[title]:hover::before,
+.action-btn[title]:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ============================================
+   AJUSTES PARA O MODO MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .condominios-table {
+        min-width: 800px;
+    }
+
+        .condominios-table th,
+        .condominios-table td {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+        }
+
+    .table-actions .btn-action,
+    .card-actions .action-btn {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    /* Melhorar visibilidade dos botões em mobile */
+    .card-actions {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        background: white;
+    }
+}
+
+/* ============================================
+   ESTILO PARA BOTÕES DESABILITADOS
+   ============================================ */
+
+.btn-action.disabled,
+.action-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed !important;
+    background: #f5f5f5 !important;
+    color: #999 !important;
+    border-color: #ddd !important;
+}
+
+    .btn-action.disabled:hover,
+    .action-btn.disabled:hover {
+        transform: none !important;
+        box-shadow: none !important;
+        background: #f5f5f5 !important;
+        color: #999 !important;
+        border-color: #ddd !important;
+    }
