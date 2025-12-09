@@ -29,7 +29,7 @@ def criar_senha_hash(senha):
     """Cria hash da senha usando SHA-256"""
     return hashlib.sha256(senha.encode()).hexdigest()
 
-# Dicionário de usuários
+# Dicionário de usuários (ADICIONADO USUÁRIO CONVIDADO)
 USUARIOS = {
     'admin': {
         'senha_hash': criar_senha_hash('admin123'),
@@ -54,6 +54,12 @@ USUARIOS = {
         'nome': 'Agente Comunitário 3',
         'nivel': 'acs',
         'equipes': ['equipe3']
+    },
+    'convidado': {  # NOVO USUÁRIO CONVIDADO
+        'senha_hash': criar_senha_hash('convidado'),
+        'nome': 'Visitante',
+        'nivel': 'convidado',
+        'equipes': ['equipe1', 'equipe2', 'equipe3']
     }
 }
 
@@ -144,11 +150,31 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def admin_required(f):
+    """Decorator para exigir que o usuário seja admin"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'usuario' not in session:
+            return jsonify({'error': 'Usuário não autenticado'}), 401
+        if session.get('nivel_usuario') != 'admin':
+            return jsonify({'error': 'Acesso restrito a administradores'}), 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+def convidado_bloqueado(f):
+    """Decorator para bloquear ações de convidados"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'usuario' in session and session.get('nivel_usuario') == 'convidado':
+            return jsonify({'status': 'erro', 'mensagem': 'Modo visitante: apenas visualização'}), 403
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.before_request
 def verificar_sessao():
     """Verifica a sessão antes de cada requisição"""
     # Lista de rotas que não precisam de verificação
-    rotas_publicas = ['login', 'static', 'logout']
+    rotas_publicas = ['login', 'static', 'logout', 'inicio']
     
     if request.endpoint and request.endpoint not in rotas_publicas:
         # Se tem usuário na sessão, renova a sessão
@@ -161,10 +187,20 @@ def verificar_sessao():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Página de login"""
+    """Página de login com opção de convidado"""
     if request.method == 'POST':
         usuario = request.form.get('usuario')
         senha = request.form.get('senha')
+        
+        # Verificar se é acesso como convidado (senha fixa)
+        if usuario == 'convidado' and senha == 'convidado':
+            session['usuario'] = 'convidado'
+            session['nome_usuario'] = 'Visitante'
+            session['nivel_usuario'] = 'convidado'
+            session['equipes_usuario'] = ['equipe1', 'equipe2', 'equipe3']
+            session.permanent = True
+            print(f"DEBUG: Convidado logado com sucesso")
+            return redirect(url_for('inicio'))
         
         if usuario in USUARIOS:
             senha_hash = criar_senha_hash(senha)
@@ -174,6 +210,7 @@ def login():
                 session['nome_usuario'] = USUARIOS[usuario]['nome']
                 session['nivel_usuario'] = USUARIOS[usuario]['nivel']
                 session['equipes_usuario'] = USUARIOS[usuario]['equipes']
+                session.permanent = True
                 
                 # Redirecionar para dashboard se já tiver equipe selecionada
                 if 'equipe' in session and session['equipe'] in USUARIOS[usuario]['equipes']:
@@ -223,7 +260,8 @@ def inicio():
         return render_template('escolha_equipe.html', 
                              equipes=EQUIPES,
                              usuario_logado=login_info['logado'],
-                             nome_usuario=login_info['nome'])
+                             nome_usuario=login_info['nome'],
+                             nivel_usuario=login_info['nivel'])
     
     # Se está logado e tem equipe, ir para dashboard
     return redirect(url_for('dashboard'))
@@ -248,7 +286,8 @@ def selecionar_equipe():
                                 equipes=EQUIPES,
                                 error='Você não tem permissão para acessar esta equipe',
                                 usuario_logado=login_info['logado'],
-                                nome_usuario=login_info['nome'])
+                                nome_usuario=login_info['nome'],
+                                nivel_usuario=login_info['nivel'])
     
     return redirect(url_for('inicio'))
 
@@ -257,6 +296,7 @@ def dashboard():
     """Dashboard principal da equipe"""
     print(f"DEBUG DASHBOARD: Usuário na sessão: {session.get('usuario')}")
     print(f"DEBUG DASHBOARD: Equipe na sessão: {session.get('equipe')}")
+    print(f"DEBUG DASHBOARD: Nível do usuário: {session.get('nivel_usuario')}")
     
     if 'equipe' not in session:
         print("DEBUG: Nenhuma equipe selecionada, redirecionando...")
@@ -271,7 +311,7 @@ def dashboard():
     nome_usuario = session.get('nome_usuario', 'Usuário')
     nivel_usuario = session.get('nivel_usuario', 'acs')
     
-    print(f"DEBUG: Renderizando template com usuario_logado={usuario_logado}, nome={nome_usuario}")
+    print(f"DEBUG: Renderizando template com usuario_logado={usuario_logado}, nome={nome_usuario}, nivel={nivel_usuario}")
     
     return render_template(
         'index.html',
@@ -346,13 +386,14 @@ def relatorios():
     )
 
 # ============================================
-# API PARA CONDOMÍNIOS
+# API PARA CONDOMÍNIOS (ATUALIZADA COM BLOQUEIO PARA CONVIDADOS)
 # ============================================
 
 @app.route('/api/novo-condominio', methods=['POST'])
 @login_required
+@convidado_bloqueado
 def novo_condominio():
-    """API para adicionar novo condomínio"""
+    """API para adicionar novo condomínio (BLOQUEADO PARA CONVIDADOS)"""
     print(f"DEBUG API: Usuário tentando adicionar condomínio: {session.get('usuario')}")
     
     try:
@@ -448,8 +489,9 @@ def get_condominio(condominio_id):
 
 @app.route('/api/atualizar-condominio/<int:condominio_id>', methods=['PUT'])
 @login_required
+@convidado_bloqueado
 def atualizar_condominio(condominio_id):
-    """Atualizar um condomínio existente"""
+    """Atualizar um condomínio existente (BLOQUEADO PARA CONVIDADOS)"""
     try:
         dados = carregar_dados()
         atualizacoes = request.json
@@ -511,8 +553,9 @@ def atualizar_condominio(condominio_id):
 
 @app.route('/api/excluir-condominio/<int:condominio_id>', methods=['DELETE'])
 @login_required
+@convidado_bloqueado
 def excluir_condominio(condominio_id):
-    """Excluir um condomínio"""
+    """Excluir um condomínio (BLOQUEADO PARA CONVIDADOS)"""
     try:
         dados = carregar_dados()
         equipe_atual = session['equipe']
@@ -603,7 +646,10 @@ if __name__ == '__main__':
     print("=" * 50)
     print("🌐 Acesse: http://localhost:5000")
     print("👥 Equipes: Equipe 1, Equipe 2, Equipe 3")
-    print("🔐 Credenciais: admin/admin123, acs1/acs123, etc.")
+    print("🔐 Credenciais:")
+    print("   - admin/admin123 (Administrador)")
+    print("   - acs1/acs123 (ACS Equipe 1)")
+    print("   - convidado/convidado (Apenas visualização)")
     print("🐛 Debug: http://localhost:5000/debug-session")
     print("=" * 50)
     
