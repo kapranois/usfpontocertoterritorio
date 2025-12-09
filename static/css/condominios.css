@@ -1,0 +1,983 @@
+/* condominios.css - DESIGN COMPACTO SEM SCROLL */
+
+/* ============================================
+   ESTRUTURA PRINCIPAL MODERNA
+   ============================================ */
+
+.condominios-page {
+    padding: 15px;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+/* ============================================
+   CABEÇALHO DA PÁGINA - DESIGN COMPACTO
+   ============================================ */
+
+.page-header {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+        .page-header h1 i {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 3px 8px rgba(26, 115, 232, 0.2);
+        }
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+    .header-actions .btn-add,
+    .header-actions .btn-sair {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+/* ============================================
+   CONTROLES DE AÇÃO - DESIGN COMPACTO
+   ============================================ */
+
+.section-header {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+    .section-header h2 {
+        color: #2c3e50;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        font-weight: 700;
+    }
+
+        .section-header h2 i {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+.condominios-count {
+    background: #f8f9fa;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #5a6268;
+    margin-left: 6px;
+    font-weight: 500;
+    border: 1px solid #e9ecef;
+}
+
+.section-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-add-primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* ============================================
+   CARDS DE CONDOMÍNIOS - DESIGN SUPER COMPACTO
+   ============================================ */
+
+.condominios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.condominio-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: auto; /* Altura automática */
+    min-height: 380px; /* Altura mínima compacta */
+}
+
+    .condominio-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--card-border-color, linear-gradient(90deg, #e0e0e0, #d0d0d0));
+    }
+
+/* Cabeçalho compacto do card */
+.condominio-header {
+    padding: 12px 15px 8px;
+    background: #fafbfd;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+    .condominio-header h3 {
+        font-size: 0.95rem;
+        color: #2c3e50;
+        margin: 0 0 8px 0;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+.condominio-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Corpo do card SUPER COMPACTO */
+.condominio-info {
+    padding: 12px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Grid de informações EXTRA COMPACTO */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    min-height: 32px;
+}
+
+    .info-item i {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        color: var(--item-color, #6c757d);
+    }
+
+    .info-item span:first-of-type {
+        font-size: 0.75rem;
+        color: #5a6268;
+        font-weight: 500;
+        min-width: 65px;
+        flex-shrink: 0;
+    }
+
+.info-value {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.8rem;
+    margin-left: auto;
+    text-align: right;
+    min-width: 35px;
+}
+
+.sem-acs {
+    color: #e74c3c;
+    font-weight: 500;
+    font-size: 0.7rem;
+    background: #ffeaea;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+/* Mini gráfico de saúde MUITO COMPACTO */
+.saude-mini-chart {
+    background: #fafbfd;
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid #f0f0f0;
+}
+
+.saude-chart-title {
+    font-size: 0.75rem;
+    color: #5a6268;
+    margin-bottom: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.saude-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 28px;
+    margin-bottom: 6px;
+}
+
+.saude-bar {
+    flex: 1;
+    background: linear-gradient(to top, var(--saude-color), var(--saude-light));
+    border-radius: 3px 3px 0 0;
+    min-height: 3px;
+}
+
+.saude-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Cobertura COMPACTA */
+.cobertura-condominio {
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.cobertura-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.cobertura-label {
+    font-size: 0.75rem;
+    color: #5a6268;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cobertura-percent {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cobertura-color, #2ecc71);
+}
+
+.cobertura-barra-container {
+    position: relative;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.cobertura-barra {
+    height: 100%;
+    display: flex;
+}
+
+.cobertura-numbers {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Rodapé do card COMPACTO */
+.condominio-footer {
+    padding: 10px 15px;
+    background: #fafbfd;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ultima-visita {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.cobertura-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 8px;
+    background: rgba(var(--status-color), 0.1);
+    color: rgba(var(--status-color), 1);
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    border: 1px solid rgba(var(--status-color), 0.2);
+}
+
+/* Botões de ação flutuantes - SEMPRE VISÍVEIS */
+.card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+    opacity: 0.9;
+    z-index: 10;
+}
+
+.action-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #e9ecef;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: #5a6268;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+    .action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+    }
+
+.btn-edit:hover {
+    border-color: #3498db;
+    background: #3498db;
+    color: white;
+}
+
+.btn-view:hover {
+    border-color: #2ecc71;
+    background: #2ecc71;
+    color: white;
+}
+
+.btn-delete:hover {
+    border-color: #e74c3c;
+    background: #e74c3c;
+    color: white;
+}
+
+/* ============================================
+   TABELA MODERNA COMPACTA
+   ============================================ */
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+.condominios-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 900px;
+}
+
+    .condominios-table thead {
+        background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    }
+
+    .condominios-table th {
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        white-space: nowrap;
+    }
+
+    .condominios-table td {
+        padding: 8px 10px;
+        color: #495057;
+        font-size: 0.8rem;
+        vertical-align: middle;
+        line-height: 1.3;
+    }
+
+    .condominios-table tbody tr {
+        border-bottom: 1px solid #f0f0f0;
+        transition: all 0.2s ease;
+    }
+
+        .condominios-table tbody tr:hover {
+            background-color: #f8fafd;
+        }
+
+/* Badges na tabela */
+.table-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 65px;
+    justify-content: center;
+}
+
+/* Ações na tabela - BOTÕES VISÍVEIS */
+.table-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.btn-action {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e9ecef;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #5a6268;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+    .btn-action:hover:not(.disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+.btn-view:hover {
+    border-color: #2ecc71;
+    background: #2ecc71;
+    color: white;
+}
+
+.btn-edit:hover {
+    border-color: #3498db;
+    background: #3498db;
+    color: white;
+}
+
+.btn-delete:hover {
+    border-color: #e74c3c;
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-action.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #f8f9fa;
+}
+
+/* ============================================
+   RESUMOS E ESTADOS
+   ============================================ */
+
+.section-summary {
+    background: white;
+    padding: 12px 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #5a6268;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+    .section-summary i {
+        font-size: 0.8rem;
+        margin-right: 5px;
+    }
+
+.cobertos {
+    color: #27ae60;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.parciais {
+    color: #d68910;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.descobertos {
+    color: #c0392b;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.page-summary {
+    margin-top: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.8rem;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+}
+
+/* Estado vazio compacto */
+.empty-state {
+    text-align: center;
+    padding: 30px 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    border: 2px dashed #e9ecef;
+    margin: 15px 0;
+}
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #dee2e6;
+        margin-bottom: 12px;
+        opacity: 0.7;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 8px;
+        color: #2c3e50;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+        color: #6c757d;
+        max-width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.4;
+    }
+
+    .empty-state .btn-primary {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+
+/* ============================================
+   FILTROS COMPACTOS
+   ============================================ */
+
+.filters-section {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f5f5f5;
+}
+
+    .filters-section h3 {
+        color: #2c3e50;
+        font-size: 1rem;
+        margin-bottom: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .filter-group label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-group select {
+        padding: 8px 10px;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .condominios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .condominios-page {
+        padding: 12px;
+    }
+
+    .page-header,
+    .section-header,
+    .filters-section {
+        padding: 12px 15px;
+        border-radius: 10px;
+    }
+
+    .condominios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 12px;
+    }
+
+    .condominio-card {
+        min-height: 360px;
+    }
+
+    .condominio-header,
+    .condominio-info,
+    .condominio-footer {
+        padding: 10px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .condominios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+
+    .table-container {
+        font-size: 0.75rem;
+        border-radius: 10px;
+    }
+
+    .condominios-table {
+        min-width: 800px;
+    }
+
+        .condominios-table th,
+        .condominios-table td {
+            padding: 6px 8px;
+        }
+
+    .section-summary {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .condominios-grid {
+        grid-template-columns: 1fr;
+        max-width: 320px;
+        margin: 0 auto 15px auto;
+    }
+
+    .page-header,
+    .section-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .section-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .condominio-card {
+        min-height: auto;
+    }
+}
+
+/* ============================================
+   ANIMAÇÕES SUAVES
+   ============================================ */
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.condominio-card {
+    animation: cardAppear 0.3s ease forwards;
+    animation-delay: calc(var(--card-index, 0) * 0.05s);
+    opacity: 0;
+}
+
+/* ============================================
+   MELHORIAS PARA BOTÕES DE EXCLUSÃO
+   ============================================ */
+
+/* Garantir que os botões de ação sejam sempre visíveis */
+.table-actions .btn-delete,
+.card-actions .btn-delete {
+    color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+    .table-actions .btn-delete:hover,
+    .card-actions .btn-delete:hover {
+        background: #e74c3c;
+        color: white;
+    }
+
+/* Tooltips para botões */
+.btn-action[title]::after,
+.action-btn[title]::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: 6px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.btn-action[title]:hover::after,
+.action-btn[title]:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ============================================
+   AJUSTES PARA CONTEÚDO LONGO NOS CARDS
+   ============================================ */
+
+/* Garantir que texto longo não quebre o layout */
+.condominio-header h3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 2.4em;
+}
+
+.info-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60px;
+}
+
+    /* Ajuste para conteúdo ACS longo */
+    .info-item .sem-acs,
+    .info-value .sem-acs {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80px;
+        display: inline-block;
+    }
+
+/* ============================================
+   ESPAÇAMENTO CONSISTENTE
+   ============================================ */
+
+/* Garantir espaçamento uniforme entre elementos */
+.condominio-info > * {
+    margin-bottom: 0;
+}
+
+/* Remove qualquer margem extra que possa causar overflow */
+.condominio-info {
+    padding-bottom: 0;
+}
+
+/* Garantir que o último elemento não tenha margem extra */
+.condominio-footer {
+    margin-top: auto;
+}
+
+/* ============================================
+   CORES PARA STATUS E PRIORIDADES
+   ============================================ */
+
+/* Prioridades */
+.badge.priority-alta {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.badge.priority-media {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+}
+
+.badge.priority-baixa {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+}
+
+/* Status */
+.badge.status-completo {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+}
+
+.badge.status-parcial {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+}
+
+.badge.status-descoberto {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+/* Table badges */
+.badge-status-completo {
+    background: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+}
+
+.badge-status-parcial {
+    background: rgba(243, 156, 18, 0.1);
+    color: #d68910;
+    border: 1px solid rgba(243, 156, 18, 0.2);
+}
+
+.badge-status-descoberto {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+}
