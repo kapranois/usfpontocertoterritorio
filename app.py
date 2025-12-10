@@ -83,6 +83,22 @@ def carregar_dados():
             return dados
     return {"condominios": [], "acs": []}
 
+def carregar_equipes():
+    """Carrega os dados das equipes profissionais"""
+    try:
+        if os.path.exists('data/equipes.json'):
+            with open('data/equipes.json', 'r', encoding='utf-8') as f:
+                dados = json.load(f)
+                print(f"DEBUG: Arquivo equipes.json carregado. Estrutura: {type(dados)}")
+                print(f"DEBUG: Chaves no JSON: {dados.keys() if isinstance(dados, dict) else 'Não é dict'}")
+                return dados
+        else:
+            print("DEBUG: Arquivo equipes.json não encontrado")
+            return {'equipes': []}
+    except Exception as e:
+        print(f"DEBUG: Erro ao carregar equipes.json: {e}")
+        return {'equipes': []}
+
 def salvar_dados(dados):
     """Salva dados no JSON"""
     os.makedirs('data', exist_ok=True)
@@ -354,24 +370,65 @@ def selecionar_equipe():
 @app.route('/dashboard')
 def dashboard():
     """Dashboard principal da equipe"""
-    print(f"DEBUG DASHBOARD: Usuário na sessão: {session.get('usuario')}")
-    print(f"DEBUG DASHBOARD: Equipe na sessão: {session.get('equipe')}")
-    print(f"DEBUG DASHBOARD: Nível do usuário: {session.get('nivel_usuario')}")
+    print(f"\n=== DEBUG DASHBOARD ===")
+    print(f"Usuário na sessão: {session.get('usuario')}")
+    print(f"Equipe na sessão: {session.get('equipe')}")
+    print(f"Nome equipe: {session.get('nome_equipe')}")
     
     if 'equipe' not in session:
         print("DEBUG: Nenhuma equipe selecionada, redirecionando...")
         return redirect(url_for('inicio'))
     
+    # Carregar dados
     dados = carregar_dados()
+    equipes_data = carregar_equipes()
+    
+    # DEBUG: Verificar estrutura das equipes
+    print(f"DEBUG: Tipo de equipes_data: {type(equipes_data)}")
+    
+    # Encontrar a equipe atual
+    equipe_id = session['equipe']
+    equipe_atual = None
+    profissionais = {}
+    
+    if 'equipes' in equipes_data:
+        print(f"DEBUG: Encontrando equipe com ID: {equipe_id}")
+        print(f"DEBUG: Equipes disponíveis: {[e.get('id') for e in equipes_data.get('equipes', [])]}")
+        
+        for equipe in equipes_data['equipes']:
+            if equipe.get('id') == equipe_id:
+                equipe_atual = equipe
+                print(f"DEBUG: Equipe encontrada: {equipe_atual.get('nome')}")
+                print(f"DEBUG: Tem profissionais? {'profissionais' in equipe_atual}")
+                break
+    
+    # Obter profissionais da equipe
+    if equipe_atual and 'profissionais' in equipe_atual:
+        profissionais = equipe_atual['profissionais']
+        print(f"DEBUG: ACS encontrados: {len(profissionais.get('acs', []))}")
+        print(f"DEBUG: Enfermeiro: {profissionais.get('enfermeiro', {}).get('nome')}")
+        print(f"DEBUG: Médico: {profissionais.get('medico', {}).get('nome')}")
+    else:
+        print(f"DEBUG: NÃO ENCONTROU EQUIPE {equipe_id}!")
+        print(f"DEBUG: Equipe atual: {equipe_atual}")
+        profissionais = {
+            'acs': [],
+            'enfermeiro': None,
+            'medico': None
+        }
+    
+    # Filtrar condomínios da equipe
     condominios_equipe = filtrar_por_equipe(dados, session['equipe'])
     metricas = calcular_metricas(condominios_equipe)
     
-    # Garantir que as variáveis existem
+    # Informações do usuário
     usuario_logado = 'usuario' in session
     nome_usuario = session.get('nome_usuario', 'Usuário')
     nivel_usuario = session.get('nivel_usuario', 'acs')
     
-    print(f"DEBUG: Renderizando template com usuario_logado={usuario_logado}, nome={nome_usuario}, nivel={nivel_usuario}")
+    print(f"DEBUG: Profissionais enviados ao template: {bool(profissionais)}")
+    print(f"DEBUG: ACS no template: {len(profissionais.get('acs', []))}")
+    print("=== FIM DEBUG ===\n")
     
     return render_template(
         'index.html',
@@ -380,8 +437,29 @@ def dashboard():
         nome_equipe=session['nome_equipe'],
         usuario_logado=usuario_logado,
         nome_usuario=nome_usuario,
-        nivel_usuario=nivel_usuario
+        nivel_usuario=nivel_usuario,
+        equipe_profissionais=profissionais  # Envia o dicionário de profissionais
     )
+@app.route('/debug-profissionais')
+def debug_profissionais():
+    """Endpoint para debug dos profissionais"""
+    equipes_data = carregar_equipes()
+    equipe_id = session.get('equipe', 'equipe1')
+    
+    # Encontrar a equipe atual
+    equipe_atual = None
+    if 'equipes' in equipes_data:
+        for equipe in equipes_data['equipes']:
+            if equipe.get('id') == equipe_id:
+                equipe_atual = equipe
+                break
+    
+    return jsonify({
+        'session_equipe': equipe_id,
+        'todas_equipes_ids': [e.get('id') for e in equipes_data.get('equipes', [])],
+        'equipe_encontrada': equipe_atual,
+        'profissionais': equipe_atual.get('profissionais', {}) if equipe_atual else {}
+    })
 
 @app.route('/mapa')
 def mapa():
