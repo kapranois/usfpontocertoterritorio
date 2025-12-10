@@ -227,33 +227,115 @@ function scrollToElement(elementId, offset = 100) {
 }
 
 // ============================================
-// FUNÇÕES DE SIDEBAR/MENU (se aplicável)
+// FUNÇÕES DE DROPDOWN DO USUÁRIO - SIMPLIFICADAS
 // ============================================
 
 /**
- * Alterna sidebar em dispositivos móveis
+ * Alterna o menu do usuário
  */
-function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    const trigger = document.querySelector('.user-menu-trigger');
 
-    if (sidebar && overlay) {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-        document.body.classList.toggle('sidebar-open');
+    if (dropdown.classList.contains('show')) {
+        closeUserMenu();
+    } else {
+        // Fechar outros dropdowns abertos
+        closeAllDropdowns();
+
+        dropdown.classList.add('show');
+        trigger.classList.add('active');
+
+        // Adicionar overlay apenas em mobile
+        if (window.innerWidth <= 768) {
+            const overlay = document.createElement('div');
+            overlay.className = 'user-dropdown-overlay show';
+            overlay.onclick = closeUserMenu;
+            document.body.appendChild(overlay);
+        }
     }
 }
 
 /**
- * Fecha sidebar ao clicar no overlay
+ * Fecha o menu do usuário
  */
-function setupSidebarOverlay() {
-    const overlay = document.querySelector('.sidebar-overlay');
-    if (overlay) {
-        overlay.addEventListener('click', function () {
-            toggleSidebar();
-        });
+function closeUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    const trigger = document.querySelector('.user-menu-trigger');
+    const overlay = document.querySelector('.user-dropdown-overlay');
+
+    if (dropdown) {
+        dropdown.classList.remove('show');
     }
+
+    if (trigger) {
+        trigger.classList.remove('active');
+    }
+
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+/**
+ * Fecha todos os dropdowns abertos
+ */
+function closeAllDropdowns() {
+    const dropdowns = document.querySelectorAll('.user-dropdown-menu.show');
+    dropdowns.forEach(dropdown => {
+        dropdown.classList.remove('show');
+    });
+
+    const triggers = document.querySelectorAll('.user-menu-trigger.active');
+    triggers.forEach(trigger => {
+        trigger.classList.remove('active');
+    });
+
+    const overlays = document.querySelectorAll('.user-dropdown-overlay');
+    overlays.forEach(overlay => {
+        overlay.remove();
+    });
+}
+
+/**
+ * Configura eventos do dropdown do usuário
+ */
+function setupUserDropdown() {
+    // Fechar menu ao pressionar ESC
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeAllDropdowns();
+        }
+    });
+
+    // Adicionar evento de clique nos itens do dropdown
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function () {
+                setTimeout(closeUserMenu, 300);
+            });
+        });
+
+        // Fechar menu ao clicar fora (apenas em desktop)
+        document.addEventListener('click', function (event) {
+            if (window.innerWidth > 768) {
+                const dropdown = document.getElementById('userDropdown');
+                const trigger = document.querySelector('.user-menu-trigger');
+                const container = document.querySelector('.user-dropdown-container');
+
+                if (dropdown && dropdown.classList.contains('show') &&
+                    !container.contains(event.target)) {
+                    closeUserMenu();
+                }
+            }
+        });
+
+        // Reposicionar dropdown ao redimensionar janela
+        window.addEventListener('resize', function () {
+            closeAllDropdowns();
+        });
+    });
 }
 
 // ============================================
@@ -273,17 +355,11 @@ function initGeneralUtilities() {
     adjustForMobile();
     setupMobileTouchEvents();
 
-    // Configurar sidebar (se existir)
-    setupSidebarOverlay();
+    // Configurar dropdown do usuário
+    setupUserDropdown();
 
     // Ajustar ao redimensionar janela
     window.addEventListener('resize', adjustForMobile);
-
-    // Configurar botão de toggle sidebar
-    const sidebarToggle = document.querySelector('.sidebar-toggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', toggleSidebar);
-    }
 }
 
 // ============================================
@@ -301,7 +377,8 @@ window.validarNumeroPositivo = validarNumeroPositivo;
 window.toggleElement = toggleElement;
 window.addTemporaryClass = addTemporaryClass;
 window.scrollToElement = scrollToElement;
-window.toggleSidebar = toggleSidebar;
+window.toggleUserMenu = toggleUserMenu;
+window.closeUserMenu = closeUserMenu;
 
 // ============================================
 // EXECUÇÃO AO CARREGAR
