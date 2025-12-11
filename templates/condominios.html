@@ -1,472 +1,511 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ nome_equipe }} - Condomínios</title>
+<!-- templates/condominios.html -->
+{% extends "base.html" %}
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/condominios.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% block title %}{{ nome_equipe }} - Condomínios{% endblock %}
 
-    <!-- Configurações do backend -->
-    <script>
-        window.APP_CONFIG = {
-            usuario_logado: {% if usuario_logado %}true{% else %}false{% endif %},
-            nome_usuario: {{ nome_usuario|default('Visitante')|tojson }},
-            nivel_usuario: {{ nivel_usuario|default('')|tojson }},
-            nome_equipe: {{ nome_equipe|tojson }},
-            condominios_count: {{ condominios|length }}
-        };
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/condominios.css') }}">
+{% endblock %}
 
-        // Dados para a tabela (opcional)
-        window.CONDOMINIOS_DATA = {{ condominios|tojson|safe }};
-    </script>
-</head>
-<body>
-    <div class="container condominios-page">
-        <!-- Cabeçalho -->
-        <div class="page-header">
-            <div class="header-actions">
-                <a href="/dashboard" class="btn-add">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-                <a href="/trocar-equipe" class="btn-sair">
-                    <i class="fas fa-exchange-alt"></i> Trocar Equipe
-                </a>
+{% block content %}
+<script>
+    window.APP_CONFIG = {
+        usuario_logado: {% if usuario_logado %}true{% else %}false{% endif %},
+        nome_usuario: {{ nome_usuario|default('Visitante')|tojson }},
+        nivel_usuario: {{ nivel_usuario|default('')|tojson }},
+        nome_equipe: {{ nome_equipe|tojson }},
+        condominios_count: {{ condominios|length }},
+        microareas: {{ microareas|tojson|safe }}
+    };
+    window.CONDOMINIOS_DATA = {{ condominios|tojson|safe }};
+</script>
+
+<div class="container condominios-page">
+    <!-- Cabeçalho da página (não confundir com o cabeçalho do site) -->
+    <div class="page-header">
+        <div class="header-info">
+            <h1>
+                <i class="fas fa-building"></i>
+                {{ nome_equipe }} - Gestão de Condomínios
+            </h1>
+            <div class="header-subtitle">
+                <span class="header-badge">
+                    <i class="fas fa-chart-bar"></i>
+                    {{ condominios|length }} condomínio(s) cadastrado(s)
+                </span>
+                <span class="header-badge">
+                    <i class="fas fa-map-pin"></i>
+                    {{ microareas|length }} microárea(s)
+                </span>
+                <span class="header-badge">
+                    <i class="fas fa-user-md"></i>
+                    {{ nome_usuario|default('Visitante') }}
+                </span>
             </div>
         </div>
 
-        <!-- Seção de Condomínios -->
-        <section class="condominios">
-            <div class="section-header">
-                <h2>
-                    <i class="fas fa-building"></i>
-                    Condomínios do Território
-                    <span class="condominios-count">
-                        {{ condominios|length }} unidade{% if condominios|length != 1 %}s{% endif %}
-                    </span>
-                </h2>
-
-                <div class="section-actions">
-                    {% if usuario_logado and nivel_usuario != 'convidado' %}
-                    <button class="btn-add" onclick="mostrarModal()">
-                        <i class="fas fa-plus"></i>
-                        <span>Novo Condomínio</span>
-                    </button>
-                    {% else %}
-                    <button class="btn-add btn-convidado-disabled"
-                            onclick="mostrarModalConvidado()"
-                            title="Modo visitante: apenas visualização">
-                        <i class="fas fa-plus"></i>
-                        <span>Novo Condomínio</span>
-                    </button>
-                    {% endif %}
-
-                    <!-- Filtros rápidos -->
-                    <div class="quick-filters">
-                        <button class="filter-btn active" onclick="CondominiosPage.filtrar('todos')" title="Mostrar todos">
-                            <i class="fas fa-layer-group"></i>
-                        </button>
-                        <button class="filter-btn" onclick="CondominiosPage.filtrar('alta')" title="Alta prioridade" style="color: #e74c3c;">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </button>
-                        <button class="filter-btn" onclick="CondominiosPage.filtrar('cobertura')" title="Ordenar por cobertura">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {% if condominios %}
-            <!-- Grid de Cards -->
-            <div class="condominios-grid">
-                {% for cond in condominios %}
-                {% set cobertura_percent = cond.cobertura|default(0)|int %}
-                <div class="condominio-card priority-{{ cond.prioridade }} status-{{ cond.status_cobertura }}"
-                     data-id="{{ cond.id }}"
-                     data-cobertura="{{ cobertura_percent }}"
-                     data-prioridade="{{ cond.prioridade }}"
-                     data-status="{{ cond.status_cobertura }}"
-                     data-acs="{{ 'com_acs' if cond.acs_responsavel else 'sem_acs' }}">
-
-                    <!-- Cabeçalho -->
-                    <div class="condominio-header">
-                        <h3>{{ cond.nome }}</h3>
-                        <div class="condominio-badges">
-                            <span class="badge priority-{{ cond.prioridade }}">
-                                <i class="fas fa-flag"></i>
-                                {{ cond.prioridade|upper }}
-                            </span>
-                            <span class="badge status-{{ cond.status_cobertura }}">
-                                {% if cond.status_cobertura == 'completo' %}
-                                <i class="fas fa-check-circle"></i> COBERTO
-                                {% elif cond.status_cobertura == 'parcial' %}
-                                <i class="fas fa-exclamation-triangle"></i> PARCIAL
-                                {% else %}
-                                <i class="fas fa-times-circle"></i> DESCOBERTO
-                                {% endif %}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Informações -->
-                    <div class="condominio-info">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <i class="fas fa-layer-group"></i>
-                                <span>Blocos:</span>
-                                <span class="info-value">{{ cond.torres }}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-door-closed"></i>
-                                <span>Apartamentos:</span>
-                                <span class="info-value">{{ cond.apartamentos }}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-users"></i>
-                                <span>Moradores:</span>
-                                <span class="info-value">{{ cond.moradores }}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-user-md"></i>
-                                <span>ACS:</span>
-                                <span class="info-value">
-                                    {% if cond.acs_responsavel %}
-                                    {{ cond.acs_responsavel|truncate(15) }}
-                                    {% else %}
-                                    <span class="sem-acs">Sem ACS</span>
-                                    {% endif %}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Dados de Saúde -->
-                        <div class="saude-mini-chart">
-                            <div class="saude-chart-title">
-                                <i class="fas fa-heartbeat"></i>
-                                Dados de Saúde
-                            </div>
-                            <div class="saude-chart-bars">
-                                <div class="saude-bar" style="height: {{ (cond.hipertensos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
-                                <div class="saude-bar" style="height: {{ (cond.diabeticos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
-                                <div class="saude-bar" style="height: {{ (cond.gestantes / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
-                            </div>
-                            <div class="saude-labels">
-                                <span>{{ cond.hipertensos }} Hipertensos</span>
-                                <span>{{ cond.diabeticos }} Diabéticos</span>
-                                <span>{{ cond.gestantes }} Gestantes</span>
-                            </div>
-                        </div>
-
-                        <!-- Cobertura -->
-                        <div class="cobertura-condominio">
-                            <div class="cobertura-header">
-                                <div class="cobertura-label">
-                                    <i class="fas fa-chart-pie"></i>
-                                    Cobertura de Blocos
-                                </div>
-                                <div class="cobertura-percent">{{ cond.cobertura }}%</div>
-                            </div>
-                            <div class="cobertura-barra-container">
-                                <div class="cobertura-barra">
-                                    <div class="coberto" style="width: {{ cond.cobertura }}%"></div>
-                                    <div class="descoberto" style="width: {{ 100 - cond.cobertura }}%"></div>
-                                </div>
-                            </div>
-                            <div class="cobertura-numbers">
-                                <span>{{ cond.blocos_cobertos }} blocos cobertos</span>
-                                <span>{{ cond.blocos_descobertos }} blocos descobertos</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rodapé -->
-                    <div class="condominio-footer">
-                        <div class="cobertura-info">
-                            <span class="status-indicator">
-                                {% if cond.status_cobertura == 'completo' %}
-                                <i class="fas fa-check-circle"></i> COBERTO
-                                {% elif cond.status_cobertura == 'parcial' %}
-                                <i class="fas fa-exclamation-triangle"></i> PARCIAL
-                                {% else %}
-                                <i class="fas fa-times-circle"></i> DESCOBERTO
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="ultima-visita">
-                            <i class="far fa-calendar-alt"></i>
-                            <span>{{ cond.ultima_visita }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Botões de ação -->
-                    <div class="card-actions">
-                        {% if usuario_logado and nivel_usuario != 'convidado' %}
-                        <button class="action-btn btn-edit" title="Editar" data-id="{{ cond.id }}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn btn-view" title="Visualizar" data-id="{{ cond.id }}">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="header-acoes">
+            <a href="/dashboard" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Dashboard
+            </a>
+            <a href="/trocar-equipe" class="btn-trocar-equipe">
+                <i class="fas fa-exchange-alt"></i>
+                Trocar Equipe
+            </a>
+            {% if usuario_logado %}
+            <a href="/logout" class="btn-sair-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair
+            </a>
             {% else %}
-            <!-- Estado Vazio -->
-            <div class="empty-state">
-                <i class="fas fa-building"></i>
-                <h3>Nenhum condomínio cadastrado</h3>
-                <p>Comece adicionando condomínios para monitorar a cobertura da sua equipe.</p>
+            <a href="/login" class="btn-trocar-equipe">
+                <i class="fas fa-sign-in-alt"></i>
+                Entrar
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Controles Superiores -->
+    <div class="controles-superiores">
+        <div class="botoes-acao-principais">
+            {% if usuario_logado and nivel_usuario != 'convidado' %}
+            <button class="btn-add-condominio" onclick="mostrarModal()">
+                <i class="fas fa-plus-circle"></i>
+                Novo Condomínio
+            </button>
+            <button class="btn-exportar">
+                <i class="fas fa-file-export"></i>
+                Exportar
+            </button>
+            <button class="btn-atualizar" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i>
+                Atualizar
+            </button>
+            {% endif %}
+        </div>
+
+        <div class="filtros-rapidos">
+            <button class="filter-btn active" onclick="CondominiosPage.filtrar('todos')" title="Mostrar todos">
+                <i class="fas fa-th"></i>
+                Todos
+            </button>
+            <button class="filter-btn" onclick="CondominiosPage.filtrar('microarea')" title="Filtrar por microárea">
+                <i class="fas fa-map-pin"></i>
+                Por Microárea
+            </button>
+            <button class="filter-btn" onclick="CondominiosPage.filtrar('cobertura')" title="Ordenar por cobertura">
+                <i class="fas fa-sort-amount-down"></i>
+                Por Cobertura
+            </button>
+            <button class="btn-filtros-avancados btn-pequeno">
+                <i class="fas fa-filter"></i>
+                Filtros
+            </button>
+        </div>
+    </div>
+
+    {% if condominios %}
+    <!-- Grid de Cards -->
+    <div class="condominios-grid">
+        {% for cond in condominios %}
+        {% set cobertura_percent = cond.cobertura|default(0)|int %}
+        <div class="condominio-card microarea-{{ cond.microarea|replace(' ', '-')|lower }} status-{{ cond.status_cobertura }}"
+             data-id="{{ cond.id }}"
+             data-cobertura="{{ cobertura_percent }}"
+             data-microarea="{{ cond.microarea }}"
+             data-status="{{ cond.status_cobertura }}"
+             data-acs="{{ 'com_acs' if cond.acs_responsavel else 'sem_acs' }}">
+
+            <!-- Cabeçalho -->
+            <div class="condominio-header">
+                <h3>{{ cond.nome }}</h3>
+                <div class="condominio-badges">
+                    <span class="badge microarea-badge">
+                        <i class="fas fa-map-pin"></i>
+                        {{ cond.microarea|upper }}
+                    </span>
+                    <span class="badge status-{{ cond.status_cobertura }}">
+                        {% if cond.status_cobertura == 'completo' %}
+                        <i class="fas fa-check-circle"></i> COBERTO
+                        {% elif cond.status_cobertura == 'parcial' %}
+                        <i class="fas fa-exclamation-triangle"></i> PARCIAL
+                        {% else %}
+                        <i class="fas fa-times-circle"></i> DESCOBERTO
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Informações -->
+            <div class="condominio-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Blocos:</span>
+                        <span class="info-value">{{ cond.torres }}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-door-closed"></i>
+                        <span>Apartamentos:</span>
+                        <span class="info-value">{{ cond.apartamentos }}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <span>Moradores:</span>
+                        <span class="info-value">{{ cond.moradores }}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-user-md"></i>
+                        <span>ACS:</span>
+                        <span class="info-value">
+                            {% if cond.acs_responsavel %}
+                            {{ cond.acs_responsavel|truncate(15) }}
+                            {% else %}
+                            <span class="sem-acs">Sem ACS</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Dados de Saúde -->
+                <div class="saude-mini-chart">
+                    <div class="saude-chart-title">
+                        <i class="fas fa-heartbeat"></i>
+                        Dados de Saúde
+                    </div>
+                    <div class="saude-chart-bars">
+                        <div class="saude-bar" style="height: {{ (cond.hipertensos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
+                        <div class="saude-bar" style="height: {{ (cond.diabeticos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
+                        <div class="saude-bar" style="height: {{ (cond.gestantes / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
+                    </div>
+                    <div class="saude-labels">
+                        <span>{{ cond.hipertensos }} Hipertensos</span>
+                        <span>{{ cond.diabeticos }} Diabéticos</span>
+                        <span>{{ cond.gestantes }} Gestantes</span>
+                    </div>
+                </div>
+
+                <!-- Cobertura -->
+                <div class="cobertura-condominio">
+                    <div class="cobertura-header">
+                        <div class="cobertura-label">
+                            <i class="fas fa-chart-pie"></i>
+                            Cobertura de Blocos
+                        </div>
+                        <div class="cobertura-percent">{{ cond.cobertura }}%</div>
+                    </div>
+                    <div class="cobertura-barra-container">
+                        <div class="cobertura-barra">
+                            <div class="coberto" style="width: {{ cond.cobertura }}%"></div>
+                            <div class="descoberto" style="width: {{ 100 - cond.cobertura }}%"></div>
+                        </div>
+                    </div>
+                    <div class="cobertura-numbers">
+                        <span>{{ cond.blocos_cobertos }} blocos cobertos</span>
+                        <span>{{ cond.blocos_descobertos }} blocos descobertos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="condominio-footer">
+                <div class="cobertura-info">
+                    <span class="status-indicator">
+                        {% if cond.status_cobertura == 'completo' %}
+                        <i class="fas fa-check-circle"></i> COBERTO
+                        {% elif cond.status_cobertura == 'parcial' %}
+                        <i class="fas fa-exclamation-triangle"></i> PARCIAL
+                        {% else %}
+                        <i class="fas fa-times-circle"></i> DESCOBERTO
+                        {% endif %}
+                    </span>
+                    <span class="microarea-info">
+                        <i class="fas fa-map-marker-alt"></i> {{ cond.microarea }}
+                    </span>
+                </div>
+                <div class="ultima-visita">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>{{ cond.ultima_visita }}</span>
+                </div>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="card-actions">
                 {% if usuario_logado and nivel_usuario != 'convidado' %}
-                <button class="btn-primary" onclick="mostrarModal()">
-                    <i class="fas fa-plus"></i>
-                    Adicionar Primeiro Condomínio
+                <button class="action-btn btn-edit" title="Editar" data-id="{{ cond.id }}">
+                    <i class="fas fa-edit"></i>
                 </button>
-                {% else %}
-                <button class="btn-primary btn-convidado-disabled" onclick="mostrarModalConvidado()">
-                    <i class="fas fa-plus"></i>
-                    Adicionar Primeiro Condomínio
+                <button class="action-btn btn-view" title="Visualizar" data-id="{{ cond.id }}">
+                    <i class="fas fa-eye"></i>
                 </button>
                 {% endif %}
             </div>
-            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
 
-            <!-- Resumo -->
-            {% if condominios %}
-            <div class="section-summary">
-                <div>
-                    <i class="fas fa-chart-bar"></i>
-                    <strong>Resumo:</strong>
-                    {% set cobertos = condominios|selectattr('status_cobertura', 'equalto', 'completo')|list|length %}
-                    {% set parciais = condominios|selectattr('status_cobertura', 'equalto', 'parcial')|list|length %}
-                    {% set descobertos = condominios|selectattr('status_cobertura', 'equalto', 'descoberto')|list|length %}
-                    <span class="cobertos">{{ cobertos }} cobertos</span> •
-                    <span class="parciais">{{ parciais }} parciais</span> •
-                    <span class="descobertos">{{ descobertos }} descobertos</span>
-                </div>
-                <div>
-                    <i class="fas fa-filter"></i>
-                    Mostrando {{ condominios|length }} condomínio{% if condominios|length != 1 %}s{% endif %}
-                </div>
-            </div>
-            {% endif %}
-        </section>
-
-        <!-- Tabela -->
-        <div class="table-container">
-            {% if condominios %}
-            <table class="condominios-table" id="condominiosTable">
-                <thead>
-                    <tr>
-                        <th>Condomínio</th>
-                        <th>Status</th>
-                        <th>Prioridade</th>
-                        <th>ACS Responsável</th>
-                        <th>Blocos</th>
-                        <th>Cobertura</th>
-                        <th>Moradores</th>
-                        <th>Saúde</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cond in condominios %}
-                    <tr data-id="{{ cond.id }}"
-                        data-status="{{ cond.status_cobertura }}"
-                        data-prioridade="{{ cond.prioridade }}"
-                        data-acs="{{ 'com_acs' if cond.acs_responsavel else 'sem_acs' }}"
-                        data-cobertura="{{ cond.cobertura }}">
-                        <td>
-                            <strong>{{ cond.nome }}</strong>
-                            <div>{{ cond.apartamentos }} aptos</div>
-                        </td>
-                        <td>
-                            <span class="table-badge badge-status-{{ cond.status_cobertura }}">
-                                {% if cond.status_cobertura == 'completo' %}
-                                <i class="fas fa-check-circle"></i> COBERTO
-                                {% elif cond.status_cobertura == 'parcial' %}
-                                <i class="fas fa-exclamation-triangle"></i> PARCIAL
-                                {% else %}
-                                <i class="fas fa-times-circle"></i> DESCOBERTO
-                                {% endif %}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="table-badge badge-priority-{{ cond.prioridade }}">
-                                {{ cond.prioridade|upper }}
-                            </span>
-                        </td>
-                        <td>
-                            {% if cond.acs_responsavel %}
-                            <div class="acs-nome">{{ cond.acs_responsavel }}</div>
-                            <div class="acs-blocos">{{ cond.blocos_ativos }}</div>
+    <!-- Tabela -->
+    <div class="table-container">
+        <table class="condominios-table" id="condominiosTable">
+            <thead>
+                <tr>
+                    <th>Condomínio</th>
+                    <th>Status</th>
+                    <th>Microárea</th>
+                    <th>ACS Responsável</th>
+                    <th>Blocos</th>
+                    <th>Cobertura</th>
+                    <th>Moradores</th>
+                    <th>Saúde</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cond in condominios %}
+                <tr data-id="{{ cond.id }}"
+                    data-status="{{ cond.status_cobertura }}"
+                    data-microarea="{{ cond.microarea }}"
+                    data-acs="{{ 'com_acs' if cond.acs_responsavel else 'sem_acs' }}"
+                    data-cobertura="{{ cond.cobertura }}">
+                    <td>
+                        <strong>{{ cond.nome }}</strong>
+                        <div>{{ cond.apartamentos }} aptos</div>
+                    </td>
+                    <td>
+                        <span class="table-badge badge-status-{{ cond.status_cobertura }}">
+                            {% if cond.status_cobertura == 'completo' %}
+                            <i class="fas fa-check-circle"></i> COBERTO
+                            {% elif cond.status_cobertura == 'parcial' %}
+                            <i class="fas fa-exclamation-triangle"></i> PARCIAL
                             {% else %}
-                            <span class="sem-acs"><i class="fas fa-user-times"></i> Sem ACS</span>
+                            <i class="fas fa-times-circle"></i> DESCOBERTO
                             {% endif %}
-                        </td>
-                        <td>
-                            <div>
-                                <span class="coberto"><i class="fas fa-check"></i> {{ cond.blocos_cobertos }}</span> cobertos
+                        </span>
+                    </td>
+                    <td>
+                        <span class="table-badge badge-microarea">
+                            <i class="fas fa-map-pin"></i> {{ cond.microarea }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if cond.acs_responsavel %}
+                        <div class="acs-nome">{{ cond.acs_responsavel }}</div>
+                        <div class="acs-blocos">{{ cond.blocos_ativos }}</div>
+                        {% else %}
+                        <span class="sem-acs"><i class="fas fa-user-times"></i> Sem ACS</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div>
+                            <span class="coberto"><i class="fas fa-check"></i> {{ cond.blocos_cobertos }}</span> cobertos
+                        </div>
+                        <div>
+                            <span class="descoberto"><i class="fas fa-times"></i> {{ cond.blocos_descobertos }}</span> descobertos
+                        </div>
+                    </td>
+                    <td>
+                        <div class="cobertura-cell">
+                            <span>{{ cond.cobertura }}%</span>
+                            <div class="mini-progress-table">
+                                <div class="mini-progress-bar-table" style="width: {{ cond.cobertura }}%"></div>
                             </div>
-                            <div>
-                                <span class="descoberto"><i class="fas fa-times"></i> {{ cond.blocos_descobertos }}</span> descobertos
+                        </div>
+                    </td>
+                    <td>
+                        <div class="moradores-count">{{ cond.moradores }}</div>
+                        <div class="moradores-avg">
+                            {{ (cond.moradores / cond.apartamentos)|round(1) }} por apto
+                        </div>
+                    </td>
+                    <td>
+                        <div class="saude-indicadores">
+                            <div title="Hipertensos">
+                                <div class="hipertensos">{{ cond.hipertensos }}</div>
+                                <i class="fas fa-heartbeat"></i>
                             </div>
-                        </td>
-                        <td>
-                            <div class="cobertura-cell">
-                                <span>{{ cond.cobertura }}%</span>
-                                <div class="mini-progress-table">
-                                    <div class="mini-progress-bar-table" style="width: {{ cond.cobertura }}%"></div>
-                                </div>
+                            <div title="Diabéticos">
+                                <div class="diabeticos">{{ cond.diabeticos }}</div>
+                                <i class="fas fa-prescription-bottle"></i>
                             </div>
-                        </td>
-                        <td>
-                            <div class="moradores-count">{{ cond.moradores }}</div>
-                            <div class="moradores-avg">
-                                {{ (cond.moradores / cond.apartamentos)|round(1) }} por apto
+                            <div title="Gestantes">
+                                <div class="gestantes">{{ cond.gestantes }}</div>
+                                <i class="fas fa-female"></i>
                             </div>
-                        </td>
-                        <td>
-                            <div class="saude-indicadores">
-                                <div title="Hipertensos">
-                                    <div class="hipertensos">{{ cond.hipertensos }}</div>
-                                    <i class="fas fa-heartbeat"></i>
-                                </div>
-                                <div title="Diabéticos">
-                                    <div class="diabeticos">{{ cond.diabeticos }}</div>
-                                    <i class="fas fa-prescription-bottle"></i>
-                                </div>
-                                <div title="Gestantes">
-                                    <div class="gestantes">{{ cond.gestantes }}</div>
-                                    <i class="fas fa-female"></i>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn-action btn-view" title="Visualizar" data-id="{{ cond.id }}">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                {% if usuario_logado and nivel_usuario != 'convidado' %}
-                                <button class="btn-action btn-edit" title="Editar" data-id="{{ cond.id }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn-action btn-delete" title="Excluir" data-id="{{ cond.id }}" data-nome="{{ cond.nome }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                {% else %}
-                                <button class="btn-action disabled" title="Modo visitante">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn-action disabled" title="Modo visitante">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div class="empty-state">
-                <i class="fas fa-building"></i>
-                <h3>Nenhum condomínio cadastrado</h3>
-                <p>Esta equipe ainda não possui condomínios cadastrados no sistema.</p>
-                <button class="btn-primary" onclick="mostrarModal()">
-                    <i class="fas fa-plus"></i> Adicionar Primeiro Condomínio
-                </button>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- Informações de resumo -->
-        <div class="page-summary">
-            <p>
-                <i class="fas fa-info-circle"></i>
-                <span class="items-counter">Mostrando {{ condominios|length }} condomínio(s)</span> |
-                Última atualização: <span id="dataAtual"></span>
-            </p>
-        </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn-action btn-view" title="Visualizar" data-id="{{ cond.id }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if usuario_logado and nivel_usuario != 'convidado' %}
+                            <button class="btn-action btn-edit" title="Editar" data-id="{{ cond.id }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action btn-delete" title="Excluir" data-id="{{ cond.id }}" data-nome="{{ cond.nome }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn-action disabled" title="Modo visitante">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action disabled" title="Modo visitante">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <!-- Modal simplificado - será controlado pelo JavaScript -->
-    <div id="modalCondominio" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 700px;">
-            <!-- O conteúdo será gerado pelo JavaScript -->
+    <!-- Resumo -->
+    <div class="section-summary">
+        <div>
+            <i class="fas fa-chart-bar"></i>
+            <strong>Resumo:</strong>
+            {% set cobertos = condominios|selectattr('status_cobertura', 'equalto', 'completo')|list|length %}
+            {% set parciais = condominios|selectattr('status_cobertura', 'equalto', 'parcial')|list|length %}
+            {% set descobertos = condominios|selectattr('status_cobertura', 'equalto', 'descoberto')|list|length %}
+            <span class="cobertos">{{ cobertos }} cobertos</span> •
+            <span class="parciais">{{ parciais }} parciais</span> •
+            <span class="descobertos">{{ descobertos }} descobertos</span>
+        </div>
+        <div>
+            <i class="fas fa-filter"></i>
+            Mostrando {{ condominios|length }} condomínio{% if condominios|length != 1 %}s{% endif %} em {{ microareas|length }} microárea(s)
         </div>
     </div>
+    {% else %}
+    <!-- Estado Vazio -->
+    <div class="empty-state">
+        <i class="fas fa-building"></i>
+        <h3>Nenhum condomínio cadastrado</h3>
+        <p>Comece adicionando condomínios para monitorar a cobertura da sua equipe.</p>
+        {% if usuario_logado and nivel_usuario != 'convidado' %}
+        <button class="btn-primary" onclick="mostrarModal()">
+            <i class="fas fa-plus"></i>
+            Adicionar Primeiro Condomínio
+        </button>
+        {% else %}
+        <button class="btn-primary btn-convidado-disabled" onclick="mostrarModalConvidado()">
+            <i class="fas fa-plus"></i>
+            Adicionar Primeiro Condomínio
+        </button>
+        {% endif %}
+    </div>
+    {% endif %}
 
-    <!-- JavaScript (arquivos externos) -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/condominios.js') }}"></script>
+    <!-- Informações de resumo -->
+    <div class="page-summary">
+        <p>
+            <i class="fas fa-info-circle"></i>
+            <span class="items-counter">Mostrando {{ condominios|length }} condomínio(s)</span> |
+            Última atualização: <span id="dataAtual"></span>
+        </p>
+    </div>
+</div>
 
-    <!-- Script específico da página para configurar botões -->
-    <script>
-        // Configurar botões após o carregamento
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Página de condomínios carregada');
+<!-- Modais -->
+<div id="modalCondominio" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <!-- O conteúdo será gerado pelo JavaScript -->
+    </div>
+</div>
 
-            // Configurar botões de ação
-            const btnAdd = document.querySelector('.btn-add:not(.btn-convidado-disabled)');
-            if (btnAdd) {
-                btnAdd.addEventListener('click', function () {
-                    mostrarModal();
-                });
-            }
+<div id="modalEditarCondominio" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <!-- Conteúdo será preenchido pelo JavaScript -->
+    </div>
+</div>
 
-            // Configurar botões de ação na tabela
-            document.querySelectorAll('.btn-view').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    CondominiosPage.verDetalhes(id);
-                });
+<!-- Botões Flutuantes -->
+{% if usuario_logado and nivel_usuario != 'convidado' %}
+<button class="botao-flutuante" onclick="mostrarModal()" title="Adicionar novo condomínio">
+    <i class="fas fa-plus"></i>
+</button>
+<button class="botao-flutuante-secundario" onclick="location.reload()" title="Atualizar página">
+    <i class="fas fa-sync-alt"></i>
+</button>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/condominios.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Página de condomínios carregada');
+
+        // Configurar botões de ação
+        const btnAdd = document.querySelector('.btn-add-condominio');
+        if (btnAdd) {
+            btnAdd.addEventListener('click', function () {
+                mostrarModal();
             });
+        }
 
-            document.querySelectorAll('.btn-edit:not(.disabled)').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    CondominiosPage.editarCondominio(id);
-                });
+        // Configurar botões de ação nos cards
+        document.querySelectorAll('.btn-view').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                CondominiosPage.verDetalhes(id);
             });
-
-            document.querySelectorAll('.btn-delete:not(.disabled)').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    const nome = this.getAttribute('data-nome');
-                    CondominiosPage.confirmarExclusao(id, nome);
-                });
-            });
-
-            // Configurar data atual
-            document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
         });
 
-        // Função para mostrar modal - chama a função do condominios.js
-        function mostrarModal() {
-            return CondominiosPage.mostrarModal();
-        }
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                CondominiosPage.editarCondominio(id);
+            });
+        });
 
-        // Função para convidados
-        function mostrarModalConvidado() {
-            return CondominiosPage.mostrarModalConvidado();
-        }
+        // Configurar botões na tabela (delegação de eventos)
+        document.addEventListener('click', function (event) {
+            // Editar na tabela
+            if (event.target.closest('.btn-edit')) {
+                const btn = event.target.closest('.btn-edit');
+                if (!btn.classList.contains('disabled')) {
+                    const id = btn.getAttribute('data-id');
+                    CondominiosPage.editarCondominio(id);
+                }
+            }
 
-        // Função para fechar modal
-        function fecharModal() {
-            return CondominiosPage.closeModal();
-        }
-    </script>
-    <!-- Modal para Editar Condomínio -->
-    <div id="modalEditarCondominio" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 700px;">
-            <!-- Conteúdo será preenchido pelo JavaScript -->
-        </div>
-    </div>
-</body>
-</html>
+            // Excluir na tabela
+            if (event.target.closest('.btn-delete')) {
+                const btn = event.target.closest('.btn-delete');
+                if (!btn.classList.contains('disabled')) {
+                    const id = btn.getAttribute('data-id');
+                    const nome = btn.getAttribute('data-nome');
+                    CondominiosPage.confirmarExclusao(id, nome);
+                }
+            }
+
+            // Visualizar na tabela
+            if (event.target.closest('.btn-view')) {
+                const btn = event.target.closest('.btn-view');
+                const id = btn.getAttribute('data-id');
+                CondominiosPage.verDetalhes(id);
+            }
+        });
+
+        // Configurar data atual
+        document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
+    });
+
+    function mostrarModal() {
+        return CondominiosPage.mostrarModal();
+    }
+
+    function mostrarModalConvidado() {
+        return CondominiosPage.mostrarModalConvidado();
+    }
+
+    function fecharModal() {
+        return CondominiosPage.closeModal();
+    }
+</script>
+{% endblock %}
