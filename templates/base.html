@@ -3,25 +3,36 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>{% block title %}{% endblock %}</title>
 
-    <!-- CSS -->
+    <!-- CSS PRINCIPAL -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- CSS ESPECÍFICO DO DASHBOARD (será carregado apenas na página do dashboard) -->
+    {% block extra_css %}{% endblock %}
+
+    <!-- ICONES E FONTES -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- CSS específico da página -->
-    {% block extra_css %}{% endblock %}
-
-    <!-- Configurações do backend -->
+    <!-- Configurações do backend (IMPORTANTE: isso deve vir ANTES dos scripts) -->
     <script>
+        // Configuração global do sistema
         window.APP_CONFIG = {
             usuario_logado: {% if usuario_logado %}true{% else %}false{% endif %},
             nome_usuario: {{ nome_usuario|default('Visitante')|tojson }},
             nivel_usuario: {{ nivel_usuario|default('')|tojson }},
             nome_equipe: {{ nome_equipe|tojson }},
-            microareas: {{ microareas|tojson|safe if microareas is defined else []|tojson }}
+            microareas: {{ microareas|tojson|safe if microareas is defined else []|tojson }},
+            current_page: '{{ request.endpoint }}'
+        };
+
+        // Debug helper
+        window.logConfig = function() {
+            console.log('APP_CONFIG:', window.APP_CONFIG);
         };
     </script>
 </head>
@@ -104,19 +115,19 @@
             </div>
 
             <nav class="navbar">
-                <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
                     <i class="fas fa-home"></i>
                     <span>Início</span>
                 </a>
-                <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}">
+                <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}" title="Mapa do Território">
                     <i class="fas fa-map"></i>
                     <span>Mapa</span>
                 </a>
-                <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}">
+                <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}" title="Gerenciar Condomínios">
                     <i class="fas fa-building"></i>
                     <span>Condomínios</span>
                 </a>
-                <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}">
+                <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}" title="Relatórios">
                     <i class="fas fa-chart-bar"></i>
                     <span>Relatórios</span>
                 </a>
@@ -125,20 +136,40 @@
     </header>
 
     <!-- Conteúdo específico de cada página -->
-    <div class="content-wrapper">
+    <main class="content-wrapper">
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     <!-- Rodapé comum -->
     <footer class="footer">
         <p>© 2025 Territorialização USF PontoCerto | {{ nome_equipe }}</p>
         <p class="version">Sistema desenvolvido por Agentes Comun. de Saúde</p>
+        <p id="currentDate"></p>
     </footer>
-
-    <!-- JavaScript comum -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
     <!-- JavaScript específico da página -->
     {% block extra_js %}{% endblock %}
+
+    <!-- JavaScript COMUM (sempre carregado) -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Script de inicialização global -->
+    <script>
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sistema inicializado - Página: {{ request.endpoint }}');
+
+            // Verificar se é dashboard e inicializar
+            if (typeof dashboard !== 'undefined' && typeof dashboard.init === 'function') {
+                console.log('Inicializando dashboard...');
+                dashboard.init();
+            }
+
+            // Debug (remova em produção)
+            if (window.location.search.includes('debug')) {
+                window.logConfig();
+            }
+        });
+    </script>
 </body>
 </html>
