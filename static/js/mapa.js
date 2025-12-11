@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentAreaId = null;
     let isEditing = false;
     let isFullscreen = false;
+    let sidebarVisibleInFullscreen = false;
 
     // COORDENADAS DE CAMAÇARI
     const CAMACARI_COORDS = {
@@ -163,10 +164,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const mapElement = document.getElementById('map');
         const fullscreenToggle = document.getElementById('fullscreen-toggle');
         const header = document.querySelector('.map-header');
+        const sidebar = document.querySelector('.map-sidebar');
 
         if (!isFullscreen) {
             // Entrar em modo tela cheia
             mapPage.classList.add('modo-tela-cheia');
+
+            // Esconder sidebar por padrão
+            if (sidebar) {
+                sidebar.classList.remove('visible');
+            }
+
+            // Adicionar botão de toggle da sidebar
+            addSidebarToggle();
 
             // Esconder cabeçalho
             if (header) {
@@ -185,9 +195,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
             showMessage('Modo tela cheia ativado. Pressione ESC para sair.', 'info', 2000);
             isFullscreen = true;
+            sidebarVisibleInFullscreen = false;
+
         } else {
             // Sair do modo tela cheia
             mapPage.classList.remove('modo-tela-cheia');
+
+            // Remover botão de toggle da sidebar
+            removeSidebarToggle();
+
+            // Mostrar sidebar normalmente
+            if (sidebar) {
+                sidebar.classList.add('visible');
+            }
 
             // Mostrar cabeçalho
             if (header) {
@@ -205,8 +225,70 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 100);
 
             isFullscreen = false;
+            sidebarVisibleInFullscreen = false;
         }
     }
+
+    // Função para adicionar botão de toggle da sidebar
+    function addSidebarToggle() {
+        const existingToggle = document.querySelector('.sidebar-toggle');
+        if (existingToggle) existingToggle.remove();
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'sidebar-toggle';
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        toggleBtn.title = 'Mostrar controles de edição';
+
+        toggleBtn.addEventListener('click', function () {
+            toggleSidebarInFullscreen();
+        });
+
+        document.querySelector('.map-container').appendChild(toggleBtn);
+    }
+
+    // Função para remover botão de toggle da sidebar
+    function removeSidebarToggle() {
+        const toggleBtn = document.querySelector('.sidebar-toggle');
+        if (toggleBtn) {
+            toggleBtn.remove();
+        }
+    }
+
+    // Função para alternar a visibilidade da sidebar em tela cheia
+    function toggleSidebarInFullscreen() {
+        if (!isFullscreen) return;
+
+        const sidebar = document.querySelector('.map-sidebar');
+        const toggleBtn = document.querySelector('.sidebar-toggle');
+
+        sidebarVisibleInFullscreen = !sidebarVisibleInFullscreen;
+
+        if (sidebarVisibleInFullscreen) {
+            sidebar.classList.add('visible');
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            toggleBtn.title = 'Ocultar controles de edição';
+            toggleBtn.style.right = '350px'; // Largura da sidebar
+        } else {
+            sidebar.classList.remove('visible');
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            toggleBtn.title = 'Mostrar controles de edição';
+            toggleBtn.style.right = '0';
+        }
+
+        // Ajustar tamanho do mapa
+        setTimeout(() => {
+            if (map) {
+                map.invalidateSize();
+            }
+        }, 300);
+    }
+
+    // Modifique a função de evento keydown para ESC
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isFullscreen) {
+            toggleFullscreen();
+        }
+    });
 
     // Iniciar desenho
     function startDrawing(type) {
