@@ -1,848 +1,598 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5, user-scalable=yes">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-    <title>{{ nome_equipe }} - Mapa Territorial</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        /* Estilos específicos para a página do mapa */
-        .mapa-page {
-            padding: 20px;
-            height: calc(100vh - 80px);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .page-header h1 {
+{% extends "base.html" %}
+
+{% block title %}Mapa de Territorialização - {{ nome_equipe }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+<style>
+    /* Estilos para a página de mapa */
+    .map-page {
+        padding: 20px;
+        height: calc(100vh - 140px);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .map-header {
+        margin-bottom: 20px;
+    }
+
+        .map-header h1 {
             color: #2c3e50;
-            font-size: 1.8rem;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+
+        .map-header p {
+            color: #7f8c8d;
+            font-size: 14px;
         }
-        
-        /* Container do mapa */
-        .map-container {
-            flex: 1;
-            display: flex;
-            gap: 20px;
-            min-height: 0; /* Importante para flexbox */
+
+    .map-container {
+        display: flex;
+        flex: 1;
+        gap: 20px;
+        height: 100%;
+    }
+
+    #map {
+        flex: 1;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+
+    .map-sidebar {
+        width: 350px;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .map-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .map-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .map-controls {
+        display: grid;
+        gap: 10px;
+    }
+
+    .map-btn {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+    }
+
+        .map-btn:hover {
+            background: #2980b9;
         }
-        
-        /* Controles do mapa */
-        .map-controls {
-            width: 300px;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-            overflow-y: auto;
+
+    .map-btn-secondary {
+        background: #95a5a6;
+    }
+
+        .map-btn-secondary:hover {
+            background: #7f8c8d;
         }
-        
-        .map-controls h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+
+    .map-btn-danger {
+        background: #e74c3c;
+    }
+
+        .map-btn-danger:hover {
+            background: #c0392b;
         }
-        
-        /* Filtros */
-        .filters-section {
-            margin-bottom: 25px;
+
+    .map-btn-success {
+        background: #27ae60;
+    }
+
+        .map-btn-success:hover {
+            background: #219653;
         }
-        
-        .filters-section h4 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+    .color-picker {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        margin: 10px 0;
+    }
+
+    .color-option {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+    }
+
+        .color-option:hover {
+            transform: scale(1.1);
         }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+
+        .color-option.selected {
+            border-color: #2c3e50;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
-        
-        .filter-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .filter-option:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .filter-option input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        
-        .filter-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .color-coberto { background: #2ecc71; }
-        .color-parcial { background: #f39c12; }
-        .color-descoberto { background: #e74c3c; }
-        
-        .filter-label {
-            flex: 1;
-            font-size: 0.95rem;
-            color: #2c3e50;
-        }
-        
-        .filter-count {
-            background: #e9ecef;
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
             color: #495057;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.85rem;
             font-weight: 500;
         }
-        
-        /* Mapa em si */
-        .map-view {
-            flex: 1;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
-        
-        #map {
+
+    textarea.form-control {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    .areas-list {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .area-item {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 12px;
+        border-left: 4px solid #3498db;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+        .area-item:hover {
+            background: #f1f8ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+    .area-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .area-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 14px;
+    }
+
+    .area-type {
+        font-size: 12px;
+        color: #7f8c8d;
+        background: #ecf0f1;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .area-actions {
+        display: flex;
+        gap: 5px;
+        margin-top: 8px;
+    }
+
+    .area-action-btn {
+        background: none;
+        border: none;
+        color: #7f8c8d;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        font-size: 14px;
+    }
+
+        .area-action-btn:hover {
+            background: #dfe6e9;
+            color: #2c3e50;
+        }
+
+        .area-action-btn i {
+            font-size: 14px;
+        }
+
+    .area-description {
+        font-size: 13px;
+        color: #636e72;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+
+    .no-areas {
+        text-align: center;
+        padding: 40px 20px;
+        color: #7f8c8d;
+    }
+
+        .no-areas i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #bdc3c7;
+        }
+
+    /* Botão de tela cheia */
+    #fullscreen-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+    }
+
+        #fullscreen-toggle:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+    /* Estilos para modo tela cheia */
+    .modo-tela-cheia {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 9999 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
+        .modo-tela-cheia .map-container {
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .modo-tela-cheia #map {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 0 !important;
+        }
+
+        .modo-tela-cheia .map-sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 10000;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .modo-tela-cheia .map-header,
+        .modo-tela-cheia .footer,
+        .modo-tela-cheia .header {
+            display: none !important;
+        }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: flex-end;
+    }
+
+    /* Controles do mapa */
+    .leaflet-top.leaflet-left {
+        top: 90px;
+        left: 10px;
+    }
+
+    .leaflet-draw-toolbar {
+        margin-top: 10px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 1024px) {
+        .map-container {
+            flex-direction: column;
+            height: calc(100vh - 200px);
+        }
+
+        .map-sidebar {
             width: 100%;
-            height: 100%;
-            border-radius: 10px;
+            height: 300px;
+            order: 2;
         }
-        
-        /* Legenda fixa no mapa */
-        .map-legend {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        
-        .map-legend h4 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
-            font-size: 0.9rem;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            color: #5a6268;
-        }
-        
-        .legend-color {
-            width: 15px;
-            height: 15px;
-            border-radius: 3px;
-        }
-        
-        /* Informações do condomínio selecionado */
-        .info-panel {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-            border: 2px solid #1a73e8;
-            display: none; /* Inicialmente oculto */
-        }
-        
-        .info-panel h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .info-panel h3 button {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #7f8c8d;
-        }
-        
-        .info-content {
-            display: grid;
-            gap: 15px;
-        }
-        
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .info-label {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-        
-        .info-value {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.95rem;
-        }
-        
-        /* Estatísticas rápidas */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-        }
-        
-        .stat-coberto .stat-number { color: #2ecc71; }
-        .stat-parcial .stat-number { color: #f39c12; }
-        .stat-descoberto .stat-number { color: #e74c3c; }
-        
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .map-container {
-                flex-direction: column;
-            }
-            
-            .map-controls {
-                width: 100%;
-                max-height: 200px;
-            }
-            
-            .map-view {
-                height: 400px;
-            }
-            
-            .stats-bar {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container mapa-page">
-        <!-- Cabeçalho da página -->
-        <div class="page-header">
-            <h1>
-                <i class="fas fa-map-marked-alt"></i>
-                Mapa Territorial - USF Camaçari
-            </h1>
-            <div class="header-actions">
-                <a href="/dashboard" class="btn-add" style="text-decoration: none;">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-                <a href="/sair" class="btn-sair" style="text-decoration: none;">
-                    <i class="fas fa-exchange-alt"></i> Trocar Equipe
-                </a>
-            </div>
-        </div>
 
-        <!-- Estatísticas rápidas -->
-        <div class="stats-bar">
-            <div class="stat-item stat-coberto">
-                <div class="stat-number" id="countCoberto">0</div>
-                <div class="stat-label">Cobertos</div>
-            </div>
-            <div class="stat-item stat-parcial">
-                <div class="stat-number" id="countParcial">0</div>
-                <div class="stat-label">Parciais</div>
-            </div>
-            <div class="stat-item stat-descoberto">
-                <div class="stat-number" id="countDescoberto">0</div>
-                <div class="stat-label">Descobertos</div>
-            </div>
-        </div>
+        #map {
+            height: 400px;
+            order: 1;
+        }
 
-        <!-- Container principal do mapa -->
-        <div class="map-container">
-            <!-- Controles à esquerda -->
-            <div class="map-controls">
-                <h3><i class="fas fa-filter"></i> Filtros do Mapa</h3>
-                
-                <!-- Filtro por status de cobertura -->
-                <div class="filters-section">
-                    <h4><i class="fas fa-user-md"></i> Status de Cobertura</h4>
-                    <div class="filter-group">
-                        <label class="filter-option" onclick="toggleFilter('coberto')">
-                            <input type="checkbox" id="filterCoberto" checked>
-                            <div class="filter-color color-coberto"></div>
-                            <span class="filter-label">Completamente Coberto</span>
-                            <span class="filter-count" id="countCobertoFilter">0</span>
-                        </label>
-                        
-                        <label class="filter-option" onclick="toggleFilter('parcial')">
-                            <input type="checkbox" id="filterParcial" checked>
-                            <div class="filter-color color-parcial"></div>
-                            <span class="filter-label">Parcialmente Coberto</span>
-                            <span class="filter-count" id="countParcialFilter">0</span>
-                        </label>
-                        
-                        <label class="filter-option" onclick="toggleFilter('descoberto')">
-                            <input type="checkbox" id="filterDescoberto" checked>
-                            <div class="filter-color color-descoberto"></div>
-                            <span class="filter-label">Descoberto</span>
-                            <span class="filter-count" id="countDescobertoFilter">0</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- Informações da equipe -->
-                <div class="filters-section">
-                    <h4><i class="fas fa-info-circle"></i> Informações</h4>
-                    <div style="font-size: 0.9rem; color: #5a6268; line-height: 1.5;">
-                        <p><strong>USF:</strong> Camaçari</p>
-                        <p><strong>Equipe:</strong> {{ nome_equipe }}</p>
-                        <p><strong>Total de condomínios:</strong> <span id="totalCondominios">0</span></p>
-                        <p><strong>Última atualização:</strong> <span id="dataAtual"></span></p>
-                    </div>
-                </div>
-                
-                <!-- Instruções -->
-                <div class="filters-section">
-                    <h4><i class="fas fa-question-circle"></i> Como usar</h4>
-                    <div style="font-size: 0.85rem; color: #7f8c8d;">
-                        <p>• Clique em um condomínio para ver detalhes</p>
-                        <p>• Use os filtros para mostrar/ocultar tipos</p>
-                        <p>• Arraste para navegar, scroll para zoom</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Mapa à direita -->
-            <div class="map-view">
-                <div id="map"></div>
-                
-                <!-- Legenda fixa -->
-                <div class="map-legend">
-                    <h4>Legenda</h4>
-                    <div class="legend-item">
-                        <div class="legend-color color-coberto"></div>
-                        <span>Coberto (100%)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color color-parcial"></div>
-                        <span>Parcial</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color color-descoberto"></div>
-                        <span>Descoberto</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Painel de informações (aparece quando clica em um condomínio) -->
-        <div class="info-panel" id="infoPanel">
-            <h3>
-                <span id="infoTitle">Detalhes do Condomínio</span>
-                <button onclick="fecharInfoPanel()">&times;</button>
-            </h3>
-            <div class="info-content" id="infoContent">
-                <!-- Conteúdo carregado dinamicamente -->
-            </div>
-        </div>
+        #fullscreen-toggle {
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .map-page {
+            padding: 10px;
+            height: calc(100vh - 120px);
+        }
+
+        .area-actions {
+            flex-wrap: wrap;
+        }
+
+        .area-action-btn {
+            padding: 3px;
+        }
+
+        .modo-tela-cheia .map-sidebar {
+            width: 100%;
+            height: 40vh;
+            bottom: 0;
+            top: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-page">
+    <!-- Cabeçalho da página -->
+    <div class="map-header">
+        <h1>
+            <i class="fas fa-map-marked-alt"></i>
+            Mapa de Territorialização
+        </h1>
+        <p>Visualize e edite áreas de atuação da equipe {{ nome_equipe }}</p>
     </div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // ============================================
-        // VARIÁVEIS GLOBAIS
-        // ============================================
-        let map;
-        let markers = [];
-        let condominiosData = [];
-        
-        // Coordenadas de Camaçari (centro do mapa)
-        const CAMACARI_COORDS = [-12.6997, -38.3247];
-        const MAP_ZOOM = 14;
-        
-        // Cores para os marcadores
-        const MARKER_COLORS = {
-            'completo': '#2ecc71',  // Verde
-            'parcial': '#f39c12',   // Laranja
-            'descoberto': '#e74c3c' // Vermelho
-        };
-        
-        // ============================================
-        // INICIALIZAÇÃO DO MAPA
-        // ============================================
-        
-        function initMap() {
-            // Criar mapa centrado em Camaçari
-            map = L.map('map').setView(CAMACARI_COORDS, MAP_ZOOM);
-            
-            // Adicionar tile layer (OpenStreetMap)
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 18
-            }).addTo(map);
-            
-            // Carregar dados dos condomínios
-            carregarDadosMapa();
-            
-            // Atualizar contadores
-            atualizarContadores();
-            
-            // Data atual
-            document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
-        }
-        
-        // ============================================
-        // CARREGAR DADOS
-        // ============================================
-        
-        async function carregarDadosMapa() {
-            try {
-                const response = await fetch('/api/dados');
-                if (!response.ok) throw new Error('Erro ao carregar dados');
-                
-                const data = await response.json();
-                condominiosData = data.condominios || [];
-                
-                // Se não tiver coordenadas, gerar posições aleatórias próximas a Camaçari
-                condominiosData.forEach((cond, index) => {
-                    if (!cond.latitude || !cond.longitude) {
-                        // Gerar coordenadas aleatórias dentro de 5km de Camaçari
-                        const offsetLat = (Math.random() - 0.5) * 0.05; // ~5.5km
-                        const offsetLng = (Math.random() - 0.5) * 0.05; // ~5.5km
-                        cond.latitude = CAMACARI_COORDS[0] + offsetLat;
-                        cond.longitude = CAMACARI_COORDS[1] + offsetLng;
-                    }
-                });
-                
-                // Adicionar marcadores
-                adicionarMarcadores();
-                
-            } catch (error) {
-                console.error('Erro ao carregar dados do mapa:', error);
-                alert('Erro ao carregar dados do mapa. Recarregue a página.');
-            }
-        }
-        
-        // ============================================
-        // ADICIONAR MARCADORES
-        // ============================================
-        
-        function adicionarMarcadores() {
-            // Limpar marcadores antigos
-            markers.forEach(marker => map.removeLayer(marker));
-            markers = [];
-            
-            // Contadores por status
-            let counts = { completo: 0, parcial: 0, descoberto: 0 };
-            
-            condominiosData.forEach(cond => {
-                const status = cond.status_cobertura || 'descoberto';
-                counts[status]++;
-                
-                // Verificar se o filtro está ativo para este status
-                const filterId = `filter${status.charAt(0).toUpperCase() + status.slice(1)}`;
-                if (!document.getElementById(filterId)?.checked) {
-                    return; // Não adicionar marcador se filtro desativado
-                }
-                
-                // Criar ícone colorido
-                const icon = L.divIcon({
-                    className: 'custom-marker',
-                    html: `
-                        <div style="
-                            background: ${MARKER_COLORS[status]};
-                            width: 24px;
-                            height: 24px;
-                            border-radius: 50%;
-                            border: 3px solid white;
-                            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            color: white;
-                            font-weight: bold;
-                            font-size: 11px;
-                            cursor: pointer;
-                        " title="${cond.nome}">
-                            ${cond.blocos_cobertos || 0}
-                        </div>
-                    `,
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12]
-                });
-                
-                // Criar popup com informações
-                const popupContent = criarPopupContent(cond);
-                
-                // Adicionar marcador ao mapa
-                const marker = L.marker([cond.latitude, cond.longitude], { icon: icon })
-                    .addTo(map)
-                    .bindPopup(popupContent, {
-                        maxWidth: 300,
-                        className: 'custom-popup'
-                    });
-                
-                // Adicionar evento de clique para mostrar painel lateral
-                marker.on('click', function() {
-                    mostrarInfoPanel(cond);
-                });
-                
-                markers.push(marker);
-            });
-            
-            // Atualizar contadores nos filtros
-            document.getElementById('countCobertoFilter').textContent = counts.completo;
-            document.getElementById('countParcialFilter').textContent = counts.parcial;
-            document.getElementById('countDescobertoFilter').textContent = counts.descoberto;
-            
-            // Atualizar estatísticas
-            document.getElementById('countCoberto').textContent = counts.completo;
-            document.getElementById('countParcial').textContent = counts.parcial;
-            document.getElementById('countDescoberto').textContent = counts.descoberto;
-            document.getElementById('totalCondominios').textContent = condominiosData.length;
-        }
-        
-        // ============================================
-        // CRIAR CONTEÚDO DO POPUP
-        // ============================================
-        
-        function criarPopupContent(cond) {
-            return `
-                <div style="padding: 10px; min-width: 250px;">
-                    <h3 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 1.1rem;">
-                        ${cond.nome}
-                    </h3>
-                    
-                    <div style="margin-bottom: 10px;">
-                        <span style="
-                            display: inline-block;
-                            padding: 3px 10px;
-                            border-radius: 12px;
-                            font-size: 0.8rem;
-                            font-weight: 600;
-                            background: ${MARKER_COLORS[cond.status_cobertura]};
-                            color: white;
-                        ">
-                            ${cond.status_cobertura === 'completo' ? 'COBERTO' : 
-                              cond.status_cobertura === 'parcial' ? 'PARCIAL' : 'DESCOBERTO'}
-                        </span>
-                    </div>
-                    
-                    <div style="font-size: 0.9rem; color: #5a6268;">
-                        <div style="margin-bottom: 8px;">
-                            <i class="fas fa-layer-group"></i>
-                            <strong> Blocos:</strong> ${cond.torres || 0} total
-                        </div>
-                        
-                        <div style="margin-bottom: 8px;">
-                            <span style="color: #27ae60;">
-                                <i class="fas fa-check"></i> ${cond.blocos_cobertos || 0} cobertos
-                            </span>
-                            <span style="color: #e74c3c; margin-left: 10px;">
-                                <i class="fas fa-times"></i> ${cond.blocos_descobertos || 0} descobertos
-                            </span>
-                        </div>
-                        
-                        <div style="margin-bottom: 8px;">
-                            <i class="fas fa-users"></i>
-                            <strong> Moradores:</strong> ${cond.moradores || 0}
-                        </div>
-                        
-                        ${cond.acs_responsavel ? `
-                            <div style="margin-bottom: 8px;">
-                                <i class="fas fa-user-md"></i>
-                                <strong> ACS:</strong> ${cond.acs_responsavel}
-                            </div>
-                        ` : ''}
-                        
-                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; font-size: 0.85rem; color: #7f8c8d;">
-                            <i class="fas fa-calendar-alt"></i>
-                            Última visita: ${cond.ultima_visita || 'Não informada'}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // ============================================
-        // PAINEL DE INFORMAÇÕES LATERAL
-        // ============================================
-        
-        function mostrarInfoPanel(cond) {
-            const panel = document.getElementById('infoPanel');
-            const content = document.getElementById('infoContent');
-            const title = document.getElementById('infoTitle');
-            
-            title.textContent = cond.nome;
-            
-            content.innerHTML = `
-                <div class="info-row">
-                    <span class="info-label">Status</span>
-                    <span class="info-value" style="color: ${MARKER_COLORS[cond.status_cobertura]}">
-                        ${cond.status_cobertura === 'completo' ? 'COBERTO' : 
-                          cond.status_cobertura === 'parcial' ? 'PARCIAL' : 'DESCOBERTO'}
-                    </span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Blocos Totais</span>
-                    <span class="info-value">${cond.torres || 0}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Blocos Cobertos</span>
-                    <span class="info-value" style="color: #27ae60">${cond.blocos_cobertos || 0}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Blocos Descobertos</span>
-                    <span class="info-value" style="color: #e74c3c">${cond.blocos_descobertos || 0}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Cobertura</span>
-                    <span class="info-value">${cond.cobertura || 0}%</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Apartamentos</span>
-                    <span class="info-value">${cond.apartamentos || 0}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Moradores</span>
-                    <span class="info-value">${cond.moradores || 0}</span>
-                </div>
-                
-                ${cond.acs_responsavel ? `
-                    <div class="info-row">
-                        <span class="info-label">ACS Responsável</span>
-                        <span class="info-value">${cond.acs_responsavel}</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Blocos Atendidos</span>
-                        <span class="info-value">${cond.blocos_ativos || 'Não informado'}</span>
-                    </div>
-                ` : `
-                    <div class="info-row">
-                        <span class="info-label">ACS Responsável</span>
-                        <span class="info-value" style="color: #e74c3c; font-style: italic;">
-                            <i class="fas fa-user-times"></i> Sem ACS
-                        </span>
-                    </div>
-                `}
-                
-                <div class="info-row">
-                    <span class="info-label">Última Visita</span>
-                    <span class="info-value">${cond.ultima_visita || 'Não informada'}</span>
-                </div>
-                
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #f0f0f0;">
-                    <h4 style="color: #2c3e50; margin-bottom: 10px; font-size: 1rem;">
-                        <i class="fas fa-heartbeat"></i> Dados de Saúde
-                    </h4>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                        <div style="text-align: center;">
-                            <div style="color: #e74c3c; font-weight: 600; font-size: 1.2rem;">
-                                ${cond.hipertensos || 0}
-                            </div>
-                            <div style="font-size: 0.85rem; color: #7f8c8d;">
-                                Hipertensos
-                            </div>
-                        </div>
-                        
-                        <div style="text-align: center;">
-                            <div style="color: #f39c12; font-weight: 600; font-size: 1.2rem;">
-                                ${cond.diabeticos || 0}
-                            </div>
-                            <div style="font-size: 0.85rem; color: #7f8c8d;">
-                                Diabéticos
-                            </div>
-                        </div>
-                        
-                        <div style="text-align: center;">
-                            <div style="color: #9b59b6; font-weight: 600; font-size: 1.2rem;">
-                                ${cond.gestantes || 0}
-                            </div>
-                            <div style="font-size: 0.85rem; color: #7f8c8d;">
-                                Gestantes
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button onclick="editarNoMapa(${cond.id})" style="
-                        flex: 1;
-                        padding: 10px;
-                        background: #fff3e0;
-                        color: #f57c00;
-                        border: none;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        font-weight: 500;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 5px;
-                    ">
-                        <i class="fas fa-edit"></i> Editar
-                    </button>
-                    
-                    <button onclick="verDetalhesNoMapa(${cond.id})" style="
-                        flex: 1;
-                        padding: 10px;
-                        background: #e3f2fd;
-                        color: #1a73e8;
-                        border: none;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        font-weight: 500;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 5px;
-                    ">
-                        <i class="fas fa-external-link-alt"></i> Ver Mais
-                    </button>
-                </div>
-            `;
-            
-            panel.style.display = 'block';
-            
-            // Centralizar mapa no condomínio
-            map.setView([cond.latitude, cond.longitude], MAP_ZOOM);
-        }
-        
-        function fecharInfoPanel() {
-            document.getElementById('infoPanel').style.display = 'none';
-        }
-        
-        function editarNoMapa(id) {
-            window.location.href = `/condominios#editar-${id}`;
-        }
-        
-        function verDetalhesNoMapa(id) {
-            window.location.href = `/condominios`;
-        }
-        
-        // ============================================
-        // FILTROS
-        // ============================================
-        
-        function toggleFilter(status) {
-            // O evento de clique já alterna o checkbox
-            // Re-renderizar os marcadores
-            adicionarMarcadores();
-            atualizarContadores();
-        }
-        
-        function atualizarContadores() {
-            let counts = { completo: 0, parcial: 0, descoberto: 0 };
-            
-            condominiosData.forEach(cond => {
-                const status = cond.status_cobertura || 'descoberto';
-                counts[status]++;
-            });
-            
-            // Atualizar estatísticas principais
-            document.getElementById('countCoberto').textContent = counts.completo;
-            document.getElementById('countParcial').textContent = counts.parcial;
-            document.getElementById('countDescoberto').textContent = counts.descoberto;
-        }
-        
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            initMap();
-            
-            // Adicionar estilos CSS para os popups
-            const style = document.createElement('style');
-            style.textContent = `
-                .custom-popup .leaflet-popup-content-wrapper {
-                    border-radius: 8px;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-                }
-                
-                .custom-popup .leaflet-popup-tip {
-                    background: white;
-                }
-            `;
-            document.head.appendChild(style);
-        });
-    </script>
-</body>
+    <!-- Botão tela cheia -->
+    <button id="fullscreen-toggle">
+        <i class="fas fa-expand"></i>
+        <span class="btn-text">Tela Cheia</span>
+    </button>
 
-</html>
+    <div class="map-container">
+        <!-- Sidebar com controles -->
+        <div class="map-sidebar">
+            <!-- Ferramentas de desenho -->
+            <div class="map-section">
+                <div class="map-section-title">
+                    <i class="fas fa-draw-polygon"></i>
+                    Ferramentas de Desenho
+                </div>
+                <div class="map-controls">
+                    <button class="map-btn" id="btn-draw-polygon">
+                        <i class="fas fa-draw-polygon"></i>
+
+                        Desenhar Polígono
+                    </button>
+                    <button class="map-btn" id="btn-draw-rectangle">
+                        <i class="fas fa-vector-square"></i>
+                        Desenhar Retângulo
+                    </button>
+                    <button class="map-btn" id="btn-draw-circle">
+                        <i class="fas fa-circle"></i>
+                        Desenhar Círculo
+                    </button>
+                    <button class="map-btn map-btn-secondary" id="btn-edit">
+                        <i class="fas fa-edit"></i>
+                        Editar Área
+                    </button>
+                    <button class="map-btn map-btn-danger" id="btn-delete">
+                        <i class="fas fa-trash"></i>
+                        Excluir Área
+                    </button>
+                </div>
+            </div>
+
+            <!-- Propriedades da área -->
+            <div class="map-section">
+                <div class="map-section-title">
+                    <i class="fas fa-palette"></i>
+                    Propriedades da Área
+                </div>
+
+                <div class="form-group">
+                    <label for="area-name">Nome da Área:</label>
+                    <input type="text" id="area-name" class="form-control" placeholder="Ex: Bairro Centro">
+                </div>
+
+                <div class="form-group">
+                    <label for="area-type">Tipo:</label>
+                    <select id="area-type" class="form-control">
+                        <option value="bairro">Bairro</option>
+                        <option value="comunidade">Comunidade</option>
+                        <option value="microarea">Microárea</option>
+                        <option value="setor">Setor</option>
+                        <option value="condominio">Condomínio</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Cor da Área:</label>
+                    <div class="color-picker" id="color-picker">
+                        <!-- Cores serão geradas pelo JavaScript -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="area-description">Descrição:</label>
+                    <textarea id="area-description" class="form-control" placeholder="Descreva a área..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="agente-id">Agente Responsável:</label>
+                    <input type="text" id="agente-id" class="form-control" placeholder="Nome do agente (opcional)">
+                </div>
+
+                <button class="map-btn map-btn-success" id="btn-save-area">
+                    <i class="fas fa-save"></i>
+                    Salvar Área
+                </button>
+
+                <button class="map-btn map-btn-secondary" id="btn-clear-form">
+                    <i class="fas fa-times"></i>
+                    Limpar Formulário
+                </button>
+            </div>
+
+            <!-- Áreas salvas -->
+            <div class="map-section" style="flex: 1;">
+                <div class="map-section-title">
+                    <i class="fas fa-layer-group"></i>
+                    Áreas Salvas
+                    <span class="badge" id="areas-count" style="background: #3498db; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;">0</span>
+                </div>
+                <div class="areas-list" id="areas-list">
+                    <!-- Áreas serão carregadas aqui -->
+                    <div class="no-areas">
+                        <i class="fas fa-map"></i>
+                        <p>Nenhuma área salva ainda.<br>Desenhe uma área no mapa!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mapa -->
+        <div id="map"></div>
+    </div>
+</div>
+
+<!-- Modal de confirmação -->
+<div class="modal" id="confirm-modal">
+    <div class="modal-content">
+        <div class="modal-header">Confirmar Exclusão</div>
+        <p>Tem certeza que deseja excluir esta área?</p>
+        <div class="modal-footer">
+            <button class="map-btn map-btn-danger" id="btn-confirm-delete">Excluir</button>
+            <button class="map-btn map-btn-secondary" id="btn-cancel-delete">Cancelar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script>
+    // Configuração inicial
+    window.APP_CONFIG = window.APP_CONFIG || {
+        nivel_usuario: '{{ nivel_usuario }}',
+        usuario_logado: {{ 'true' if usuario_logado else 'false' }},
+        nome_equipe: '{{ nome_equipe }}'
+    };
+ <script src="https://unpkg.com/leaflet-measure@3.1.0/dist/leaflet-measure.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-measure@3.1.0/dist/leaflet-measure.css" />
+
+<!-- Para geolocalização -->
+<script src="https://unpkg.com/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.css" />
+
+<!-- Para exportar como imagem (opcional) -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</script>
+<script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
+{% endblock %}
