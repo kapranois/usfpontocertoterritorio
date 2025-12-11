@@ -1214,3 +1214,65 @@ body {
         text-align: center;
     }
 }
+/* Estilos para esconder sidebar em tela cheia */
+.modo-tela-cheia .map-sidebar {
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    opacity: 0;
+}
+
+/* Botão para mostrar/ocultar sidebar em tela cheia */
+.sidebar-toggle {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 8px;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    z-index: 10001;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+    display: none;
+}
+
+.modo-tela-cheia .sidebar-toggle {
+    display: block;
+}
+
+/* Quando sidebar está visível em tela cheia */
+.modo-tela-cheia .map-sidebar.visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Ajuste para map-container em tela cheia sem sidebar */
+.modo-tela-cheia .map-container:has(.map-sidebar:not(.visible)) #map {
+    width: 100% !important;
+    right: 0 !important;
+}
+
+/* Transição suave para o mapa */
+#map {
+    transition: all 0.3s ease;
+}
+
+/* Responsivo para tela cheia */
+@media (max-width: 768px) {
+    .modo-tela-cheia .map-sidebar.visible {
+        width: 100%;
+        height: 50vh;
+        top: auto;
+        bottom: 0;
+        transform: translateY(0);
+    }
+
+    .sidebar-toggle {
+        top: auto;
+        bottom: 50%;
+        right: 0;
+        transform: translateY(50%);
+    }
+}
