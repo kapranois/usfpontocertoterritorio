@@ -24,12 +24,18 @@ EQUIPES = {
     'equipe3': 'Equipe 3'
 }
 
-# Função para criar hash da senha
+# Microáreas disponíveis (pode ser ajustado por equipe)
+MICROAREAS = {
+    'equipe1': ['Microárea 01', 'Microárea 02', 'Microárea 03', 'Microárea 04'],
+    'equipe2': ['Microárea 05', 'Microárea 06', 'Microárea 07', 'Microárea 08'],
+    'equipe3': ['Microárea 09', 'Microárea 10', 'Microárea 11', 'Microárea 12']
+}
+
 def criar_senha_hash(senha):
     """Cria hash da senha usando SHA-256"""
     return hashlib.sha256(senha.encode()).hexdigest()
 
-# Dicionário de usuários (ADICIONADO USUÁRIO CONVIDADO)
+# Dicionário de usuários
 USUARIOS = {
     'admin': {
         'senha_hash': criar_senha_hash('admin123'),
@@ -55,7 +61,7 @@ USUARIOS = {
         'nivel': 'acs',
         'equipes': ['equipe3']
     },
-    'convidado': {  # NOVO USUÁRIO CONVIDADO
+    'convidado': {
         'senha_hash': criar_senha_hash('convidado'),
         'nome': 'Visitante',
         'nivel': 'convidado',
@@ -79,8 +85,16 @@ def carregar_dados():
                             'blocos': cond.get('blocos_ativos', ''),
                             'data_inicio': cond.get('ultima_visita', '2024-01-01')
                         })
+                
+                # Garantir que microarea existe (para dados antigos)
+                if 'microarea' not in cond:
+                    cond['microarea'] = cond.get('prioridade', 'Microárea A')  # Converter prioridade antiga
+                    if 'prioridade' in cond:
+                        del cond['prioridade']
             
             return dados
+    
+    # Criar estrutura inicial se não existir
     return {"condominios": [], "acs": []}
 
 def carregar_equipes():
@@ -89,8 +103,6 @@ def carregar_equipes():
         if os.path.exists('data/equipes.json'):
             with open('data/equipes.json', 'r', encoding='utf-8') as f:
                 dados = json.load(f)
-                print(f"DEBUG: Arquivo equipes.json carregado. Estrutura: {type(dados)}")
-                print(f"DEBUG: Chaves no JSON: {dados.keys() if isinstance(dados, dict) else 'Não é dict'}")
                 return dados
         else:
             print("DEBUG: Arquivo equipes.json não encontrado")
@@ -191,18 +203,15 @@ def convidado_bloqueado(f):
 @app.before_request
 def verificar_sessao():
     """Verifica a sessão antes de cada requisição"""
-    # Lista de rotas que não precisam de verificação
     rotas_publicas = ['login', 'static', 'logout', 'inicio']
     
     if request.endpoint and request.endpoint not in rotas_publicas:
-        # Se tem usuário na sessão, renova a sessão
         if 'usuario' in session:
             session.permanent = True
 
 def calcular_cobertura(blocos_ativos_texto, total_torres):
     """
     Calcula cobertura a partir do texto de blocos ativos
-    Exemplo: "1-5" = 5 blocos cobertos, "1,3,5" = 3 blocos cobertos
     """
     if not blocos_ativos_texto or not total_torres or total_torres <= 0:
         return 0, 0, 0, 'descoberto'
@@ -211,30 +220,26 @@ def calcular_cobertura(blocos_ativos_texto, total_torres):
     numeros_cobertos = set()
     
     try:
-        # Remove espaços e divide por vírgula ou ponto e vírgula
         partes = [p.strip() for p in blocos_ativos_texto.replace(';', ',').split(',') if p.strip()]
         
         for parte in partes:
             if '-' in parte:
-                # É uma faixa (ex: 1-5 ou 1 - 5)
                 faixa = [n.strip() for n in parte.split('-') if n.strip()]
                 if len(faixa) == 2:
                     inicio = int(faixa[0])
                     fim = int(faixa[1])
                     
                     if inicio <= fim:
-                        # Adiciona todos os números da faixa
                         for i in range(inicio, fim + 1):
                             if 1 <= i <= total_torres:
                                 numeros_cobertos.add(i)
             else:
-                # É um número único
                 try:
                     num = int(parte)
                     if 1 <= num <= total_torres:
                         numeros_cobertos.add(num)
                 except ValueError:
-                    continue  # Ignora partes que não são números
+                    continue
         
         blocos_cobertos = len(numeros_cobertos)
         
@@ -242,12 +247,10 @@ def calcular_cobertura(blocos_ativos_texto, total_torres):
         print(f"Erro ao calcular cobertura: {e}")
         blocos_cobertos = 0
     
-    # Calcula valores
     blocos_cobertos = min(blocos_cobertos, total_torres)
     blocos_descobertos = total_torres - blocos_cobertos
     cobertura = round((blocos_cobertos / total_torres) * 100) if total_torres > 0 else 0
     
-    # Determina status
     if cobertura == 0:
         status = 'descoberto'
     elif cobertura == 100:
@@ -268,33 +271,28 @@ def login():
         usuario = request.form.get('usuario')
         senha = request.form.get('senha')
         
-        # Verificar se é acesso como convidado (senha fixa)
         if usuario == 'convidado' and senha == 'convidado':
             session['usuario'] = 'convidado'
             session['nome_usuario'] = 'Visitante'
             session['nivel_usuario'] = 'convidado'
             session['equipes_usuario'] = ['equipe1', 'equipe2', 'equipe3']
             session.permanent = True
-            print(f"DEBUG: Convidado logado com sucesso")
             return redirect(url_for('inicio'))
         
         if usuario in USUARIOS:
             senha_hash = criar_senha_hash(senha)
             if USUARIOS[usuario]['senha_hash'] == senha_hash:
-                # Login bem sucedido
                 session['usuario'] = usuario
                 session['nome_usuario'] = USUARIOS[usuario]['nome']
                 session['nivel_usuario'] = USUARIOS[usuario]['nivel']
                 session['equipes_usuario'] = USUARIOS[usuario]['equipes']
                 session.permanent = True
                 
-                # Redirecionar para dashboard se já tiver equipe selecionada
                 if 'equipe' in session and session['equipe'] in USUARIOS[usuario]['equipes']:
                     return redirect(url_for('dashboard'))
                 else:
                     return redirect(url_for('inicio'))
         
-        # Login falhou
         return render_template('login.html', error='Usuário ou senha inválidos')
     
     return render_template('login.html')
@@ -308,29 +306,16 @@ def logout():
 @app.route('/trocar-equipe')
 def trocar_equipe():
     """Trocar de equipe mantendo login"""
-    # Remove apenas informações da equipe
     session.pop('equipe', None)
     session.pop('nome_equipe', None)
     return redirect(url_for('inicio'))
 
-@app.route('/debug-session')
-def debug_session():
-    """Debug da sessão"""
-    return jsonify({
-        'session_data': dict(session),
-        'usuario_logado': 'usuario' in session,
-        'equipe_selecionada': 'equipe' in session,
-        'cookies': dict(request.cookies)
-    })
-
 @app.route('/')
 def inicio():
     """Página inicial - verifica se precisa login"""
-    # Se não está logado, mostrar login
     if 'usuario' not in session:
         return redirect(url_for('login'))
     
-    # Se está logado mas não tem equipe selecionada
     if 'equipe' not in session:
         login_info = verificar_login()
         return render_template('escolha_equipe.html', 
@@ -339,7 +324,6 @@ def inicio():
                              nome_usuario=login_info['nome'],
                              nivel_usuario=login_info['nivel'])
     
-    # Se está logado e tem equipe, ir para dashboard
     return redirect(url_for('dashboard'))
 
 @app.route('/selecionar-equipe', methods=['POST'])
@@ -350,13 +334,11 @@ def selecionar_equipe():
     
     equipe = request.form.get('equipe')
     if equipe in EQUIPES:
-        # Verificar se usuário tem permissão para esta equipe
         if equipe in session.get('equipes_usuario', []):
             session['equipe'] = equipe
             session['nome_equipe'] = EQUIPES[equipe]
             return redirect(url_for('dashboard'))
         else:
-            # Usuário não tem permissão para esta equipe
             login_info = verificar_login()
             return render_template('escolha_equipe.html', 
                                 equipes=EQUIPES,
@@ -370,65 +352,40 @@ def selecionar_equipe():
 @app.route('/dashboard')
 def dashboard():
     """Dashboard principal da equipe"""
-    print(f"\n=== DEBUG DASHBOARD ===")
-    print(f"Usuário na sessão: {session.get('usuario')}")
-    print(f"Equipe na sessão: {session.get('equipe')}")
-    print(f"Nome equipe: {session.get('nome_equipe')}")
-    
     if 'equipe' not in session:
-        print("DEBUG: Nenhuma equipe selecionada, redirecionando...")
         return redirect(url_for('inicio'))
     
-    # Carregar dados
     dados = carregar_dados()
     equipes_data = carregar_equipes()
     
-    # DEBUG: Verificar estrutura das equipes
-    print(f"DEBUG: Tipo de equipes_data: {type(equipes_data)}")
-    
-    # Encontrar a equipe atual
     equipe_id = session['equipe']
     equipe_atual = None
     profissionais = {}
     
     if 'equipes' in equipes_data:
-        print(f"DEBUG: Encontrando equipe com ID: {equipe_id}")
-        print(f"DEBUG: Equipes disponíveis: {[e.get('id') for e in equipes_data.get('equipes', [])]}")
-        
         for equipe in equipes_data['equipes']:
             if equipe.get('id') == equipe_id:
                 equipe_atual = equipe
-                print(f"DEBUG: Equipe encontrada: {equipe_atual.get('nome')}")
-                print(f"DEBUG: Tem profissionais? {'profissionais' in equipe_atual}")
                 break
     
-    # Obter profissionais da equipe
     if equipe_atual and 'profissionais' in equipe_atual:
         profissionais = equipe_atual['profissionais']
-        print(f"DEBUG: ACS encontrados: {len(profissionais.get('acs', []))}")
-        print(f"DEBUG: Enfermeiro: {profissionais.get('enfermeiro', {}).get('nome')}")
-        print(f"DEBUG: Médico: {profissionais.get('medico', {}).get('nome')}")
     else:
-        print(f"DEBUG: NÃO ENCONTROU EQUIPE {equipe_id}!")
-        print(f"DEBUG: Equipe atual: {equipe_atual}")
         profissionais = {
             'acs': [],
             'enfermeiro': None,
             'medico': None
         }
     
-    # Filtrar condomínios da equipe
     condominios_equipe = filtrar_por_equipe(dados, session['equipe'])
     metricas = calcular_metricas(condominios_equipe)
     
-    # Informações do usuário
     usuario_logado = 'usuario' in session
     nome_usuario = session.get('nome_usuario', 'Usuário')
     nivel_usuario = session.get('nivel_usuario', 'acs')
     
-    print(f"DEBUG: Profissionais enviados ao template: {bool(profissionais)}")
-    print(f"DEBUG: ACS no template: {len(profissionais.get('acs', []))}")
-    print("=== FIM DEBUG ===\n")
+    # Obter microáreas para esta equipe
+    microareas = MICROAREAS.get(session['equipe'], [])
     
     return render_template(
         'index.html',
@@ -438,47 +395,8 @@ def dashboard():
         usuario_logado=usuario_logado,
         nome_usuario=nome_usuario,
         nivel_usuario=nivel_usuario,
-        equipe_profissionais=profissionais  # Envia o dicionário de profissionais
-    )
-@app.route('/debug-profissionais')
-def debug_profissionais():
-    """Endpoint para debug dos profissionais"""
-    equipes_data = carregar_equipes()
-    equipe_id = session.get('equipe', 'equipe1')
-    
-    # Encontrar a equipe atual
-    equipe_atual = None
-    if 'equipes' in equipes_data:
-        for equipe in equipes_data['equipes']:
-            if equipe.get('id') == equipe_id:
-                equipe_atual = equipe
-                break
-    
-    return jsonify({
-        'session_equipe': equipe_id,
-        'todas_equipes_ids': [e.get('id') for e in equipes_data.get('equipes', [])],
-        'equipe_encontrada': equipe_atual,
-        'profissionais': equipe_atual.get('profissionais', {}) if equipe_atual else {}
-    })
-
-@app.route('/mapa')
-def mapa():
-    """Página do mapa"""
-    if 'equipe' not in session:
-        return redirect(url_for('inicio'))
-    
-    dados = carregar_dados()
-    condominios_equipe = filtrar_por_equipe(dados, session['equipe'])
-    
-    login_info = verificar_login()
-    
-    return render_template(
-        'mapa.html',
-        condominios=condominios_equipe,
-        nome_equipe=session['nome_equipe'],
-        usuario_logado=login_info['logado'],
-        nome_usuario=login_info['nome'],
-        nivel_usuario=login_info['nivel']
+        equipe_profissionais=profissionais,
+        microareas=microareas
     )
 
 @app.route('/condominios')
@@ -492,13 +410,44 @@ def condominios():
     
     login_info = verificar_login()
     
+    # Obter microáreas para esta equipe
+    microareas = MICROAREAS.get(session['equipe'], [])
+    
     return render_template(
         'condominios.html',
         condominios=condominios_equipe,
         nome_equipe=session['nome_equipe'],
         usuario_logado=login_info['logado'],
         nome_usuario=login_info['nome'],
-        nivel_usuario=login_info['nivel']
+        nivel_usuario=login_info['nivel'],
+        microareas=microareas
+    )
+@app.context_processor
+def inject_request():
+    return dict(request=request)
+
+@app.route('/mapa')
+def mapa():
+    """Página do mapa"""
+    if 'equipe' not in session:
+        return redirect(url_for('inicio'))
+    
+    dados = carregar_dados()
+    condominios_equipe = filtrar_por_equipe(dados, session['equipe'])
+    
+    login_info = verificar_login()
+    
+    # Obter microáreas para esta equipe
+    microareas = MICROAREAS.get(session['equipe'], [])
+    
+    return render_template(
+        'mapa.html',
+        condominios=condominios_equipe,
+        nome_equipe=session['nome_equipe'],
+        usuario_logado=login_info['logado'],
+        nome_usuario=login_info['nome'],
+        nivel_usuario=login_info['nivel'],
+        microareas=microareas
     )
 
 @app.route('/relatorios')
@@ -513,6 +462,9 @@ def relatorios():
     
     login_info = verificar_login()
     
+    # Obter microáreas para esta equipe
+    microareas = MICROAREAS.get(session['equipe'], [])
+    
     return render_template(
         'relatorios.html',
         condominios=condominios_equipe,
@@ -520,20 +472,19 @@ def relatorios():
         nome_equipe=session['nome_equipe'],
         usuario_logado=login_info['logado'],
         nome_usuario=login_info['nome'],
-        nivel_usuario=login_info['nivel']
+        nivel_usuario=login_info['nivel'],
+        microareas=microareas
     )
 
 # ============================================
-# API PARA CONDOMÍNIOS (ATUALIZADA COM BLOQUEIO PARA CONVIDADOS)
+# API PARA CONDOMÍNIOS
 # ============================================
 
 @app.route('/api/novo-condominio', methods=['POST'])
 @login_required
 @convidado_bloqueado
 def novo_condominio():
-    """API para adicionar novo condomínio (BLOQUEADO PARA CONVIDADOS)"""
-    print(f"DEBUG API: Usuário tentando adicionar condomínio: {session.get('usuario')}")
-    
+    """API para adicionar novo condomínio"""
     try:
         if 'equipe' not in session:
             return jsonify({'status': 'erro', 'mensagem': 'Equipe não selecionada'}), 401
@@ -541,9 +492,6 @@ def novo_condominio():
         dados = carregar_dados()
         novo = request.json
         
-        print(f"DEBUG: Dados recebidos: {novo}")
-        
-        # Validações
         if not novo.get('nome') or not novo.get('nome').strip():
             return jsonify({'status': 'erro', 'mensagem': 'Nome do condomínio é obrigatório'}), 400
         
@@ -551,14 +499,10 @@ def novo_condominio():
         if torres <= 0:
             return jsonify({'status': 'erro', 'mensagem': 'Número de blocos inválido'}), 400
         
-        # CALCULAR COBERTURA NO BACKEND
         blocos_ativos = novo.get('blocos_ativos', '')
         blocos_cobertos, blocos_descobertos, cobertura, status_cobertura = calcular_cobertura(blocos_ativos, torres)
         
-        print(f"DEBUG Cálculo: torres={torres}, blocos_ativos='{blocos_ativos}'")
-        print(f"DEBUG Resultado: cobertos={blocos_cobertos}, descobertos={blocos_descobertos}, cobertura={cobertura}%, status={status_cobertura}")
-        
-        # Garantir campos de cobertura (usar valores calculados)
+        # Garantir campos de cobertura
         novo['blocos_cobertos'] = blocos_cobertos
         novo['blocos_descobertos'] = blocos_descobertos
         novo['cobertura'] = cobertura
@@ -582,7 +526,7 @@ def novo_condominio():
         novo['hipertensos'] = novo.get('hipertensos', 0)
         novo['diabeticos'] = novo.get('diabeticos', 0)
         novo['gestantes'] = novo.get('gestantes', 0)
-        novo['prioridade'] = novo.get('prioridade', 'media')
+        novo['microarea'] = novo.get('microarea', MICROAREAS.get(session['equipe'], ['Microárea A'])[0])
         
         # Gerar ID
         if dados['condominios']:
@@ -596,7 +540,6 @@ def novo_condominio():
             if 'acs' not in dados:
                 dados['acs'] = []
             
-            # Verificar se ACS já existe
             acs_existente = None
             for acs in dados.get('acs', []):
                 if acs['nome'] == acs_responsavel and acs['equipe'] == session['equipe']:
@@ -604,14 +547,12 @@ def novo_condominio():
                     break
             
             if acs_existente:
-                # Atualizar ACS existente
                 if 'condominios' not in acs_existente:
                     acs_existente['condominios'] = []
                 if novo['id'] not in acs_existente['condominios']:
                     acs_existente['condominios'].append(novo['id'])
                 acs_existente['blocos_ativos'] = blocos_ativos
             else:
-                # Criar novo ACS
                 novo_acs = {
                     'id': len(dados['acs']) + 1,
                     'nome': acs_responsavel,
@@ -627,12 +568,9 @@ def novo_condominio():
         dados['condominios'].append(novo)
         salvar_dados(dados)
         
-        print(f"DEBUG: Condomínio salvo com ID {novo['id']}")
-        print(f"DEBUG: Cobertura calculada: {cobertura}% ({blocos_cobertos}/{torres} blocos)")
-        
         return jsonify({
             'status': 'sucesso',
-            'mensagem': 'Condomínio cadastrado com informações de cobertura!',
+            'mensagem': 'Condomínio cadastrado com sucesso!',
             'id': novo['id'],
             'status_cobertura': novo['status_cobertura'],
             'cobertura': novo['cobertura'],
@@ -646,64 +584,41 @@ def novo_condominio():
         traceback.print_exc()
         return jsonify({'status': 'erro', 'mensagem': f'Erro interno: {str(e)}'}), 500
 
-@app.route('/api/condominio/<int:condominio_id>')
-@equipe_required
-def get_condominio(condominio_id):
-    """Obter dados de um condomínio específico"""
-    dados = carregar_dados()
-    
-    for cond in dados['condominios']:
-        if cond['id'] == condominio_id and cond.get('equipe') == session['equipe']:
-            return jsonify(cond)
-    
-    return jsonify({'error': 'Condomínio não encontrado'}), 404
-
 @app.route('/api/atualizar-condominio/<int:condominio_id>', methods=['PUT'])
 @login_required
 @convidado_bloqueado
 def atualizar_condominio(condominio_id):
-    """Atualizar um condomínio existente (BLOQUEADO PARA CONVIDADOS)"""
+    """Atualizar um condomínio existente"""
     try:
         dados = carregar_dados()
         atualizacoes = request.json
         equipe_atual = session['equipe']
         
-        print(f"DEBUG ATUALIZAÇÃO: Recebendo atualizações para condomínio {condominio_id}")
-        print(f"DEBUG ATUALIZAÇÃO: Dados recebidos: {atualizacoes}")
-        
         for i, cond in enumerate(dados['condominios']):
             if cond['id'] == condominio_id:
-                # Verificar se pertence à equipe atual
                 if cond.get('equipe') != equipe_atual:
                     return jsonify({
                         'status': 'erro',
                         'mensagem': 'Você não tem permissão para modificar este condomínio'
                     }), 403
                 
-                print(f"DEBUG: Condomínio encontrado - Antes: {cond}")
-                
                 # Atualizar campos básicos
                 campos_basicos = ['nome', 'torres', 'apartamentos', 'moradores',
-                                 'hipertensos', 'diabeticos', 'gestantes', 'prioridade',
+                                 'hipertensos', 'diabeticos', 'gestantes', 'microarea',
                                  'ultima_visita', 'acs_responsavel', 'blocos_ativos']
                 
                 for campo in campos_basicos:
                     if campo in atualizacoes:
                         dados['condominios'][i][campo] = atualizacoes[campo]
                 
-                # SEMPRE RECALCULAR COBERTURA (não confiar nos valores enviados)
-                # Obter valores atuais
+                # SEMPRE RECALCULAR COBERTURA
                 torres = dados['condominios'][i]['torres']
                 blocos_ativos = dados['condominios'][i].get('blocos_ativos', '')
                 
-                # Usar a função calcular_cobertura que já temos
                 blocos_cobertos, blocos_descobertos, cobertura, status_cobertura = calcular_cobertura(
                     blocos_ativos, 
                     torres
                 )
-                
-                print(f"DEBUG CÁLCULO: torres={torres}, blocos_ativos='{blocos_ativos}'")
-                print(f"DEBUG CÁLCULO: Resultado - cobertos={blocos_cobertos}, descobertos={blocos_descobertos}, cobertura={cobertura}%")
                 
                 # Atualizar campos calculados
                 dados['condominios'][i]['blocos_cobertos'] = blocos_cobertos
@@ -717,8 +632,6 @@ def atualizar_condominio(condominio_id):
                     dados['condominios'][i]['cobertura'] = 0
                     dados['condominios'][i]['blocos_cobertos'] = 0
                     dados['condominios'][i]['blocos_descobertos'] = torres
-                
-                print(f"DEBUG: Condomínio atualizado - Depois: {dados['condominios'][i]}")
                 
                 # Atualizar também na lista de ACS se o nome do ACS mudou
                 acs_novo = dados['condominios'][i].get('acs_responsavel')
@@ -735,7 +648,6 @@ def atualizar_condominio(condominio_id):
                         
                         # Adicionar ao novo ACS (se existir)
                         if acs_novo:
-                            # Verificar se ACS já existe
                             acs_existente = None
                             for acs in dados['acs']:
                                 if acs['nome'] == acs_novo and acs['equipe'] == equipe_atual:
@@ -743,14 +655,12 @@ def atualizar_condominio(condominio_id):
                                     break
                             
                             if acs_existente:
-                                # Atualizar ACS existente
                                 if 'condominios' not in acs_existente:
                                     acs_existente['condominios'] = []
                                 if condominio_id not in acs_existente['condominios']:
                                     acs_existente['condominios'].append(condominio_id)
                                 acs_existente['blocos_ativos'] = blocos_ativos
                             else:
-                                # Criar novo ACS
                                 novo_acs = {
                                     'id': len(dados['acs']) + 1,
                                     'nome': acs_novo,
@@ -786,12 +696,27 @@ def atualizar_condominio(condominio_id):
             'status': 'erro',
             'mensagem': f'Erro interno: {str(e)}'
         }), 500
+# ============================================
+# ROTAS PARA EDIÇÃO E EXCLUSÃO
+# ============================================
+
+@app.route('/api/condominio/<int:condominio_id>')
+@equipe_required
+def get_condominio(condominio_id):
+    """Obter dados de um condomínio específico para edição"""
+    dados = carregar_dados()
+    
+    for cond in dados['condominios']:
+        if cond['id'] == condominio_id and cond.get('equipe') == session['equipe']:
+            return jsonify(cond)
+    
+    return jsonify({'error': 'Condomínio não encontrado'}), 404
 
 @app.route('/api/excluir-condominio/<int:condominio_id>', methods=['DELETE'])
 @login_required
 @convidado_bloqueado
 def excluir_condominio(condominio_id):
-    """Excluir um condomínio (BLOQUEADO PARA CONVIDADOS)"""
+    """Excluir um condomínio"""
     try:
         dados = carregar_dados()
         equipe_atual = session['equipe']
@@ -829,15 +754,26 @@ def excluir_condominio(condominio_id):
     except Exception as e:
         return jsonify({
             'status': 'erro',
-            'mensagem': f'Erro interno: {str(e)}'
+            'mensagem': f'Erro interno de cu: {str(e)}'
         }), 500
 
+# ============================================
+# API PARA LISTAR MICROÁREAS
+# ============================================
+
+@app.route('/api/microareas')
+@equipe_required
+def get_microareas():
+    """Retorna as microáreas disponíveis para a equipe atual"""
+    equipe = session['equipe']
+    return jsonify({
+        'microareas': MICROAREAS.get(equipe, [])
+    })
 # ============================================
 # INICIALIZAÇÃO
 # ============================================
 
 if __name__ == '__main__':
-    # Criar estrutura inicial
     if not os.path.exists('data'):
         os.makedirs('data')
     
@@ -855,7 +791,7 @@ if __name__ == '__main__':
                     "diabeticos": 28,
                     "gestantes": 12,
                     "cobertura": 85,
-                    "prioridade": "alta",
+                    "microarea": "Microárea 01",
                     "ultima_visita": "2024-01-15"
                 },
                 {
@@ -869,7 +805,7 @@ if __name__ == '__main__':
                     "diabeticos": 18,
                     "gestantes": 8,
                     "cobertura": 90,
-                    "prioridade": "media",
+                    "microarea": "Microárea 02",
                     "ultima_visita": "2024-01-10"
                 }
             ]
@@ -882,11 +818,12 @@ if __name__ == '__main__':
     print("=" * 50)
     print("🌐 Acesse: http://localhost:5000")
     print("👥 Equipes: Equipe 1, Equipe 2, Equipe 3")
+    print("📍 Microáreas por equipe:")
+    for equipe, areas in MICROAREAS.items():
+        print(f"   - {equipe}: {', '.join(areas)}")
     print("🔐 Credenciais:")
     print("   - admin/admin123 (Administrador)")
     print("   - acs1/acs123 (ACS Equipe 1)")
     print("   - convidado/convidado (Apenas visualização)")
-    print("🐛 Debug: http://localhost:5000/debug-session")
     print("=" * 50)
-    
     app.run(debug=True, port=5000)
