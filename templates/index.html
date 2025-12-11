@@ -1,34 +1,38 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.5, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>{{ nome_equipe }} - Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-
     <!-- Cabeçalho -->
-    <!-- templates/index.html -->
     {% extends "base.html" %}
 
     {% block title %}{{ nome_equipe }} - Dashboard{% endblock %}
 
+    {% block extra_css %}
+    <!-- CSS específico do dashboard -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    {% endblock %}
+
     {% block content %}
-
-
-    <!-- Métricas -->
     <div class="content-wrapper">
+        <!-- Banner do convidado (se aplicável) -->
+        {% if not usuario_logado or nivel_usuario == 'convidado' %}
+        <div class="convidado-banner">
+            <div class="convidado-banner-content">
+                <i class="fas fa-eye"></i>
+                <div>
+                    <strong>Modo Visitante</strong>
+                    <p>Você está no modo de visualização apenas. Para editar conteúdo, faça login.</p>
+                </div>
+            </div>
+            <button onclick="window.location.href='/login'">
+                <i class="fas fa-sign-in-alt"></i> Fazer Login
+            </button>
+        </div>
+        {% endif %}
+
+        <!-- Métricas -->
         <section class="metrics">
             <div class="section-header-profissional">
                 <h2>
                     <i class="fas fa-chart-pie"></i>
                     Resumo do Território
-                    <span style="font-size: 0.9rem; color: #95a5a6; margin-left: auto; font-weight: 400;">
+                    <span class="update-info">
                         Atualizado em tempo real
                     </span>
                 </h2>
@@ -36,7 +40,7 @@
 
             <div class="metrics-grid">
                 <!-- Total de Moradores -->
-                <div class="metric-card card-total" style="--card-index: 0">
+                <div class="metric-card card-total" data-card-index="0">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-users"></i>
@@ -49,15 +53,15 @@
                         </div>
                     </div>
                     <div class="metric-info">
-                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
-                            <i class="fas fa-home" style="margin-right: 5px;"></i>
+                        <p class="metric-description">
+                            <i class="fas fa-home"></i>
                             População atendida
                         </p>
                     </div>
                 </div>
 
                 <!-- Hipertensos -->
-                <div class="metric-card card-hipertensos" style="--card-index: 1">
+                <div class="metric-card card-hipertensos" data-card-index="1">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-heartbeat"></i>
@@ -82,14 +86,14 @@
                                 </span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: {% if metricas.total_moradores > 0 %}{{ ((metricas.total_hipertensos / metricas.total_moradores) * 100)|round(1) }}%{% else %}0%{% endif %}"></div>
+                                <div class="progress-bar" data-width="{% if metricas.total_moradores > 0 %}{{ ((metricas.total_hipertensos / metricas.total_moradores) * 100)|round(1) }}{% else %}0{% endif %}"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Diabéticos -->
-                <div class="metric-card card-diabeticos" style="--card-index: 2">
+                <div class="metric-card card-diabeticos" data-card-index="2">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-prescription-bottle"></i>
@@ -114,14 +118,14 @@
                                 </span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: {% if metricas.total_moradores > 0 %}{{ ((metricas.total_diabeticos / metricas.total_moradores) * 100)|round(1) }}%{% else %}0%{% endif %}"></div>
+                                <div class="progress-bar" data-width="{% if metricas.total_moradores > 0 %}{{ ((metricas.total_diabeticos / metricas.total_moradores) * 100)|round(1) }}{% else %}0{% endif %}"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gestantes -->
-                <div class="metric-card card-gestantes" style="--card-index: 3">
+                <div class="metric-card card-gestantes" data-card-index="3">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-female"></i>
@@ -146,14 +150,14 @@
                                 </span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: {% if metricas.total_moradores > 0 %}{{ ((metricas.total_gestantes / metricas.total_moradores) * 100)|round(2) }}%{% else %}0%{% endif %}"></div>
+                                <div class="progress-bar" data-width="{% if metricas.total_moradores > 0 %}{{ ((metricas.total_gestantes / metricas.total_moradores) * 100)|round(2) }}{% else %}0{% endif %}"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Cobertura Geral -->
-                <div class="metric-card card-cobertura" style="--card-index: 4">
+                <div class="metric-card card-cobertura" data-card-index="4">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-chart-pie"></i>
@@ -172,14 +176,14 @@
                                 <span class="progress-percent">{{ metricas.cobertura_geral|default(0) }}%</span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: {{ metricas.cobertura_geral|default(0) }}%"></div>
+                                <div class="progress-bar" data-width="{{ metricas.cobertura_geral|default(0) }}"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Condomínios Cobertos -->
-                <div class="metric-card card-status" style="--card-index: 5">
+                <div class="metric-card card-status" data-card-index="5">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-check-circle"></i>
@@ -193,14 +197,14 @@
                         </div>
                     </div>
                     <div class="metric-info">
-                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
-                            <i class="fas fa-building" style="margin-right: 5px;"></i>
+                        <p class="metric-description">
+                            <i class="fas fa-building"></i>
                             {{ (cobertos / condominios|length * 100)|round(1) if condominios|length > 0 else 0 }}% dos condomínios
                         </p>
                         <div class="mini-chart">
                             {% for i in range(5) %}
                             <div class="chart-bar">
-                                <div class="chart-fill" style="height: {% if i < (cobertos / condominios|length * 5 if condominios|length > 0 else 0) %}100%{% else %}0%{% endif %};"></div>
+                                <div class="chart-fill" data-height="{% if i < (cobertos / condominios|length * 5 if condominios|length > 0 else 0) %}100{% else %}0{% endif %}"></div>
                             </div>
                             {% endfor %}
                         </div>
@@ -208,7 +212,7 @@
                 </div>
 
                 <!-- Condomínios Parciais -->
-                <div class="metric-card card-status" style="--card-index: 6">
+                <div class="metric-card card-status" data-card-index="6">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -222,14 +226,14 @@
                         </div>
                     </div>
                     <div class="metric-info">
-                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
-                            <i class="fas fa-building" style="margin-right: 5px;"></i>
+                        <p class="metric-description">
+                            <i class="fas fa-building"></i>
                             {{ (parciais / condominios|length * 100)|round(1) if condominios|length > 0 else 0 }}% dos condomínios
                         </p>
                         <div class="mini-chart">
                             {% for i in range(5) %}
                             <div class="chart-bar">
-                                <div class="chart-fill" style="height: {% if i < (parciais / condominios|length * 5 if condominios|length > 0 else 0) %}100%{% else %}0%{% endif %};"></div>
+                                <div class="chart-fill" data-height="{% if i < (parciais / condominios|length * 5 if condominios|length > 0 else 0) %}100{% else %}0{% endif %}"></div>
                             </div>
                             {% endfor %}
                         </div>
@@ -237,7 +241,7 @@
                 </div>
 
                 <!-- Condomínios Descobertos -->
-                <div class="metric-card card-status" style="--card-index: 7">
+                <div class="metric-card card-status" data-card-index="7">
                     <div class="metric-header">
                         <div class="metric-icon">
                             <i class="fas fa-times-circle"></i>
@@ -251,14 +255,14 @@
                         </div>
                     </div>
                     <div class="metric-info">
-                        <p style="color: #7f8c8d; font-size: 0.9rem; margin: 5px 0;">
-                            <i class="fas fa-building" style="margin-right: 5px;"></i>
+                        <p class="metric-description">
+                            <i class="fas fa-building"></i>
                             {{ (descobertos / condominios|length * 100)|round(1) if condominios|length > 0 else 0 }}% dos condomínios
                         </p>
                         <div class="mini-chart">
                             {% for i in range(5) %}
                             <div class="chart-bar">
-                                <div class="chart-fill" style="height: {% if i < (descobertos / condominios|length * 5 if condominios|length > 0 else 0) %}100%{% else %}0%{% endif %};"></div>
+                                <div class="chart-fill" data-height="{% if i < (descobertos / condominios|length * 5 if condominios|length > 0 else 0) %}100{% else %}0{% endif %}"></div>
                             </div>
                             {% endfor %}
                         </div>
@@ -268,14 +272,14 @@
 
             <div class="metrics-summary">
                 <div>
-                    <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                    <i class="fas fa-info-circle"></i>
                     <strong>Resumo:</strong>
                     {{ condominios|length }} condomínios •
                     {{ metricas.total_moradores }} moradores •
                     {{ metricas.cobertura_geral|default(0) }}% de cobertura
                 </div>
                 <div>
-                    <i class="fas fa-sync-alt" style="margin-right: 0; cursor: pointer;" onclick="atualizarMetricas()" title="Atualizar dados"></i>
+                    <i class="fas fa-sync-alt" onclick="dashboard.atualizarMetricas()" title="Atualizar dados"></i>
                     Última atualização: <span id="lastUpdateTime">--:--</span>
                 </div>
             </div>
@@ -352,7 +356,7 @@
                         {% set acs_ativos_list = acs_ativos|list %}
 
                         {% for acs in acs_ativos_list[:4] %}
-                        <div class="profissional-item-premium" onclick="mostrarDetalhesACS('{{ acs|tojson|safe }}')">
+                        <div class="profissional-item-premium" data-acs='{{ acs|tojson }}'>
                             <div class="profissional-avatar">
                                 <div class="avatar-circle">
                                     <i class="fas fa-user-md"></i>
@@ -381,7 +385,7 @@
                         {% endfor %}
 
                         {% if acs_ativos_list|length > 4 %}
-                        <div class="ver-mais-premium" onclick="mostrarTodosACS('{{ acs_ativos_list|tojson|safe }}')">
+                        <div class="ver-mais-premium" data-acs-data='{{ acs_ativos_list|tojson }}'>
                             <div class="ver-mais-content">
                                 <i class="fas fa-plus-circle"></i>
                                 <span>Ver mais {{ acs_ativos_list|length - 4 }} agentes</span>
@@ -403,7 +407,7 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <span>Cobertura total do território</span>
                         </div>
-                        <button class="btn-card-action" onclick="mostrarModalAdicionarACS()">
+                        <button class="btn-card-action btn-adicionar-acs">
                             <i class="fas fa-user-plus"></i>
                             Adicionar
                         </button>
@@ -436,7 +440,7 @@
                     <div class="profissionais-lista-premium">
                         {% if equipe_profissionais and equipe_profissionais.get('enfermeiro') %}
                         {% set enfermeiro = equipe_profissionais.get('enfermeiro') %}
-                        <div class="profissional-destaque" onclick="mostrarDetalhesEnfermeiro('{{ enfermeiro|tojson|safe }}')">
+                        <div class="profissional-destaque" data-enfermeiro='{{ enfermeiro|tojson }}'>
                             <div class="destaque-avatar">
                                 <div class="avatar-circle-large">
                                     <i class="fas fa-user-nurse"></i>
@@ -471,7 +475,7 @@
                             </div>
                             <h4>Posição em aberto</h4>
                             <p>Enfermeiro não designado</p>
-                            <button class="btn-designar" onclick="mostrarModalDesignarEnfermeiro()">
+                            <button class="btn-designar btn-designar-enfermeiro">
                                 <i class="fas fa-user-plus"></i>
                                 Designar Enfermeiro
                             </button>
@@ -485,7 +489,7 @@
                             <span>Coordenação da equipe ACS</span>
                         </div>
                         {% if equipe_profissionais and equipe_profissionais.get('enfermeiro') %}
-                        <button class="btn-card-action" onclick="mostrarDetalhesEnfermeiro('{{ enfermeiro|tojson|safe }}')">
+                        <button class="btn-card-action btn-ver-enfermeiro" data-enfermeiro='{{ enfermeiro|tojson }}'>
                             <i class="fas fa-eye"></i>
                             Ver detalhes
                         </button>
@@ -519,7 +523,7 @@
                     <div class="profissionais-lista-premium">
                         {% if equipe_profissionais and equipe_profissionais.get('medico') %}
                         {% set medico = equipe_profissionais.get('medico') %}
-                        <div class="profissional-destaque" onclick="mostrarDetalhesMedico('{{ medico|tojson|safe }}')">
+                        <div class="profissional-destaque" data-medico='{{ medico|tojson }}'>
                             <div class="destaque-avatar">
                                 <div class="avatar-circle-large">
                                     <i class="fas fa-user-md"></i>
@@ -554,7 +558,7 @@
                             </div>
                             <h4>Posição em aberto</h4>
                             <p>Médico não designado</p>
-                            <button class="btn-designar" onclick="mostrarModalDesignarMedico()">
+                            <button class="btn-designar btn-designar-medico">
                                 <i class="fas fa-user-plus"></i>
                                 Designar Médico
                             </button>
@@ -568,7 +572,7 @@
                             <span>Referência técnica da equipe</span>
                         </div>
                         {% if equipe_profissionais and equipe_profissionais.get('medico') %}
-                        <button class="btn-card-action" onclick="mostrarDetalhesMedico('{{ medico|tojson|safe }}')">
+                        <button class="btn-card-action btn-ver-medico" data-medico='{{ medico|tojson }}'>
                             <i class="fas fa-eye"></i>
                             Ver detalhes
                         </button>
@@ -577,18 +581,12 @@
                 </div>
             </div>
         </section>
-        {% endblock %}
-
-
-        <!-- Rodapé -->
-        <footer class="footer">
-            <p>© 2025 Territorialização USF PontoCerto | {{ nome_equipe }}</p>
-            <p class="version">Sistema desenvolvido por Agentes Comun. de Saúde</p>
-        </footer>
     </div>
-    {% block extra_js %}
+    {% endblock %}
 
+    {% block extra_js %}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     <script>
         // Configuração do usuário para JavaScript
         window.APP_CONFIG = {
@@ -596,169 +594,21 @@
             nome_usuario: {{ nome_usuario|default('Visitante')|tojson }},
             nivel_usuario: {{ nivel_usuario|default('')|tojson }},
             nome_equipe: {{ nome_equipe|tojson }},
-            condominios_count: {{ condominios|length }}
-        };
-
-        // Função para atualizar métricas (simulação)
-        window.atualizarMetricas = function () {
-            const updateBtn = document.querySelector('.fa-sync-alt');
-            if (updateBtn) {
-                updateBtn.classList.add('fa-spin');
-                setTimeout(() => {
-                    updateBtn.classList.remove('fa-spin');
-                    const now = new Date();
-                    const timeString = now.toLocaleTimeString('pt-BR', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    document.getElementById('lastUpdateTime').textContent = timeString;
-                    showNotification('Métricas atualizadas com sucesso!', 'success');
-                }, 1500);
+            condominios_count: {{ condominios|length }},
+            metricas: {
+                total_moradores: {{ metricas.total_moradores }},
+                total_hipertensos: {{ metricas.total_hipertensos }},
+                total_diabeticos: {{ metricas.total_diabeticos }},
+                total_gestantes: {{ metricas.total_gestantes }},
+                cobertura_geral: {{ metricas.cobertura_geral|default(0) }}
             }
         };
 
-        // Função para mostrar notificação
-        function showNotification(message, type) {
-            document.querySelectorAll('.notification').forEach(n => n.remove());
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
-                <button onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Função para mostrar todos os ACS
-        function mostrarTodosACS(acsData) {
-            try {
-                const acs = typeof acsData === 'string' ? JSON.parse(acsData) : acsData;
-                const acsAtivos = acs.filter(a => a.ativo);
-
-                if (acsAtivos.length === 0) {
-                    alert('Nenhum ACS ativo nesta equipe.');
-                    return;
-                }
-
-                const modalContent = `
-                    <div class="modal" id="modalACS" style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;">
-                        <div class="modal-content" style="background: white; border-radius: 12px; padding: 25px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #2c3e50;">
-                                    <i class="fas fa-user-md"></i> Agentes Comunitários de Saúde
-                                </h3>
-                                <button class="modal-close" onclick="document.getElementById('modalACS').remove()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #7f8c8d;">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p style="margin-bottom: 15px; color: #666;">
-                                    Total de ACS ativos: <strong>${acsAtivos.length}</strong>
-                                </p>
-                                <div class="acs-lista-modal" style="max-height: 400px; overflow-y: auto;">
-                                    ${acsAtivos.map((acs, index) => `
-                                        <div class="acs-item-modal" style="display: flex; align-items: center; gap: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e9ecef;">
-                                            <div class="acs-numero" style="width: 30px; height: 30px; background: #3498db; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">
-                                                ${index + 1}
-                                            </div>
-                                            <div class="acs-info" style="flex: 1;">
-                                                <strong style="display: block; margin-bottom: 5px;">${acs.nome}</strong>
-                                                <div class="acs-detalhes" style="display: flex; gap: 15px; margin-top: 5px; font-size: 0.85rem; color: #666;">
-                                                    <span style="display: flex; align-items: center; gap: 5px;">
-                                                        <i class="fas fa-id-card"></i> ${acs.registro || 'Sem registro'}
-                                                    </span>
-                                                    ${acs.telefone ? `<span style="display: flex; align-items: center; gap: 5px;">
-                                                        <i class="fas fa-phone"></i> ${acs.telefone}
-                                                    </span>` : ''}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // Remove modal existente
-                const existingModal = document.getElementById('modalACS');
-                if (existingModal) existingModal.remove();
-
-                // Adiciona novo modal
-                document.body.insertAdjacentHTML('beforeend', modalContent);
-            } catch (error) {
-                console.error('Erro ao mostrar ACS:', error);
-                alert('Erro ao carregar lista de ACS.');
+        // Inicializar dashboard quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof dashboard !== 'undefined') {
+                dashboard.init();
             }
-        }
-
-        // Funções globais
-        window.mostrarModalConvidado = function() {
-            alert('🔒 Modo Visitante\n\nPara adicionar ou editar condomínios, faça login como usuário cadastrado.);      };
-        window.mostrarModal = function() {
-            if (!window.APP_CONFIG || !window.APP_CONFIG.usuario_logado) {
-                alert('Para adicionar um novo condomínio, é necessário fazer login no sistema.');
-                window.location.href = '/login';
-                return false;
-            }
-            window.location.href = '/condominios';
-            return true;
-        };
-
-        // Inicializar animações
-        document.addEventListener('DOMContentLoaded', function () {
-            // Atualizar hora da última atualização
-            function updateLastUpdateTime() {
-                const now = new Date();
-                const timeString = now.toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                const updateElement = document.getElementById('lastUpdateTime');
-                if (updateElement) {
-                    updateElement.textContent = timeString;
-                }
-            }
-            updateLastUpdateTime();
-            setInterval(updateLastUpdateTime, 60000);
-
-            // Animar barras de progresso
-            setTimeout(() => {
-                document.querySelectorAll('.progress-bar').forEach(bar => {
-                    const width = bar.style.width;
-                    bar.style.width = '0%';
-                    setTimeout(() => {
-                        bar.style.width = width;
-                    }, 300);
-                });
-
-                // Animar mini gráficos
-                document.querySelectorAll('.chart-fill').forEach(fill => {
-                    const height = fill.style.height;
-                    fill.style.height = '0%';
-                    setTimeout(() => {
-                        fill.style.height = height;
-                    }, 500);
-                });
-            }, 500);
-
-            // Formatar números com separador de milhar
-            document.querySelectorAll('.metric-value').forEach(el => {
-                const text = el.textContent.trim();
-                if (text && !isNaN(text.replace('%', ''))) {
-                    const num = parseInt(text.replace('%', ''));
-                    if (!isNaN(num)) {
-                        el.textContent = num.toLocaleString('pt-BR') + (text.includes('%') ? '%' : '');
-                    }
-                }
-            });
         });
     </script>
     {% endblock %}
