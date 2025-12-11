@@ -79,39 +79,6 @@ function adjustForMobile() {
     }
 }
 
-/**
- * Previne zoom duplo-tap em elementos interativos
- */
-function setupMobileTouchEvents() {
-    document.addEventListener('touchstart', function (event) {
-        if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('button') || event.target.closest('a')) {
-            const element = event.target.tagName === 'BUTTON' || event.target.tagName === 'A' ? event.target : event.target.closest('button') || event.target.closest('a');
-            if (element) {
-                element.style.transform = 'scale(0.98)';
-                element.style.transition = 'transform 0.1s ease';
-            }
-        }
-    });
-
-    document.addEventListener('touchend', function (event) {
-        if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('button') || event.target.closest('a')) {
-            const element = event.target.tagName === 'BUTTON' || event.target.tagName === 'A' ? event.target : event.target.closest('button') || event.target.closest('a');
-            if (element) {
-                element.style.transform = '';
-            }
-        }
-    });
-
-    document.addEventListener('touchcancel', function (event) {
-        if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('button') || event.target.closest('a')) {
-            const element = event.target.tagName === 'BUTTON' || event.target.tagName === 'A' ? event.target : event.target.closest('button') || event.target.closest('a');
-            if (element) {
-                element.style.transform = '';
-            }
-        }
-    });
-}
-
 // ============================================
 // FUNÇÕES DE NOTIFICAÇÃO E ALERTA
 // ============================================
@@ -353,7 +320,6 @@ function initGeneralUtilities() {
 
     // Configurar para mobile
     adjustForMobile();
-    setupMobileTouchEvents();
 
     // Configurar dropdown do usuário
     setupUserDropdown();
@@ -410,3 +376,11 @@ function debugUserConfig() {
 
 // Expor função de debug
 window.debugUserConfig = debugUserConfig;
+
+// REMOVA daqui: Tudo relacionado a:
+// - dashboard.atualizarMetricas
+// - mostrarTodosACS
+// - mostrarDetalhesACS
+// - showNotification
+// - etc... (tudo que é específico do dashboard)
+// Pois isso já está no dashboard.js
