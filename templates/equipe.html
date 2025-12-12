@@ -1,0 +1,577 @@
+<!-- templates/equipe.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ nome_equipe }} - Equipe{% endblock %}
+
+{% block extra_css %}
+<style>
+    .equipe-container {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Header da Equipe */
+    .equipe-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    }
+
+        .equipe-header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+            .equipe-header h1 i {
+                font-size: 1.2em;
+            }
+
+    .equipe-stats {
+        display: flex;
+        gap: 20px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+    }
+
+    .equipe-stat {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 15px 20px;
+        border-radius: 10px;
+        min-width: 140px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+        .equipe-stat .number {
+            font-size: 1.8em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .equipe-stat .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+    /* Grid de Profissionais */
+    .equipe-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    /* Cards */
+    .equipe-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #eaeaea;
+    }
+
+        .equipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 1.3em;
+    }
+
+        .card-icon.acs {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .card-icon.enfermeiro {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .card-icon.medico {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+    .card-title h3 {
+        margin: 0;
+        color: #333;
+        font-size: 1.3em;
+    }
+
+    .card-title .subtitle {
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    /* Lista de Profissionais */
+    .profissionais-lista {
+        margin-bottom: 20px;
+    }
+
+    .profissional-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+        border-left: 3px solid #667eea;
+    }
+
+        .profissional-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+    .profissional-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #667eea;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        font-size: 1em;
+    }
+
+    .profissional-info h4 {
+        margin: 0;
+        color: #333;
+        font-size: 1em;
+    }
+
+    .profissional-info p {
+        margin: 4px 0 0 0;
+        color: #666;
+        font-size: 0.85em;
+    }
+
+    .badge {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.75em;
+        margin-left: 5px;
+    }
+
+        .badge.inativo {
+            background: #6c757d;
+        }
+
+    /* Destaque (Enfermeiro/Médico) */
+    .profissional-destaque {
+        background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        border: 2px solid #667eea20;
+    }
+
+    .destaque-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 1.5em;
+    }
+
+    .profissional-destaque h4 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 1.2em;
+    }
+
+    .profissional-destaque p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    /* Vazio */
+    .empty-state {
+        text-align: center;
+        padding: 30px 20px;
+        color: #999;
+    }
+
+        .empty-state i {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #ced4da;
+        }
+
+        .empty-state p {
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+    /* Botões de Ação */
+    .card-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .btn-action {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-action:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-action.secondary {
+            background: transparent;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+            .btn-action.secondary:hover {
+                background: #667eea;
+                color: white;
+            }
+
+    /* Botão de Voltar */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding: 8px 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .back-button:hover {
+            background: #e9ecef;
+            transform: translateX(-3px);
+        }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .equipe-container {
+            padding: 15px;
+        }
+
+        .equipe-header {
+            padding: 20px;
+        }
+
+            .equipe-header h1 {
+                font-size: 1.8em;
+            }
+
+        .equipe-stats {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .equipe-stat {
+            min-width: 100%;
+        }
+
+        .equipe-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            margin-right: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Cabeçalho -->
+    <div class="equipe-header">
+        <h1><i class="fas fa-users-medical"></i> Equipe {{ nome_equipe }}</h1>
+        <p>Equipe multiprofissional de saúde da família</p>
+
+        <div class="equipe-stats">
+            <div class="equipe-stat">
+                <span class="number">
+                    {% if equipe_profissionais %}
+                    {% set total = 0 %}
+                    {% if equipe_profissionais.get('acs') %}{% set total = total + equipe_profissionais.get('acs')|length %}{% endif %}
+                    {% if equipe_profissionais.get('enfermeiro') %}{% set total = total + 1 %}{% endif %}
+                    {% if equipe_profissionais.get('medico') %}{% set total = total + 1 %}{% endif %}
+                    {{ total }}
+                    {% else %}0{% endif %}
+                </span>
+                <span class="label">Profissionais</span>
+            </div>
+
+            <div class="equipe-stat">
+                <span class="number">{{ condominios|length }}</span>
+                <span class="label">Condomínios</span>
+            </div>
+
+            <div class="equipe-stat">
+                <span class="number">{{ metricas.total_moradores }}</span>
+                <span class="label">Moradores</span>
+            </div>
+
+            <div class="equipe-stat">
+                <span class="number">{{ metricas.cobertura_geral|default(0) }}%</span>
+                <span class="label">Cobertura</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid de Profissionais -->
+    <div class="equipe-grid">
+        <!-- Agentes Comunitários de Saúde -->
+        <div class="equipe-card">
+            <div class="card-header">
+                <div class="card-icon acs">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="card-title">
+                    <h3>Agentes Comunitários de Saúde</h3>
+                    <div class="subtitle">Contato direto com a comunidade</div>
+                </div>
+            </div>
+
+            <div class="profissionais-lista">
+                {% if equipe_profissionais and equipe_profissionais.get('acs') %}
+                {% for acs in equipe_profissionais.get('acs', []) %}
+                <div class="profissional-item">
+                    <div class="profissional-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="profissional-info">
+                        <h4>
+                            {{ acs.nome }}
+                            {% if acs.ativo %}
+                            <span class="badge">Ativo</span>
+                            {% else %}
+                            <span class="badge inativo">Inativo</span>
+                            {% endif %}
+                        </h4>
+                        <p>
+                            <i class="fas fa-id-card"></i> {{ acs.registro|default('N/I') }}
+                            {% if acs.microarea %}
+                            • <i class="fas fa-map-marker-alt"></i> {{ acs.microarea }}
+                            {% endif %}
+                        </p>
+                        {% if acs.telefone %}
+                        <p><i class="fas fa-phone"></i> {{ acs.telefone }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-user-slash"></i>
+                    <p>Nenhum ACS cadastrado</p>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if usuario_logado and nivel_usuario != 'convidado' %}
+            <div class="card-actions">
+                <button class="btn-action" onclick="dashboard.adicionarACS()">
+                    <i class="fas fa-user-plus"></i> Adicionar ACS
+                </button>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Enfermeiro Responsável -->
+        <div class="equipe-card">
+            <div class="card-header">
+                <div class="card-icon enfermeiro">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="card-title">
+                    <h3>Enfermeiro Responsável</h3>
+                    <div class="subtitle">Supervisão e coordenação</div>
+                </div>
+            </div>
+
+            <div class="profissionais-lista">
+                {% if equipe_profissionais and equipe_profissionais.get('enfermeiro') %}
+                {% set enfermeiro = equipe_profissionais.get('enfermeiro') %}
+                <div class="profissional-destaque">
+                    <div class="destaque-avatar">
+                        <i class="fas fa-user-nurse"></i>
+                    </div>
+                    <h4>{{ enfermeiro.nome }}</h4>
+                    <p><i class="fas fa-id-card"></i> {{ enfermeiro.registro|default('N/I') }}</p>
+                    {% if enfermeiro.especializacao %}
+                    <p><i class="fas fa-graduation-cap"></i> {{ enfermeiro.especializacao }}</p>
+                    {% endif %}
+                    {% if enfermeiro.telefone %}
+                    <p><i class="fas fa-phone"></i> {{ enfermeiro.telefone }}</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-user-clock"></i>
+                    <p>Enfermeiro não designado</p>
+                    {% if usuario_logado and nivel_usuario != 'convidado' %}
+                    <button class="btn-action" onclick="dashboard.designarEnfermeiro()">
+                        <i class="fas fa-user-plus"></i> Designar Enfermeiro
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if equipe_profissionais and equipe_profissionais.get('enfermeiro') and usuario_logado and nivel_usuario != 'convidado' %}
+            <div class="card-actions">
+                <button class="btn-action secondary" onclick="dashboard.mostrarDetalhesEnfermeiro()">
+                    <i class="fas fa-eye"></i> Ver detalhes
+                </button>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Médico Responsável -->
+        <div class="equipe-card">
+            <div class="card-header">
+                <div class="card-icon medico">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                <div class="card-title">
+                    <h3>Médico Responsável</h3>
+                    <div class="subtitle">Referência técnica</div>
+                </div>
+            </div>
+
+            <div class="profissionais-lista">
+                {% if equipe_profissionais and equipe_profissionais.get('medico') %}
+                {% set medico = equipe_profissionais.get('medico') %}
+                <div class="profissional-destaque">
+                    <div class="destaque-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h4>{{ medico.nome }}</h4>
+                    <p><i class="fas fa-id-card"></i> {{ medico.registro|default('N/I') }}</p>
+                    {% if medico.especializacao %}
+                    <p><i class="fas fa-heartbeat"></i> {{ medico.especializacao }}</p>
+                    {% endif %}
+                    {% if medico.telefone %}
+                    <p><i class="fas fa-phone"></i> {{ medico.telefone }}</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-user-clock"></i>
+                    <p>Médico não designado</p>
+                    {% if usuario_logado and nivel_usuario != 'convidado' %}
+                    <button class="btn-action" onclick="dashboard.designarMedico()">
+                        <i class="fas fa-user-plus"></i> Designar Médico
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if equipe_profissionais and equipe_profissionais.get('medico') and usuario_logado and nivel_usuario != 'convidado' %}
+            <div class="card-actions">
+                <button class="btn-action secondary" onclick="dashboard.mostrarDetalhesMedico()">
+                    <i class="fas fa-eye"></i> Ver detalhes
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Configuração da página
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Página da equipe carregada');
+
+        // Configurar eventos dos cards de ACS
+        document.querySelectorAll('.profissional-item').forEach(item => {
+            item.addEventListener('click', function () {
+                if (typeof dashboard !== 'undefined' && typeof dashboard.mostrarDetalhesACS === 'function') {
+                    const acsNome = this.querySelector('h4').textContent.split(' ')[0];
+                    // Você pode implementar uma lógica para buscar os dados do ACS
+                }
+            });
+        });
+
+        // Verificar se é modo convidado
+        if (window.APP_CONFIG?.nivel_usuario === 'convidado') {
+            document.querySelectorAll('.btn-action').forEach(btn => {
+                btn.style.opacity = '0.6';
+                btn.style.cursor = 'not-allowed';
+                btn.onclick = function (e) {
+                    e.preventDefault();
+                    alert('🔒 Modo Visitante\n\nPara realizar esta ação, faça login como usuário cadastrado.');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
