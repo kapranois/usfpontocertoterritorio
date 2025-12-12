@@ -37,101 +37,102 @@
     </script>
 </head>
 <body>
-    <!-- Cabeçalho (igual ao do index.html) -->
+    <!-- Cabeçalho -->
     <header class="header">
         <div class="header-bg-effect"></div>
         <div class="logo">
             <i class="fas fa-map-marked-alt"></i>
             <div>
-                <h1>{{ nome_equipe }}</h1>
+                <h1>USF Ponto Certo</h1>
                 <p class="subtitle">Dashboard de Territorialização</p>
             </div>
         </div>
-        <div class="header-right">
+        <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
             <div class="equipe-info">
                 <i class="fas fa-users"></i>
                 <span>{{ nome_equipe }}</span>
             </div>
+        </a>
 
-            <!-- Menu dropdown do usuário -->
-            <div class="user-dropdown-container">
-                <div class="user-menu-trigger" onclick="toggleUserMenu()">
-                    {% if usuario_logado %}
-                    <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
-                        <i class="fas fa-user-circle"></i>
-                        <span>{{ nome_usuario }}</span>
-                        {% if nivel_usuario == 'convidado' %}
-                        <span class="convidado-badge">Visitante</span>
-                        {% endif %}
-                    </div>
-                    {% else %}
-                    <div class="user-info">
-                        <i class="fas fa-user-circle"></i>
-                        <span>Visitante</span>
-                    </div>
-                    {% endif %}
-                    <i class="fas fa-chevron-down dropdown-arrow"></i>
-                </div>
-
-                <!-- Menu dropdown -->
-                <div class="user-dropdown-menu" id="userDropdown">
-                    {% if usuario_logado %}
-                    <!-- Usuário logado -->
-                    <div class="dropdown-user-info">
-                        <i class="fas fa-user-circle"></i>
-                        <div>
-                            <strong>{{ nome_usuario }}</strong>
-                            <small>{{ nivel_usuario|capitalize }}</small>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a href="/trocar-equipe" class="dropdown-item">
-                        <i class="fas fa-exchange-alt"></i>
-                        <span>Trocar Equipe</span>
-                    </a>
-                    <a href="/logout" class="dropdown-item logout-item">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Sair</span>
-                    </a>
-                    {% else %}
-                    <!-- Usuário não logado -->
-                    <div class="dropdown-user-info">
-                        <i class="fas fa-user-circle"></i>
-                        <div>
-                            <strong>Visitante</strong>
-                            <small>Modo de visualização</small>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a href="/login" class="dropdown-item">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span>Fazer Login</span>
-                    </a>
-                    <div class="dropdown-footer">
-                        <small>Para editar dados, faça login</small>
-                    </div>
+        <!-- Menu dropdown do usuário -->
+        <div class="user-dropdown-container">
+            <div class="user-menu-trigger" onclick="toggleUserMenu()">
+                {% if usuario_logado %}
+                <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ nome_usuario }}</span>
+                    {% if nivel_usuario == 'convidado' %}
+                    <span class="convidado-badge">Visitante</span>
                     {% endif %}
                 </div>
+                {% else %}
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Visitante</span>
+                </div>
+                {% endif %}
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
 
-            <nav class="navbar">
-                <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
-                    <i class="fas fa-home"></i>
-                    <span>Início</span>
+            <!-- Menu dropdown -->
+            <div class="user-dropdown-menu" id="userDropdown">
+                {% if usuario_logado %}
+                <!-- Usuário logado -->
+                <div class="dropdown-user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <strong>{{ nome_usuario }}</strong>
+                        <small>{{ nivel_usuario|capitalize }}</small>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="/trocar-equipe" class="dropdown-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Trocar Equipe</span>
                 </a>
-                <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}" title="Mapa do Território">
-                    <i class="fas fa-map"></i>
-                    <span>Mapa</span>
+                <a href="/logout" class="dropdown-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
                 </a>
-                <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}" title="Gerenciar Condomínios">
-                    <i class="fas fa-building"></i>
-                    <span>Condomínios</span>
+                {% else %}
+                <!-- Usuário não logado -->
+                <div class="dropdown-user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <strong>Visitante</strong>
+                        <small>Modo de visualização</small>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="/login" class="dropdown-item">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Fazer Login</span>
                 </a>
-                <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}" title="Relatórios">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Relatórios</span>
-                </a>
-            </nav>
+                <div class="dropdown-footer">
+                    <small>Para editar dados, faça login</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <nav class="navbar">
+            <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
+            </a>
+            <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}" title="Mapa do Território">
+                <i class="fas fa-map"></i>
+                <span>Mapa</span>
+            </a>
+            <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}" title="Gerenciar Condomínios">
+                <i class="fas fa-building"></i>
+                <span>Condomínios</span>
+            </a>
+            <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}" title="Relatórios">
+                <i class="fas fa-chart-bar"></i>
+                <span>Relatórios</span>
+            </a>
+        </nav>
         </div>
     </header>
 
@@ -140,11 +141,23 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Rodapé comum -->
-    <footer class="footer">
-        <p>© 2025 Territorialização USF PontoCerto | {{ nome_equipe }}</p>
-        <p class="version">Sistema desenvolvido por Agentes Comun. de Saúde</p>
-        <p id="currentDate"></p>
+    <footer class="footer-simple-horizontal">
+        <div class="footer-simple-container">
+            <!-- Logos em linha contínua -->
+            <div class="logos-inline">
+                <div class="logo-inline-wrapper">
+                    <img src="{{ url_for('static', filename='img/acs.png') }}" alt="ACS">
+                    <img src="{{ url_for('static', filename='img/maissaudecomagente.png') }}" alt="msca">
+                    <img src="{{ url_for('static', filename='img/saudedafamilia.png') }}" alt="Saúde da Família">
+                    <img src="{{ url_for('static', filename='img/acs2.png') }}" alt="Agente de Saude">
+                </div>
+            </div>
+
+            <!-- Versão centralizada (igual era antes) -->
+            <div class="footer-version-simple">
+                <p class="version">Sistema desenvolvido por Agentes Comunitários de Saúde</p>
+            </div>
+        </div>
     </footer>
 
     <!-- JavaScript específico da página -->
