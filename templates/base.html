@@ -44,7 +44,7 @@
             <i class="fas fa-map-marked-alt"></i>
             <div>
                 <h1>USF Ponto Certo</h1>
-                <p class="subtitle">Dashboard de Territorialização</p>
+                <p class="subtitle">Territorialização</p>
             </div>
         </div>
         <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
@@ -141,6 +141,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- RODA PÉ -->
     <footer class="footer-simple-horizontal">
         <div class="footer-simple-container">
             <!-- Logos em linha contínua -->
@@ -153,7 +154,7 @@
                 </div>
             </div>
 
-            <!-- Versão centralizada (igual era antes) -->
+            <!-- Versão centralizada  -->
             <div class="footer-version-simple">
                 <p class="version">Sistema desenvolvido por Agentes Comunitários de Saúde</p>
             </div>
@@ -177,7 +178,7 @@
                 console.log('Inicializando dashboard...');
                 dashboard.init();
             }
-
+            
             // Debug (remova em produção)
             if (window.location.search.includes('debug')) {
                 window.logConfig();
