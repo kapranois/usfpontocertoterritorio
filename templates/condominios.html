@@ -21,51 +21,17 @@
 </script>
 
 <div class="container condominios-page">
-    <!-- Cabeçalho da página (não confundir com o cabeçalho do site) -->
+    <!-- Cabeçalho da página-->
     <div class="page-header">
         <div class="header-info">
-            <h1>
-                <i class="fas fa-building"></i>
-                {{ nome_equipe }} - Gestão de Condomínios
-            </h1>
+            
             <div class="header-subtitle">
-                <span class="header-badge">
-                    <i class="fas fa-chart-bar"></i>
-                    {{ condominios|length }} condomínio(s) cadastrado(s)
-                </span>
-                <span class="header-badge">
-                    <i class="fas fa-map-pin"></i>
-                    {{ microareas|length }} microárea(s)
-                </span>
-                <span class="header-badge">
-                    <i class="fas fa-user-md"></i>
-                    {{ nome_usuario|default('Visitante') }}
-                </span>
+                
+                
+                
             </div>
         </div>
 
-        <div class="header-acoes">
-            <a href="/dashboard" class="btn-voltar">
-                <i class="fas fa-arrow-left"></i>
-                Voltar ao Dashboard
-            </a>
-            <a href="/trocar-equipe" class="btn-trocar-equipe">
-                <i class="fas fa-exchange-alt"></i>
-                Trocar Equipe
-            </a>
-            {% if usuario_logado %}
-            <a href="/logout" class="btn-sair-logout">
-                <i class="fas fa-sign-out-alt"></i>
-                Sair
-            </a>
-            {% else %}
-            <a href="/login" class="btn-trocar-equipe">
-                <i class="fas fa-sign-in-alt"></i>
-                Entrar
-            </a>
-            {% endif %}
-        </div>
-    </div>
 
     <!-- Controles Superiores -->
     <div class="controles-superiores">
@@ -234,12 +200,6 @@
             <!-- Botões de ação -->
             <div class="card-actions">
                 {% if usuario_logado and nivel_usuario != 'convidado' %}
-                <button class="action-btn btn-edit" title="Editar" data-id="{{ cond.id }}">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn btn-view" title="Visualizar" data-id="{{ cond.id }}">
-                    <i class="fas fa-eye"></i>
-                </button>
                 {% endif %}
             </div>
         </div>
@@ -404,8 +364,7 @@
     <div class="page-summary">
         <p>
             <i class="fas fa-info-circle"></i>
-            <span class="items-counter">Mostrando {{ condominios|length }} condomínio(s)</span> |
-            Última atualização: <span id="dataAtual"></span>
+            <span class="items-counter">Mostrando {{ condominios|length }} condomínio(s)</span>
         </p>
     </div>
 </div>
@@ -425,12 +384,6 @@
 
 <!-- Botões Flutuantes -->
 {% if usuario_logado and nivel_usuario != 'convidado' %}
-<button class="botao-flutuante" onclick="mostrarModal()" title="Adicionar novo condomínio">
-    <i class="fas fa-plus"></i>
-</button>
-<button class="botao-flutuante-secundario" onclick="location.reload()" title="Atualizar página">
-    <i class="fas fa-sync-alt"></i>
-</button>
 {% endif %}
 {% endblock %}
 
