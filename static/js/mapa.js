@@ -429,15 +429,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }).addTo(drawnItems);
 
-            // Adicionar popup
-            layer.bindPopup(`
-                <div style="min-width: 200px;">
-                    <h4 style="margin: 0 0 10px 0; color: ${area.cor}">${area.nome}</h4>
-                    <p><strong>Tipo:</strong> ${formatAreaType(area.tipo)}</p>
-                    <p><strong>Descrição:</strong> ${area.descricao || 'Sem descrição'}</p>
-                    ${area.agente_saude_id ? `<p><strong>Agente:</strong> ${area.agente_saude_id}</p>` : ''}
-                </div>
-            `);
+            
+            // Construir conteúdo do popup
+            const popupContent = `
+            <div style="min-width: 200px;">
+                <h4 style="margin: 0 0 10px 0; color: ${area.cor}">${area.nome}</h4>
+                <p><strong>Tipo:</strong> ${formatAreaType(area.tipo)}</p>
+                <p><strong>Descrição:</strong> ${area.descricao || 'Sem descrição'}</p>
+                ${area.agente_saude_id ? `<p><strong>Agente:</strong> ${area.agente_saude_id}</p>` : ''}
+                
+                <!-- ADICIONE ESTA PARTE PARA O BOTÃO DO STREET VIEW -->
+                ${area.streetview_link ? `
+                    <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                        <a href="${area.streetview_link}" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           style="display: inline-flex; align-items: center; gap: 8px;
+                                  background: #4285f4; color: white; padding: 8px 12px;
+                                  border-radius: 6px; text-decoration: none; font-size: 14px;
+                                  font-weight: 500; transition: background 0.3s;">
+                            <i class="fas fa-street-view"></i>
+                            Ver no Street View
+                        </a>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+
+            layer.bindPopup(popupContent);
+
 
             // Armazenar dados da área
             layer.areaId = area.id;
@@ -481,27 +501,40 @@ document.addEventListener('DOMContentLoaded', function () {
         areas.sort((a, b) => a.nome.localeCompare(b.nome));
 
         areasList.innerHTML = areas.map(area => `
-            <div class="area-item" data-id="${area.id}" style="border-left-color: ${area.cor}">
-                <div class="area-header">
-                    <div class="area-name">${area.nome}</div>
-                    <div class="area-type">${formatAreaType(area.tipo)}</div>
-                </div>
-                ${area.descricao ? `<div class="area-description">${area.descricao}</div>` : ''}
-                <div class="area-actions">
-                    <button class="area-action-btn" onclick="zoomToArea(${area.id})" title="Zoom">
-                        <i class="fas fa-search-plus"></i>
-                    </button>
-                    ${window.APP_CONFIG.usuario_logado && window.APP_CONFIG.nivel_usuario !== 'convidado' ? `
-                        <button class="area-action-btn" onclick="editArea(${area.id})" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="area-action-btn" onclick="confirmDeleteArea(${area.id})" title="Excluir">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    ` : ''}
-                </div>
+        <div class="area-item" data-id="${area.id}" style="border-left-color: ${area.cor}">
+            <div class="area-header">
+                <div class="area-name">${area.nome}</div>
+                <div class="area-type">${formatAreaType(area.tipo)}</div>
             </div>
-        `).join('');
+            ${area.descricao ? `<div class="area-description">${area.descricao}</div>` : ''}
+            ${area.streetview_link ? `
+                <div class="area-link" style="margin-top: 8px;">
+                    <a href="${area.streetview_link}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       style="display: inline-flex; align-items: center; gap: 6px;
+                              color: #4285f4; font-size: 12px; text-decoration: none;">
+                        <i class="fas fa-external-link-alt"></i>
+                        Ver no Street View
+                    </a>
+                </div>
+            ` : ''}
+            
+            <div class="area-actions">
+                <button class="area-action-btn" onclick="zoomToArea(${area.id})" title="Zoom">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                ${window.APP_CONFIG.usuario_logado && window.APP_CONFIG.nivel_usuario !== 'convidado' ? `
+                    <button class="area-action-btn" onclick="editArea(${area.id})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="area-action-btn" onclick="confirmDeleteArea(${area.id})" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                ` : ''}
+            </div>
+        </div>
+    `).join('');
 
         // Atualizar contador
         updateAreasCount(areas.length);
@@ -545,6 +578,7 @@ document.addEventListener('DOMContentLoaded', function () {
             cor: selectedColor,
             descricao: document.getElementById('area-description').value.trim(),
             agente_saude_id: document.getElementById('agente-id').value.trim() || null,
+            streetview_link: document.getElementById('streetview-link').value.trim() || null, // NOVO CAMPO
             geojson: geojson,
             equipe: window.APP_CONFIG.nome_equipe.toLowerCase().replace(/\s+/g, '')
         };
@@ -569,7 +603,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result.status === 'sucesso') {
                 showMessage('Área salva com sucesso!', 'success');
                 clearForm();
-                loadAreas(); // Recarregar áreas
+                loadAreas();
             } else {
                 showMessage('Erro: ' + result.mensagem, 'error');
             }
@@ -591,6 +625,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('area-type').value = area.tipo;
                 document.getElementById('area-description').value = area.descricao || '';
                 document.getElementById('agente-id').value = area.agente_saude_id || '';
+                document.getElementById('streetview-link').value = area.streetview_link || ''; // NOVO CAMPO
 
                 // Selecionar cor
                 selectedColor = area.cor;
@@ -669,8 +704,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Desabilitar edição para convidados
     function disableEditing() {
-        const editButtons = ['btn-draw-polygon', 'btn-draw-rectangle', 'btn-draw-circle',
-            'btn-edit', 'btn-delete', 'btn-save-area'];
+        const editButtons = ['btn-draw-polygon',  'btn-edit', 'btn-delete', 'btn-save-area'];
 
         editButtons.forEach(btnId => {
             const btn = document.getElementById(btnId);
