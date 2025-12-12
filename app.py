@@ -8,6 +8,14 @@ from functools import wraps
 app = Flask(__name__)
 app.secret_key = 'acs_2025_seguro_123_altere_esta_chave'
 
+# ADICIONE ESTAS CONFIGURAÇÕES PARA LIDAR COM ENCODING:
+import codecs
+codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
+
+# Para forçar UTF-8 em todos os arquivos
+app.config['JSON_AS_ASCII'] = False
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
 # Configurações importantes da sessão
 app.config.update(
     SESSION_COOKIE_SECURE=False,  # True em produção com HTTPS
@@ -16,6 +24,7 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=86400,  # 24 horas em segundos
     SESSION_PERMANENT=True
 )
+
 
 # Configuração das equipes
 EQUIPES = {
@@ -75,7 +84,7 @@ def carregar_dados():
         with open('data/dados.json', 'r', encoding='utf-8') as f:
             dados = json.load(f)
             
-            # Garantir compatibilidade
+            # Garantir compatibilidade - estrutura antiga de condomínios
             for cond in dados.get('condominios', []):
                 if 'acs_responsavel' in cond and 'acs_multiplos' not in cond:
                     cond['acs_multiplos'] = []
@@ -86,16 +95,19 @@ def carregar_dados():
                             'data_inicio': cond.get('ultima_visita', '2024-01-01')
                         })
                 
-                # Garantir que microarea existe (para dados antigos)
                 if 'microarea' not in cond:
-                    cond['microarea'] = cond.get('prioridade', 'Microárea A')  # Converter prioridade antiga
+                    cond['microarea'] = cond.get('prioridade', 'Microárea A')
                     if 'prioridade' in cond:
                         del cond['prioridade']
             
+            # GARANTIR QUE EXISTE A ESTRUTURA DE ÁREAS TERRITORIAIS
+            if 'areas_territoriais' not in dados:
+                dados['areas_territoriais'] = []
+            
             return dados
     
-    # Criar estrutura inicial se não existir
-    return {"condominios": [], "acs": []}
+    # estrutura inicial
+    return {"condominios": [], "acs": [], "areas_territoriais": [] }
 
 def carregar_equipes():
     """Carrega os dados das equipes profissionais"""
@@ -426,29 +438,6 @@ def condominios():
 def inject_request():
     return dict(request=request)
 
-@app.route('/mapa')
-def mapa():
-    """Página do mapa"""
-    if 'equipe' not in session:
-        return redirect(url_for('inicio'))
-    
-    dados = carregar_dados()
-    condominios_equipe = filtrar_por_equipe(dados, session['equipe'])
-    
-    login_info = verificar_login()
-    
-    # Obter microáreas para esta equipe
-    microareas = MICROAREAS.get(session['equipe'], [])
-    
-    return render_template(
-        'mapa.html',
-        condominios=condominios_equipe,
-        nome_equipe=session['nome_equipe'],
-        usuario_logado=login_info['logado'],
-        nome_usuario=login_info['nome'],
-        nivel_usuario=login_info['nivel'],
-        microareas=microareas
-    )
 
 @app.route('/relatorios')
 def relatorios():
@@ -696,6 +685,59 @@ def atualizar_condominio(condominio_id):
             'status': 'erro',
             'mensagem': f'Erro interno: {str(e)}'
         }), 500
+
+# ============================================
+# ROTAS PARA EQUIPES
+# ============================================
+@app.route('/equipe')
+def pagina_equipe():
+    """Página de detalhes da equipe"""
+    if 'equipe' not in session:
+        return redirect(url_for('inicio'))
+    
+    dados = carregar_dados()
+    equipes_data = carregar_equipes()
+    
+    equipe_id = session['equipe']
+    equipe_atual = None
+    profissionais = {}
+    
+    if 'equipes' in equipes_data:
+        for equipe in equipes_data['equipes']:
+            if equipe.get('id') == equipe_id:
+                equipe_atual = equipe
+                break
+    
+    if equipe_atual and 'profissionais' in equipe_atual:
+        profissionais = equipe_atual['profissionais']
+    else:
+        profissionais = {
+            'acs': [],
+            'enfermeiro': None,
+            'medico': None
+        }
+    
+    # Obter condomínios da equipe para estatísticas
+    condominios_equipe = filtrar_por_equipe(dados, session['equipe'])
+    metricas = calcular_metricas(condominios_equipe)
+    
+    login_info = verificar_login()
+    
+    # Obter microáreas para esta equipe
+    microareas = MICROAREAS.get(session['equipe'], [])
+    
+    return render_template(
+        'equipe.html',
+        equipe=equipe_atual,
+        equipe_profissionais=profissionais,
+        condominios=condominios_equipe,
+        metricas=metricas,
+        nome_equipe=session['nome_equipe'],
+        usuario_logado=login_info['logado'],
+        nome_usuario=login_info['nome'],
+        nivel_usuario=login_info['nivel'],
+        microareas=microareas
+    )
 # ============================================
 # ROTAS PARA EDIÇÃO E EXCLUSÃO
 # ============================================
@@ -757,6 +799,7 @@ def excluir_condominio(condominio_id):
             'mensagem': f'Erro interno de cu: {str(e)}'
         }), 500
 
+
 # ============================================
 # API PARA LISTAR MICROÁREAS
 # ============================================
@@ -769,10 +812,155 @@ def get_microareas():
     return jsonify({
         'microareas': MICROAREAS.get(equipe, [])
     })
+
+# ============================================
+# ROTAS PARA O SISTEMA DE MAPA
+# ============================================
+
+@app.route('/mapa')
+def mapa():
+    """Página do mapa"""
+    if 'equipe' not in session:
+        return redirect(url_for('inicio'))
+    
+    dados = carregar_dados()
+    condominios_equipe = filtrar_por_equipe(dados, session['equipe'])
+    
+    login_info = verificar_login()
+    
+    # Obter microáreas para esta equipe
+    microareas = MICROAREAS.get(session['equipe'], [])
+    
+    return render_template(
+        'mapa.html',
+        condominios=condominios_equipe,
+        nome_equipe=session['nome_equipe'],
+        usuario_logado=login_info['logado'],
+        nome_usuario=login_info['nome'],
+        nivel_usuario=login_info['nivel'],
+        microareas=microareas
+    )
+@app.route('/api/areas-territoriais')
+@equipe_required
+def get_areas_territoriais():
+    """Retorna todas as áreas territoriais da equipe"""
+    dados = carregar_dados()
+    equipe = session['equipe']
+    
+    if 'areas_territoriais' not in dados:
+        return jsonify([])
+    
+    # Filtrar áreas pela equipe
+    areas_filtradas = [
+        area for area in dados['areas_territoriais'] 
+        if area.get('equipe') == equipe
+    ]
+    
+    return jsonify(areas_filtradas)
+
+@app.route('/api/salvar-area', methods=['POST'])
+@login_required
+@convidado_bloqueado
+def salvar_area():
+    """Salva ou atualiza uma área territorial"""
+    try:
+        dados = carregar_dados()
+        area_data = request.json
+        
+        # Verificar se é uma equipe válida para o usuário
+        equipe_usuario = session['equipe']
+        if area_data.get('equipe') != equipe_usuario:
+            return jsonify({
+                'status': 'erro',
+                'mensagem': 'Você não tem permissão para salvar áreas nesta equipe'
+            }), 403
+        
+        # Garantir que temos a estrutura
+        if 'areas_territoriais' not in dados:
+            dados['areas_territoriais'] = []
+        
+        # Verificar se é uma atualização
+        if 'id' in area_data:
+            # Atualizar área existente
+            for i, area in enumerate(dados['areas_territoriais']):
+                if area['id'] == area_data['id']:
+                    # Verificar permissão
+                    if area.get('equipe') != equipe_usuario:
+                        return jsonify({
+                            'status': 'erro',
+                            'mensagem': 'Permissão negada'
+                        }), 403
+                    
+                    # Atualizar área
+                    dados['areas_territoriais'][i] = area_data
+                    break
+        else:
+            # Nova área - gerar ID
+            if dados['areas_territoriais']:
+                novo_id = max(a['id'] for a in dados['areas_territoriais']) + 1
+            else:
+                novo_id = 1
+            
+            area_data['id'] = novo_id
+            area_data['data_criacao'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            area_data['criado_por'] = session.get('nome_usuario', 'Usuário')
+            
+            dados['areas_territoriais'].append(area_data)
+        
+        salvar_dados(dados)
+        
+        return jsonify({
+            'status': 'sucesso',
+            'mensagem': 'Área salva com sucesso',
+            'id': area_data['id']
+        })
+        
+    except Exception as e:
+        print(f"Erro ao salvar área: {e}")
+        return jsonify({
+            'status': 'erro',
+            'mensagem': f'Erro interno: {str(e)}'
+        }), 500
+
+@app.route('/api/excluir-area/<int:area_id>', methods=['DELETE'])
+@login_required
+@convidado_bloqueado
+def excluir_area(area_id):
+    """Exclui uma área territorial"""
+    try:
+        dados = carregar_dados()
+        equipe_atual = session['equipe']
+        
+        if 'areas_territoriais' not in dados:
+            return jsonify({'status': 'erro', 'mensagem': 'Nenhuma área encontrada'}), 404
+        
+        # Encontrar e excluir a área
+        for i, area in enumerate(dados['areas_territoriais']):
+            if area['id'] == area_id:
+                if area.get('equipe') != equipe_atual:
+                    return jsonify({
+                        'status': 'erro',
+                        'mensagem': 'Você não tem permissão para excluir esta área'
+                    }), 403
+                
+                dados['areas_territoriais'].pop(i)
+                salvar_dados(dados)
+                
+                return jsonify({
+                    'status': 'sucesso',
+                    'mensagem': 'Área excluída com sucesso'
+                })
+        
+        return jsonify({'status': 'erro', 'mensagem': 'Área não encontrada'}), 404
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'erro',
+            'mensagem': f'Erro interno: {str(e)}'
+        }), 500
 # ============================================
 # INICIALIZAÇÃO
 # ============================================
-
 if __name__ == '__main__':
     if not os.path.exists('data'):
         os.makedirs('data')
