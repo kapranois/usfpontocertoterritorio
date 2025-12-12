@@ -211,6 +211,34 @@ def convidado_bloqueado(f):
             return jsonify({'status': 'erro', 'mensagem': 'Modo visitante: apenas visualização'}), 403
         return f(*args, **kwargs)
     return decorated_function
+def carregar_dados_mapa():
+    """Carrega os dados do arquivo dados-mapa.json"""
+    try:
+        if os.path.exists('data/dados-mapa.json'):
+            with open('data/dados-mapa.json', 'r', encoding='utf-8') as f:
+                dados = json.load(f)
+                
+                # Garantir compatibilidade
+                if 'areas_territoriais' not in dados:
+                    dados['areas_territoriais'] = []
+                
+                return dados
+    except Exception as e:
+        print(f"DEBUG: Erro ao carregar dados-mapa.json: {e}")
+    
+    # Retorna estrutura inicial
+    return {"areas_territoriais": []}
+
+def salvar_dados_mapa(dados):
+    """Salva dados no arquivo dados-mapa.json"""
+    try:
+        os.makedirs('data', exist_ok=True)
+        with open('data/dados-mapa.json', 'w', encoding='utf-8') as f:
+            json.dump(dados, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"DEBUG: Erro ao salvar dados-mapa.json: {e}")
+        return False
 
 @app.before_request
 def verificar_sessao():
@@ -819,7 +847,6 @@ def get_microareas():
 
 @app.route('/mapa')
 def mapa():
-    """Página do mapa"""
     if 'equipe' not in session:
         return redirect(url_for('inicio'))
     
@@ -844,7 +871,7 @@ def mapa():
 @equipe_required
 def get_areas_territoriais():
     """Retorna todas as áreas territoriais da equipe"""
-    dados = carregar_dados()
+    dados = carregar_dados_mapa()
     equipe = session['equipe']
     
     if 'areas_territoriais' not in dados:
@@ -864,7 +891,7 @@ def get_areas_territoriais():
 def salvar_area():
     """Salva ou atualiza uma área territorial"""
     try:
-        dados = carregar_dados()
+        dados = carregar_dados_mapa()
         area_data = request.json
         
         # Verificar se é uma equipe válida para o usuário
@@ -907,7 +934,7 @@ def salvar_area():
             
             dados['areas_territoriais'].append(area_data)
         
-        salvar_dados(dados)
+        salvar_dados_mapa(dados)
         
         return jsonify({
             'status': 'sucesso',
@@ -926,9 +953,9 @@ def salvar_area():
 @login_required
 @convidado_bloqueado
 def excluir_area(area_id):
-    """Exclui uma área territorial"""
+    """Exclui uma área territorial""" 
     try:
-        dados = carregar_dados()
+        dados = carregar_dados_mapa()
         equipe_atual = session['equipe']
         
         if 'areas_territoriais' not in dados:
@@ -944,7 +971,7 @@ def excluir_area(area_id):
                     }), 403
                 
                 dados['areas_territoriais'].pop(i)
-                salvar_dados(dados)
+                salvar_dados_mapa(dados)
                 
                 return jsonify({
                     'status': 'sucesso',
