@@ -1,5 +1,6 @@
-// Sistema de Mapa para Territorialização
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM carregado, iniciando mapa...');
+
     // Variáveis globais
     let map;
     let drawnItems = L.featureGroup();
@@ -25,12 +26,20 @@ document.addEventListener('DOMContentLoaded', function () {
         setupEventListeners();
         loadAreas();
         checkPermissions();
+        setupCustomAnimations();
     }
 
     // Inicializar mapa
     function initMap() {
         try {
             console.log('Criando mapa...', CAMACARI_COORDS);
+
+            // Verificar se o container existe
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) {
+                console.error('Container #map não encontrado!');
+                return;
+            }
 
             // Criar mapa centralizado em Camaçari
             map = L.map('map', {
@@ -39,6 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 zoomControl: true,
                 preferCanvas: true
             });
+
+            window._leafletMap = map;
 
             // Tile layer do OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -50,15 +61,27 @@ document.addEventListener('DOMContentLoaded', function () {
             // Adicionar layer para itens desenhados
             drawnItems.addTo(map);
 
+            // Forçar redimensionamento após um pequeno delay
+            setTimeout(() => {
+                if (map) {
+                    map.invalidateSize();
+                    console.log('Mapa inicializado com sucesso!');
+                }
+            }, 100);
+
         } catch (error) {
             console.error('❌ Erro ao inicializar mapa:', error);
-            alert('Erro ao carregar o mapa: ' + error.message);
+            showMessage('Erro ao carregar o mapa: ' + error.message, 'error');
         }
     }
 
     // Configurar seletor de cores
     function setupColorPicker() {
         const colorPicker = document.getElementById('color-picker');
+        if (!colorPicker) {
+            console.error('Elemento color-picker não encontrado!');
+            return;
+        }
 
         colors.forEach(color => {
             const div = document.createElement('div');
@@ -80,33 +103,65 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Atualizar seletor de cores
+
     function updateColorPicker() {
         document.querySelectorAll('.color-option').forEach(option => {
             option.classList.toggle('selected', option.dataset.color === selectedColor);
         });
     }
 
-    // Configurar eventos
+    // ========== LÓGICA DE STATUS DA ÁREA ==========
+
+    function setupAreaStatusLogic() {
+        const agenteField = document.getElementById('agente-id');
+        const microareaGroup = document.getElementById('microarea-group');
+        const microareaField = document.getElementById('microarea');
+
+        if (!agenteField || !microareaGroup || !microareaField) {
+            console.error('Campos de ACS/microárea não encontrados!');
+            return;
+        }
+
+        // Escutar mudanças no campo do agente
+        agenteField.addEventListener('input', function () {
+            if (this.value.trim() !== '') {
+                // Tem ACS - mostrar campo de microárea
+                microareaGroup.style.display = 'block';
+                microareaField.required = true;
+                areaStatus = 'mapeada';
+            } else {
+                // Não tem ACS - ocultar campo de microárea
+                microareaGroup.style.display = 'none';
+                microareaField.required = false;
+                microareaField.value = '';
+                areaStatus = 'descoberta';
+            }
+        });
+
+        // Escutar no campo de microárea
+        microareaField.addEventListener('change', function () {
+            if (this.value !== '') {
+                areaStatus = 'mapeada';
+                // Se tiver microárea mas não tiver ACS, focar no campo ACS
+                if (!agenteField.value.trim()) {
+                    agenteField.placeholder = 'Informe o ACS desta microárea...';
+                    agenteField.focus();
+                }
+            } else if (!agenteField.value.trim()) {
+                areaStatus = 'descoberta';
+            }
+        });
+    }
+
+    // ========== CONFIGURAÇÃO DE EVENTOS ==========
+
     function setupEventListeners() {
         // Botões de desenho
-        document.getElementById('btn-draw-polygon').addEventListener('click', function () {
-            startDrawing('polygon');
-        });
-
-        document.getElementById('btn-draw-rectangle').addEventListener('click', function () {
-            startDrawing('rectangle');
-        });
-
-        document.getElementById('btn-draw-circle').addEventListener('click', function () {
-            startDrawing('circle');
-        });
-
-        document.getElementById('btn-edit').addEventListener('click', function () {
-            toggleEditMode();
-        });
-
-        document.getElementById('btn-delete').addEventListener('click', function () {
+        document.getElementById('btn-draw-polygon').addEventListener('click', () => startDrawing('polygon'));
+        document.getElementById('btn-draw-rectangle').addEventListener('click', () => startDrawing('rectangle'));
+        document.getElementById('btn-draw-circle').addEventListener('click', () => startDrawing('circle'));
+        document.getElementById('btn-edit').addEventListener('click', toggleEditMode);
+        document.getElementById('btn-delete').addEventListener('click', () => {
             if (confirm('Clique em uma área para excluir')) {
                 isEditing = true;
                 map.once('click', handleAreaDelete);
@@ -138,9 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 weight: 2
             });
 
-            // Adicionar popup
             layer.bindPopup('<b>Nova Área</b><br>Preencha os dados e salve');
-
             drawnItems.addLayer(layer);
 
             // Preencher nome automático
@@ -155,182 +208,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 toggleFullscreen();
             }
         });
-    }
 
-    // Toggle tela cheia
-    function toggleFullscreen() {
-        const mapPage = document.querySelector('.map-page');
-        const mapContainer = document.querySelector('.map-container');
-        const mapElement = document.getElementById('map');
-        const fullscreenToggle = document.getElementById('fullscreen-toggle');
-        const header = document.querySelector('.map-header');
-        const sidebar = document.querySelector('.map-sidebar');
-
-        if (!isFullscreen) {
-            // Entrar em modo tela cheia
-            mapPage.classList.add('modo-tela-cheia');
-
-            // Esconder sidebar por padrão
-            if (sidebar) {
-                sidebar.classList.remove('visible');
-            }
-
-            // Adicionar botão de toggle da sidebar
-            addSidebarToggle();
-
-            // Esconder cabeçalho
-            if (header) {
-                header.style.display = 'none';
-            }
-
-            // Atualizar botão
-            fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i><span class="btn-text">Sair da Tela Cheia</span>';
-
-            // Ajustar tamanho do mapa
-            setTimeout(() => {
-                if (map) {
-                    map.invalidateSize();
-                }
-            }, 100);
-
-            showMessage('Modo tela cheia ativado. Pressione ESC para sair.', 'info', 2000);
-            isFullscreen = true;
-            sidebarVisibleInFullscreen = false;
-
-        } else {
-            // Sair do modo tela cheia
-            mapPage.classList.remove('modo-tela-cheia');
-
-            // Remover botão de toggle da sidebar
-            removeSidebarToggle();
-
-            // Mostrar sidebar normalmente
-            if (sidebar) {
-                sidebar.classList.add('visible');
-            }
-
-            // Mostrar cabeçalho
-            if (header) {
-                header.style.display = 'block';
-            }
-
-            // Atualizar botão
-            fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i><span class="btn-text">Tela Cheia</span>';
-
-            // Ajustar tamanho do mapa
-            setTimeout(() => {
-                if (map) {
-                    map.invalidateSize();
-                }
-            }, 100);
-
-            isFullscreen = false;
-            sidebarVisibleInFullscreen = false;
-        }
-    }
-
-    // Função para adicionar botão de toggle da sidebar
-    function addSidebarToggle() {
-        const existingToggle = document.querySelector('.sidebar-toggle');
-        if (existingToggle) existingToggle.remove();
-
-        const toggleBtn = document.createElement('button');
-        toggleBtn.className = 'sidebar-toggle';
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        toggleBtn.title = 'Mostrar controles de edição';
-
-        toggleBtn.addEventListener('click', function () {
-            toggleSidebarInFullscreen();
-        });
-
-        document.querySelector('.map-container').appendChild(toggleBtn);
-    }
-
-    // Função para remover botão de toggle da sidebar
-    function removeSidebarToggle() {
-        const toggleBtn = document.querySelector('.sidebar-toggle');
-        if (toggleBtn) {
-            toggleBtn.remove();
-        }
-    }
-
-    // Função para alternar a visibilidade da sidebar em tela cheia
-    function toggleSidebarInFullscreen() {
-        if (!isFullscreen) return;
-
-        const sidebar = document.querySelector('.map-sidebar');
-        const toggleBtn = document.querySelector('.sidebar-toggle');
-
-        sidebarVisibleInFullscreen = !sidebarVisibleInFullscreen;
-
-        if (sidebarVisibleInFullscreen) {
-            sidebar.classList.add('visible');
-            toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-            toggleBtn.title = 'Ocultar controles de edição';
-            toggleBtn.style.right = '350px'; // Largura da sidebar
-        } else {
-            sidebar.classList.remove('visible');
-            toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-            toggleBtn.title = 'Mostrar controles de edição';
-            toggleBtn.style.right = '0';
-        }
-
-        // Ajustar tamanho do mapa
-        setTimeout(() => {
+        // Redimensionar mapa quando a janela mudar
+        window.addEventListener('resize', () => {
             if (map) {
-                map.invalidateSize();
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 250);
             }
-        }, 300);
+        });
     }
 
-    // Modifique a função de evento keydown para ESC
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && isFullscreen) {
-            toggleFullscreen();
-        }
-    });
+    // ========== FUNÇÕES DE DESENHO ==========
 
-    // Iniciar desenho
     function startDrawing(type) {
-        let drawOptions;
+        let drawOptions = {
+            shapeOptions: {
+                color: selectedColor,
+                fillColor: selectedColor,
+                fillOpacity: 0.4
+            }
+        };
 
         switch (type) {
             case 'polygon':
-                drawOptions = {
-                    shapeOptions: {
-                        color: selectedColor,
-                        fillColor: selectedColor,
-                        fillOpacity: 0.4
-                    }
-                };
                 new L.Draw.Polygon(map, drawOptions).enable();
                 break;
-
             case 'rectangle':
-                drawOptions = {
-                    shapeOptions: {
-                        color: selectedColor,
-                        fillColor: selectedColor,
-                        fillOpacity: 0.4
-                    }
-                };
                 new L.Draw.Rectangle(map, drawOptions).enable();
                 break;
-
             case 'circle':
-                drawOptions = {
-                    shapeOptions: {
-                        color: selectedColor,
-                        fillColor: selectedColor,
-                        fillOpacity: 0.4
-                    }
-                };
                 new L.Draw.Circle(map, drawOptions).enable();
                 break;
         }
     }
 
-    // Alternar modo de edição
     function toggleEditMode() {
         isEditing = !isEditing;
         const btn = document.getElementById('btn-edit');
@@ -338,61 +250,106 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isEditing) {
             btn.classList.add('active');
             btn.innerHTML = '<i class="fas fa-times"></i> Cancelar Edição';
-            alert('Clique em uma área para editar suas propriedades');
+            showMessage('Clique em uma área para editar suas propriedades', 'info');
         } else {
             btn.classList.remove('active');
             btn.innerHTML = '<i class="fas fa-edit"></i> Editar Área';
         }
     }
 
-    // Manipular exclusão de área
-    function handleAreaDelete(e) {
-        const clickedLayer = findLayerAtPoint(e.latlng);
-        if (clickedLayer && clickedLayer.areaId) {
-            showDeleteConfirmation(clickedLayer.areaId);
+    // ========== FUNÇÕES DE ÁREAS ==========
+
+    async function saveCurrentArea() {
+        const layers = drawnItems.getLayers();
+        if (layers.length === 0) {
+            showMessage('Desenhe uma área no mapa primeiro!', 'warning');
+            return;
         }
-        isEditing = false;
-    }
 
-    // Encontrar layer em um ponto
-    function findLayerAtPoint(latlng) {
-        let foundLayer = null;
+        const lastLayer = layers[layers.length - 1];
+        const geojson = lastLayer.toGeoJSON();
 
-        drawnItems.eachLayer(function (layer) {
-            if (layer.getBounds && layer.getBounds().contains(latlng)) {
-                foundLayer = layer;
-            } else if (layer.getLatLng && layer.getLatLng().distanceTo(latlng) < 10) {
-                foundLayer = layer;
-            }
-        });
+        // Coletar dados
+        const nome = document.getElementById('area-name').value.trim();
+        const tipo = document.getElementById('area-type').value;
+        const descricao = document.getElementById('area-description').value.trim();
+        const agente = document.getElementById('agente-id').value.trim();
+        const microarea = document.getElementById('microarea').value;
+        const streetview = document.getElementById('streetview-link').value.trim();
 
-        return foundLayer;
-    }
+        // Validações
+        if (!nome) {
+            showMessage('Por favor, informe um nome para a área', 'warning');
+            document.getElementById('area-name').focus();
+            return;
+        }
 
-    // Mostrar confirmação de exclusão
-    function showDeleteConfirmation(areaId) {
-        currentAreaId = areaId;
-        document.getElementById('confirm-modal').style.display = 'flex';
-
-        document.getElementById('btn-confirm-delete').onclick = function () {
-            deleteArea(areaId);
-            hideModal();
+        // Preparar dados
+        let areaData = {
+            nome: nome,
+            tipo: tipo,
+            cor: selectedColor,
+            descricao: descricao,
+            streetview_link: streetview || null,
+            geojson: geojson,
+            equipe: window.APP_CONFIG.nome_equipe.toLowerCase().replace(/\s+/g, ''),
+            status: 'descoberta',
+            microarea: null,
+            agente_saude_id: null
         };
+
+        // Lógica: Se tem microárea OU ACS, é área mapeada
+        if (microarea || agente) {
+            areaData.status = 'mapeada';
+
+            // Validações específicas para áreas mapeadas
+            if (agente && !microarea) {
+                showMessage('Para vincular um ACS, selecione uma microárea', 'warning');
+                document.getElementById('microarea').focus();
+                return;
+            }
+
+            if (microarea && !agente) {
+                showMessage('Para vincular uma microárea, informe o ACS responsável', 'warning');
+                document.getElementById('agente-id').focus();
+                return;
+            }
+
+            // Salvar dados de vinculação
+            if (microarea) areaData.microarea = microarea;
+            if (agente) areaData.agente_saude_id = agente;
+        }
+
+        console.log('Enviando dados:', areaData);
+
+        try {
+            const response = await fetch('/api/salvar-area', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(areaData)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'sucesso') {
+                const msg = areaData.status === 'mapeada'
+                    ? 'Área mapeada salva com sucesso!'
+                    : 'Área descoberta salva com sucesso!';
+                showMessage(msg, 'success');
+                clearForm();
+                loadAreas();
+            } else {
+                showMessage('Erro: ' + result.mensagem, 'error');
+            }
+        } catch (error) {
+            showMessage('Erro ao salvar: ' + error.message, 'error');
+        }
     }
 
-    // Esconder modal
-    function hideModal() {
-        document.getElementById('confirm-modal').style.display = 'none';
-        currentAreaId = null;
-    }
-
-    // Carregar áreas do servidor
     async function loadAreas() {
         try {
             const response = await fetch('/api/areas-territoriais');
-            if (!response.ok) {
-                throw new Error('Erro ao carregar áreas');
-            }
+            if (!response.ok) throw new Error('Erro ao carregar áreas');
 
             const areas = await response.json();
             renderAreas(areas);
@@ -403,21 +360,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Renderizar áreas no mapa e na lista
     function renderAreas(areas) {
-        // Limpar áreas existentes
         drawnItems.clearLayers();
-
-        // Adicionar cada área
-        areas.forEach(area => {
-            addAreaToMap(area);
-        });
-
-        // Atualizar lista
+        areas.forEach(area => addAreaToMap(area));
         updateAreasList(areas);
     }
 
-    // Adicionar área ao mapa
     function addAreaToMap(area) {
         try {
             const layer = L.geoJSON(area.geojson, {
@@ -429,17 +377,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }).addTo(drawnItems);
 
-            
-            // Construir conteúdo do popup
-            const popupContent = `
-            <div style="min-width: 200px;">
-                <h4 style="margin: 0 0 10px 0; color: ${area.cor}">${area.nome}</h4>
-                <p><strong>Tipo:</strong> ${formatAreaType(area.tipo)}</p>
-                <p><strong>Descrição:</strong> ${area.descricao || 'Sem descrição'}</p>
-                ${area.agente_saude_id ? `<p><strong>Agente:</strong> ${area.agente_saude_id}</p>` : ''}
-                
-                <!-- ADICIONE ESTA PARTE PARA O BOTÃO DO STREET VIEW -->
-                ${area.streetview_link ? `
+            // Conteúdo do popup
+            let popupContent = `
+                <div style="min-width: 250px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <div style="width: 12px; height: 12px; background: ${area.cor}; border-radius: 50%;"></div>
+                        <h4 style="margin: 0; color: ${area.cor}">${area.nome}</h4>
+                    </div>
+                    
+                    <div style="background: ${area.status === 'mapeada' ? '#d4edda' : '#fff3cd'}; 
+                                padding: 8px; border-radius: 6px; margin-bottom: 10px;">
+                        <strong>Status:</strong> 
+                        ${area.status === 'mapeada' ? '🟢 Área Mapeada' : '🟡 Área Descoberta'}
+                    </div>
+            `;
+
+            if (area.status === 'mapeada') {
+                popupContent += `
+                    ${area.microarea ? `<p><strong>Microárea:</strong> ${area.microarea}</p>` : ''}
+                    ${area.agente_saude_id ? `<p><strong>ACS:</strong> ${area.agente_saude_id}</p>` : ''}
+                `;
+            } else {
+                popupContent += `<p><em>Área identificada sem vínculo com ACS</em></p>`;
+            }
+
+            popupContent += `
+                    <p><strong>Tipo:</strong> ${formatAreaType(area.tipo)}</p>
+                    ${area.descricao ? `<p><strong>Descrição:</strong> ${area.descricao}</p>` : ''}
+            `;
+
+            if (area.streetview_link) {
+                popupContent += `
                     <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
                         <a href="${area.streetview_link}" 
                            target="_blank" 
@@ -452,18 +420,15 @@ document.addEventListener('DOMContentLoaded', function () {
                             Ver no Street View
                         </a>
                     </div>
-                ` : ''}
-            </div>
-        `;
+                `;
+            }
+
+            popupContent += `</div>`;
 
             layer.bindPopup(popupContent);
-
-
-            // Armazenar dados da área
             layer.areaId = area.id;
             layer.areaData = area;
 
-            // Adicionar evento de clique
             layer.on('click', function (e) {
                 if (isEditing) {
                     editArea(area.id);
@@ -475,7 +440,44 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Atualizar lista de áreas
+    async function editArea(areaId) {
+        try {
+            const response = await fetch(`/api/area/${areaId}`);
+            const area = await response.json();
+
+            if (area) {
+                // Preencher formulário
+                document.getElementById('area-name').value = area.nome;
+                document.getElementById('area-type').value = area.tipo;
+                document.getElementById('area-description').value = area.descricao || '';
+                document.getElementById('streetview-link').value = area.streetview_link || '';
+                document.getElementById('agente-id').value = area.agente_saude_id || '';
+                document.getElementById('microarea').value = area.microarea || '';
+
+                // Mostrar/ocultar campo de microárea
+                const microareaGroup = document.getElementById('microarea-group');
+                if (area.agente_saude_id || area.microarea) {
+                    microareaGroup.style.display = 'block';
+                    areaStatus = 'mapeada';
+                } else {
+                    microareaGroup.style.display = 'none';
+                    areaStatus = 'descoberta';
+                }
+
+                // Cor
+                selectedColor = area.cor;
+                updateColorPicker();
+
+                // Focar
+                document.getElementById('area-name').focus();
+
+                showMessage(`Editando área: ${area.nome}`, 'info');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar área para edição:', error);
+        }
+    }
+
     function updateAreasList(areas) {
         const areasList = document.getElementById('areas-list');
         const noAreas = areasList.querySelector('.no-areas');
@@ -489,66 +491,71 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 `;
             }
+            updateAreasCount(0);
             return;
         }
 
         // Remover mensagem de "nenhuma área"
-        if (noAreas) {
-            noAreas.remove();
-        }
+        if (noAreas) noAreas.remove();
 
-        // Ordenar por nome
-        areas.sort((a, b) => a.nome.localeCompare(b.nome));
+        // Ordenar: mapeadas primeiro
+        areas.sort((a, b) => {
+            if (a.status === b.status) return a.nome.localeCompare(b.nome);
+            return a.status === 'mapeada' ? -1 : 1;
+        });
 
         areasList.innerHTML = areas.map(area => `
-        <div class="area-item" data-id="${area.id}" style="border-left-color: ${area.cor}">
-            <div class="area-header">
-                <div class="area-name">${area.nome}</div>
-                <div class="area-type">${formatAreaType(area.tipo)}</div>
-            </div>
-            ${area.descricao ? `<div class="area-description">${area.descricao}</div>` : ''}
-            ${area.streetview_link ? `
-                <div class="area-link" style="margin-top: 8px;">
-                    <a href="${area.streetview_link}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       style="display: inline-flex; align-items: center; gap: 6px;
-                              color: #4285f4; font-size: 12px; text-decoration: none;">
-                        <i class="fas fa-external-link-alt"></i>
-                        Ver no Street View
-                    </a>
+            <div class="area-item" data-id="${area.id}" data-status="${area.status}" style="border-left-color: ${area.cor}">
+                <div class="area-header">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="area-name">${area.nome}</div>
+                        <span class="area-status ${area.status === 'mapeada' ? 'status-mapeada' : 'status-descoberta'}">
+                            ${area.status === 'mapeada' ? 'Mapeada' : 'Descoberta'}
+                        </span>
+                    </div>
+                    <div class="area-type">${formatAreaType(area.tipo)}</div>
                 </div>
-            ` : ''}
-            
-            <div class="area-actions">
-                <button class="area-action-btn" onclick="zoomToArea(${area.id})" title="Zoom">
-                    <i class="fas fa-search-plus"></i>
-                </button>
-                ${window.APP_CONFIG.usuario_logado && window.APP_CONFIG.nivel_usuario !== 'convidado' ? `
-                    <button class="area-action-btn" onclick="editArea(${area.id})" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="area-action-btn" onclick="confirmDeleteArea(${area.id})" title="Excluir">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                
+                ${area.microarea ? `
+                    <div class="area-microarea" style="font-size: 13px; color: #3498db; margin: 5px 0;">
+                        <i class="fas fa-map-marker-alt"></i> Microárea: ${area.microarea}
+                    </div>
                 ` : ''}
+                
+                ${area.agente_saude_id ? `
+                    <div class="area-agente" style="font-size: 13px; color: #27ae60; margin: 5px 0;">
+                        <i class="fas fa-user-md"></i> ACS: ${area.agente_saude_id}
+                    </div>
+                ` : ''}
+                
+                ${area.descricao ? `<div class="area-description">${area.descricao}</div>` : ''}
+                
+                <div class="area-actions">
+                    <button class="area-action-btn" onclick="zoomToArea(${area.id})" title="Zoom">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    ${window.APP_CONFIG.usuario_logado && window.APP_CONFIG.nivel_usuario !== 'convidado' ? `
+                        <button class="area-action-btn" onclick="editArea(${area.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="area-action-btn" onclick="confirmDeleteArea(${area.id})" title="Excluir">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : ''}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
 
-        // Atualizar contador
         updateAreasCount(areas.length);
     }
 
-    // Atualizar contador de áreas
     function updateAreasCount(count) {
         const countElement = document.getElementById('areas-count');
-        if (countElement) {
-            countElement.textContent = count;
-        }
+        if (countElement) countElement.textContent = count;
     }
 
-    // Formatar tipo de área
+    // ========== FUNÇÕES UTILITÁRIAS ==========
+
     function formatAreaType(type) {
         const types = {
             'bairro': 'Bairro',
@@ -561,150 +568,32 @@ document.addEventListener('DOMContentLoaded', function () {
         return types[type] || type;
     }
 
-    // Salvar área atual
-    async function saveCurrentArea() {
-        const layers = drawnItems.getLayers();
-        if (layers.length === 0) {
-            showMessage('Desenhe uma área no mapa primeiro!', 'warning');
-            return;
-        }
-
-        const lastLayer = layers[layers.length - 1];
-        const geojson = lastLayer.toGeoJSON();
-
-        const areaData = {
-            nome: document.getElementById('area-name').value.trim(),
-            tipo: document.getElementById('area-type').value,
-            cor: selectedColor,
-            descricao: document.getElementById('area-description').value.trim(),
-            agente_saude_id: document.getElementById('agente-id').value.trim() || null,
-            streetview_link: document.getElementById('streetview-link').value.trim() || null, // NOVO CAMPO
-            geojson: geojson,
-            equipe: window.APP_CONFIG.nome_equipe.toLowerCase().replace(/\s+/g, '')
-        };
-
-        if (!areaData.nome) {
-            showMessage('Por favor, informe um nome para a área', 'warning');
-            document.getElementById('area-name').focus();
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/salvar-area', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(areaData)
-            });
-
-            const result = await response.json();
-
-            if (result.status === 'sucesso') {
-                showMessage('Área salva com sucesso!', 'success');
-                clearForm();
-                loadAreas();
-            } else {
-                showMessage('Erro: ' + result.mensagem, 'error');
-            }
-        } catch (error) {
-            showMessage('Erro ao salvar: ' + error.message, 'error');
-        }
-    }
-
-    // Editar área
-    async function editArea(areaId) {
-        try {
-            const response = await fetch('/api/areas-territoriais');
-            const areas = await response.json();
-
-            const area = areas.find(a => a.id === areaId);
-            if (area) {
-                // Preencher formulário
-                document.getElementById('area-name').value = area.nome;
-                document.getElementById('area-type').value = area.tipo;
-                document.getElementById('area-description').value = area.descricao || '';
-                document.getElementById('agente-id').value = area.agente_saude_id || '';
-                document.getElementById('streetview-link').value = area.streetview_link || ''; // NOVO CAMPO
-
-                // Selecionar cor
-                selectedColor = area.cor;
-                updateColorPicker();
-
-                // Rolar para o formulário
-                document.getElementById('area-name').focus();
-
-                showMessage(`Editando área: ${area.nome}`, 'info');
-            }
-        } catch (error) {
-            console.error('Erro ao carregar área para edição:', error);
-        }
-    }
-
-    // Zoom para área
-    function zoomToArea(areaId) {
-        drawnItems.eachLayer(function (layer) {
-            if (layer.areaId === areaId) {
-                if (layer.getBounds) {
-                    map.fitBounds(layer.getBounds());
-                    layer.openPopup();
-                }
-                return false; // Parar iteração
-            }
-        });
-    }
-
-    // Confirmar exclusão (para botões na lista)
-    window.confirmDeleteArea = function (areaId) {
-        currentAreaId = areaId;
-        document.getElementById('confirm-modal').style.display = 'flex';
-
-        document.getElementById('btn-confirm-delete').onclick = function () {
-            deleteArea(areaId);
-            hideModal();
-        };
-    };
-
-    // Excluir área
-    async function deleteArea(areaId) {
-        try {
-            const response = await fetch(`/api/excluir-area/${areaId}`, {
-                method: 'DELETE'
-            });
-
-            const result = await response.json();
-
-            if (result.status === 'sucesso') {
-                showMessage('Área excluída com sucesso!', 'success');
-                loadAreas(); // Recarregar áreas
-            } else {
-                showMessage('Erro: ' + result.mensagem, 'error');
-            }
-        } catch (error) {
-            showMessage('Erro ao excluir: ' + error.message, 'error');
-        }
-    }
-
-    // Limpar formulário
     function clearForm() {
         document.getElementById('area-name').value = '';
+        document.getElementById('area-type').value = 'bairro';
         document.getElementById('area-description').value = '';
         document.getElementById('agente-id').value = '';
-        document.getElementById('area-type').value = 'bairro';
+        document.getElementById('streetview-link').value = '';
+        document.getElementById('microarea').value = '';
+
+        // Resetar status
+        areaStatus = 'descoberta';
+        const microareaGroup = document.getElementById('microarea-group');
+        if (microareaGroup) microareaGroup.style.display = 'none';
+
         selectedColor = '#3498db';
         updateColorPicker();
     }
 
-    // Verificar permissões
     function checkPermissions() {
         if (!window.APP_CONFIG.usuario_logado || window.APP_CONFIG.nivel_usuario === 'convidado') {
             disableEditing();
         }
     }
 
-    // Desabilitar edição para convidados
     function disableEditing() {
-        const editButtons = ['btn-draw-polygon',  'btn-edit', 'btn-delete', 'btn-save-area'];
+        const editButtons = ['btn-draw-polygon', 'btn-draw-rectangle', 'btn-draw-circle',
+            'btn-edit', 'btn-delete', 'btn-save-area'];
 
         editButtons.forEach(btnId => {
             const btn = document.getElementById(btnId);
@@ -716,8 +605,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Desabilitar campos do formulário
-        const formFields = ['area-name', 'area-type', 'area-description', 'agente-id'];
+        const formFields = ['area-name', 'area-type', 'area-description', 'agente-id', 'streetview-link', 'microarea'];
         formFields.forEach(fieldId => {
             const field = document.getElementById(fieldId);
             if (field) {
@@ -727,7 +615,103 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Função para mostrar mensagens
+    // ========== FUNÇÕES DE EXCLUSÃO ==========
+
+    function handleAreaDelete(e) {
+        const clickedLayer = findLayerAtPoint(e.latlng);
+        if (clickedLayer && clickedLayer.areaId) {
+            showDeleteConfirmation(clickedLayer.areaId);
+        }
+        isEditing = false;
+    }
+
+    function findLayerAtPoint(latlng) {
+        let foundLayer = null;
+        drawnItems.eachLayer(function (layer) {
+            if (layer.getBounds && layer.getBounds().contains(latlng)) {
+                foundLayer = layer;
+            } else if (layer.getLatLng && layer.getLatLng().distanceTo(latlng) < 10) {
+                foundLayer = layer;
+            }
+        });
+        return foundLayer;
+    }
+
+    function showDeleteConfirmation(areaId) {
+        currentAreaId = areaId;
+        document.getElementById('confirm-modal').style.display = 'flex';
+        document.getElementById('btn-confirm-delete').onclick = function () {
+            deleteArea(areaId);
+            hideModal();
+        };
+    }
+
+    function hideModal() {
+        document.getElementById('confirm-modal').style.display = 'none';
+        currentAreaId = null;
+    }
+
+    async function deleteArea(areaId) {
+        try {
+            const response = await fetch(`/api/excluir-area/${areaId}`, { method: 'DELETE' });
+            const result = await response.json();
+
+            if (result.status === 'sucesso') {
+                showMessage('Área excluída com sucesso!', 'success');
+                loadAreas();
+            } else {
+                showMessage('Erro: ' + result.mensagem, 'error');
+            }
+        } catch (error) {
+            showMessage('Erro ao excluir: ' + error.message, 'error');
+        }
+    }
+
+    // ========== FUNÇÕES DE TELA CHEIA ==========
+
+    function toggleFullscreen() {
+        const mapPage = document.querySelector('.map-page');
+        const fullscreenToggle = document.getElementById('fullscreen-toggle');
+        const header = document.querySelector('.map-header');
+        const sidebar = document.querySelector('.map-sidebar');
+
+        if (!isFullscreen) {
+            // Entrar em modo tela cheia
+            mapPage.classList.add('modo-tela-cheia');
+            if (header) header.style.display = 'none';
+
+            fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i><span class="btn-text">Sair da Tela Cheia</span>';
+
+            setTimeout(() => {
+                if (map) {
+                    map.invalidateSize();
+                    map.setView([CAMACARI_COORDS.lat, CAMACARI_COORDS.lng], CAMACARI_COORDS.zoom);
+                }
+            }, 100);
+
+            showMessage('Modo tela cheia ativado. Pressione ESC para sair.', 'info', 2000);
+            isFullscreen = true;
+
+        } else {
+            // Sair do modo tela cheia
+            mapPage.classList.remove('modo-tela-cheia');
+            if (header) header.style.display = 'block';
+
+            fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i><span class="btn-text">Tela Cheia</span>';
+
+            setTimeout(() => {
+                if (map) {
+                    map.invalidateSize();
+                    map.setView([CAMACARI_COORDS.lat, CAMACARI_COORDS.lng], CAMACARI_COORDS.zoom);
+                }
+            }, 100);
+
+            isFullscreen = false;
+        }
+    }
+
+    // ========== FUNÇÕES DE MENSAGENS ==========
+
     function showMessage(text, type = 'info', duration = 3000) {
         const existingMessages = document.querySelectorAll('.custom-message');
         existingMessages.forEach(msg => msg.remove());
@@ -787,7 +771,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }, 400);
         }, duration);
+    }
 
+    function setupCustomAnimations() {
         if (!document.querySelector('#custom-animations')) {
             const style = document.createElement('style');
             style.id = 'custom-animations';
@@ -805,6 +791,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Inicializar
+    // ========== FUNÇÕES GLOBAIS ==========
+
+    window.zoomToArea = function (areaId) {
+        drawnItems.eachLayer(function (layer) {
+            if (layer.areaId === areaId) {
+                if (layer.getBounds) {
+                    map.fitBounds(layer.getBounds());
+                    layer.openPopup();
+                }
+                return false;
+            }
+        });
+    };
+
+    window.confirmDeleteArea = function (areaId) {
+        currentAreaId = areaId;
+        document.getElementById('confirm-modal').style.display = 'flex';
+        document.getElementById('btn-confirm-delete').onclick = function () {
+            deleteArea(areaId);
+            hideModal();
+        };
+    };
+
+    // ========== INICIALIZAÇÃO ==========
+
     init();
 });
