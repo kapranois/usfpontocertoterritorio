@@ -274,12 +274,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // REMOVER CURSOR DE DESENHO (CRUZ)
         document.getElementById('map').classList.remove('map-drawing-mode');
 
-        // Aplicar estilo com cor padrão
+        // Aplicar estilo SEM BORDAS
         layer.setStyle({
-            color: selectedColor,
+            color: 'transparent', // Borda transparente
             fillColor: selectedColor,
             fillOpacity: 0.4,
-            weight: 2
+            weight: 0, // Espessura zero
+            opacity: 0 // Opacidade zero
         });
 
         // Adicionar ao layer
@@ -476,7 +477,6 @@ document.addEventListener('DOMContentLoaded', function () {
             agenteRow.style.display = 'none';
         }
 
-        // Street View (se existir) - AGORA ABRE MODAL DE PREVIEW
         const streetviewRow = document.getElementById('card-streetview-row');
         const streetviewLink = document.getElementById('card-streetview-link');
         if (areaData.streetview_link) {
@@ -484,11 +484,11 @@ document.addEventListener('DOMContentLoaded', function () {
             streetviewLink.textContent = 'Abrir Street View';
             streetviewLink.href = '#';
 
-            // Remove target="_blank" e adiciona evento para abrir modal
+            // Remove target="_blank" e adiciona evento para abrir popup
             streetviewLink.removeAttribute('target');
             streetviewLink.onclick = function (e) {
                 e.preventDefault();
-                openStreetViewModal(areaData.streetview_link);
+                openStreetViewPopup(areaData.streetview_link);
                 return false;
             };
 
@@ -496,6 +496,17 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             streetviewRow.style.display = 'none';
         }
+
+        // Detectar se popups estão bloqueados
+        function arePopupsBlocked() {
+            const testPopup = window.open('', '_blank', 'width=1,height=1');
+            if (!testPopup || testPopup.closed || typeof testPopup.closed === 'undefined') {
+                return true;
+            }
+            testPopup.close();
+            return false;
+        }
+
 
         // Mostrar card
         document.getElementById('area-info-card').classList.add('active');
@@ -578,11 +589,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result.status === 'sucesso') {
                 showMessage('Área salva com sucesso!', 'success');
 
-                // Atualizar tooltip do polígono
-                //currentPolygonLayer.bindTooltip(
-                  //  `<b>${areaData.nome}</b><br>${formatAreaType(areaData.tipo)}<br>Clique para ver`,
-                    //{ permanent: false, direction: 'center' }
-                //  );
+                // Atualizar estilo para SEM BORDAS
+                currentPolygonLayer.setStyle({
+                    color: 'transparent',
+                    fillColor: selectedColor,
+                    fillOpacity: 0.4,
+                    weight: 0,
+                    opacity: 0
+                });
+
 
                 // Adicionar dados da área ao layer
                 //currentPolygonLayer.areaId = result.id || currentAreaId;
@@ -623,138 +638,49 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Abrir modal do Street View
-    function openStreetViewModal(streetviewUrl) {
-        const modal = document.getElementById('streetview-modal');
-        const iframe = document.getElementById('streetview-iframe');
-        const externalLink = document.getElementById('open-external-streetview');
+    
 
-        if (!modal || !iframe) return;
+    // Abrir Street View em popup do navegador
+    function openStreetViewPopup(streetviewUrl) {
+        // Configurações do popup
+        const width = 1000;
+        const height = 700;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
 
-        // Configurar iframe
-        iframe.src = streetviewUrl;
+        // Parâmetros do popup
+        const features = [
+            `width=${width}`,
+            `height=${height}`,
+            `left=${left}`,
+            `top=${top}`,
+            'scrollbars=yes',
+            'resizable=yes',
+            'toolbar=no',
+            'location=no',
+            'directories=no',
+            'status=no',
+            'menubar=no'
+        ].join(',');
 
-        // Configurar link externo
-        externalLink.href = streetviewUrl;
-
-        // Mostrar modal
-        modal.classList.add('active');
-
-        // Bloquear scroll da página
-        document.body.style.overflow = 'hidden';
-    }
-
-    // Fechar modal do Street View
-    function closeStreetViewModal() {
-        const modal = document.getElementById('streetview-modal');
-        const iframe = document.getElementById('streetview-iframe');
-
-        if (!modal || !iframe) return;
-
-        // Remover src do iframe para parar carregamento
-        iframe.src = '';
-
-        // Fechar modal
-        modal.classList.remove('active');
-
-        // Restaurar scroll da página
-        document.body.style.overflow = '';
-    }
-
-    // Extrair coordenadas da URL do Google Maps (se possível)
-    function extractCoordsFromUrl(url) {
         try {
-            // Padrões comuns de URLs do Google Maps
-            const patterns = [
-                /@(-?\d+\.\d+),(-?\d+\.\d+),(\d+\.?\d*)z/, // @lat,lng,zoomz
-                /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,          // !3dlat!4dlng
-                /lat=(-?\d+\.\d+)&lng=(-?\d+\.\d+)/,       // lat=...&lng=...
-                /q=(-?\d+\.\d+),(-?\d+\.\d+)/              // q=lat,lng
-            ];
+            // Abrir popup
+            const popup = window.open(streetviewUrl, 'StreetViewPopup', features);
 
-            for (const pattern of patterns) {
-                const match = url.match(pattern);
-                if (match) {
-                    let lat, lng;
-
-                    if (pattern.toString().includes('@')) {
-                        // Formato: @lat,lng,zoomz
-                        lat = parseFloat(match[1]);
-                        lng = parseFloat(match[2]);
-                    } else if (pattern.toString().includes('!3d')) {
-                        // Formato: !3dlat!4dlng
-                        lat = parseFloat(match[1]);
-                        lng = parseFloat(match[2]);
-                    } else if (pattern.toString().includes('lat=')) {
-                        // Formato: lat=...&lng=...
-                        lat = parseFloat(match[1]);
-                        lng = parseFloat(match[2]);
-                    } else {
-                        // Formato: q=lat,lng
-                        lat = parseFloat(match[1]);
-                        lng = parseFloat(match[2]);
-                    }
-
-                    if (!isNaN(lat) && !isNaN(lng)) {
-                        return { lat, lng };
-                    }
-                }
+            if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+                // Se popup foi bloqueado, abre em nova aba
+                showMessage('Popup bloqueado. Abrindo em nova aba...', 'warning', 3000);
+                window.open(streetviewUrl, '_blank', 'noopener,noreferrer');
+            } else {
+                // Focar no popup
+                popup.focus();
+                showMessage('Street View aberto em nova janela', 'info', 2000);
             }
         } catch (error) {
-            console.error('Erro ao extrair coordenadas:', error);
-        }
-
-        return null;
-    }
-
-    // Abrir modal do Street View (agora é preview)
-    function openStreetViewModal(streetviewUrl) {
-        const modal = document.getElementById('streetview-modal');
-        const urlDisplay = document.getElementById('streetview-url-display');
-        const openTabBtn = document.getElementById('open-streetview-tab');
-        const copyBtn = document.getElementById('copy-streetview-link');
-
-        if (!modal || !urlDisplay) return;
-
-        // Mostrar URL
-        urlDisplay.textContent = streetviewUrl;
-
-        // Configurar botão para abrir em nova aba
-        openTabBtn.onclick = function () {
+            console.error('Erro ao abrir popup:', error);
+            // Fallback: abrir em nova aba
             window.open(streetviewUrl, '_blank', 'noopener,noreferrer');
-            closeStreetViewModal();
-        };
-
-        // Configurar botão de copiar
-        copyBtn.onclick = function () {
-            navigator.clipboard.writeText(streetviewUrl)
-                .then(() => {
-                    showMessage('Link copiado para a área de transferência!', 'success');
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
-                    setTimeout(() => {
-                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Link';
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error('Erro ao copiar:', err);
-                    showMessage('Erro ao copiar link', 'error');
-                });
-        };
-
-        // Tentar extrair coordenadas e mostrar mini mapa
-        const coords = extractCoordsFromUrl(streetviewUrl);
-        if (coords) {
-            showMiniMap(coords.lat, coords.lng);
-        } else {
-            // Esconder mini mapa se não conseguir extrair coordenadas
-            document.getElementById('map-mini-preview').style.display = 'none';
         }
-
-        // Mostrar modal
-        modal.classList.add('active');
-
-        // Bloquear scroll da página
-        document.body.style.overflow = 'hidden';
     }
 
     // Mostrar mini mapa com localização
@@ -861,42 +787,48 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
     // Adicionar área ao mapa
     function addAreaToMap(area) {
         try {
             const layer = L.geoJSON(area.geojson, {
                 style: {
-                    color: area.cor || '#3498db', // Cor padrão se não tiver
+                    color: 'transparent', // BORDA TRANSPARENTE
                     fillColor: area.cor || '#3498db',
-                    fillOpacity: 0.4,
-                    weight: 2
+                    fillOpacity: 0.4, // Opacidade do preenchimento
+                    weight: 0, // ESPESSURA DA BORDA = 0
+                    opacity: 0 // OPACIDADE DA BORDA = 0
                 }
             }).addTo(drawnItems);
 
-            // Tooltip com informações básicas
-            const tooltipContent = `
-                <div style="text-align: center;">
-                    <b>${area.nome}</b><br>
-                    <small>${formatAreaType(area.tipo)}</small><br>
-                    <small>${area.descricao || 'Clique para ver informações'}</small>
-                </div>
-            `;
-
-            //layer.bindTooltip(tooltipContent, {
-              //  permanent: false,
-                //direction: 'center',
-                //lassName: 'area-tooltip'
-            //});
+            // classe NAME CSS para leaflet aceitar. 
+            setTimeout(() => {
+                if (layer._path) {
+                    layer._path.classList.add('area-no-border');
+                }
+            }, 50);
 
             layer.areaId = area.id;
             layer.areaData = area;
+            
 
-            // Click para abrir popup de edição
+            // Click para abrir card de informações
             layer.on('click', function (e) {
-                e.originalEvent.stopPropagation(); // Evitar propagação para o mapa
+                e.originalEvent.stopPropagation();
                 showAreaInfoCard(area);
             });
+            // Adicionar efeito hover
+            layer.on('mouseover', function () {
+                this.setStyle({
+                    fillOpacity: 0.6 // Mais opaco no hover
+                });
+            });
 
+            layer.on('mouseout', function () {
+                this.setStyle({
+                    fillOpacity: 0.3 // Volta ao normal
+                });
+            });
         } catch (error) {
             console.error('Erro ao adicionar área ao mapa:', error);
         }
@@ -906,8 +838,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateCurrentPolygonColor() {
         if (currentPolygonLayer) {
             currentPolygonLayer.setStyle({
-                color: selectedColor,
-                fillColor: selectedColor
+                color: 'transparent', // Mantém borda transparente
+                fillColor: selectedColor,
+                fillOpacity: 0.3,
+                weight: 0,
+                opacity: 0
             });
         }
     }
