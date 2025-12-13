@@ -577,34 +577,48 @@ textarea.form-control {
     visibility: visible;
 }
 
-/* Popup de edição */
+/* Popup de edição -  */
 .edit-popup {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 500px;
+    top: 20px; /* Distância do topo */
+    right: 20px; /* Distância da direita */
+    left: auto; /* Remove left: 50% */
+    bottom: auto; /* Remove bottom: auto */
+    transform: none; /* Remove transform: translate(-50%, -50%) */
+    width: 380px; /* Largura fixa */
+    max-width: 75%; /* Responsivo */
     background: white;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     z-index: 2000;
     display: none;
-    max-height: 80vh;
+    max-height: calc(100vh - 100px); /* Altura máxima */
     overflow-y: auto;
 }
 
-    .edit-popup.active {
-        display: block;
-        animation: slideIn 0.3s ease;
+/* Remove a animação slideIn antiga */
+.edit-popup.active {
+    display: block;
     }
 
+/* Nova animação para deslizar da direita */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Remove animação antiga se existir */
 @keyframes slideIn {
     from {
         opacity: 0;
         transform: translate(-50%, -60%);
     }
-
     to {
         opacity: 1;
         transform: translate(-50%, -50%);
@@ -1041,12 +1055,12 @@ textarea.form-control {
 .area-info-card {
     position: absolute;
     top: 20px;
-    right: 20px;
+    right: -485px;
     width: 300px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 1999;
     display: none;
     animation: slideInRight 0.3s ease;
 }
@@ -1324,4 +1338,14 @@ textarea.form-control {
 .custom-marker {
     background: none;
     border: none;
+}
+
+/* Estilo para áreas sem bordas */
+.area-no-border {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Hover mais sutil */
+.leaflet-interactive:hover {
+    fill-opacity: 0.9 !important;
 }
