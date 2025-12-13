@@ -1,18 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM carregado, iniciando mapa...');
+    console.log('Iniciando mapa simplificado...');
 
     // Variáveis globais
     let map;
     let drawnItems = L.featureGroup();
-    let selectedColor = '#3498db';
+    let selectedColor = '#3498db'; // Cor padrão
     let colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c'];
     let currentAreaId = null;
-    let isEditing = false;
+    let drawControl = null;
+    let isDrawing = false;
     let isFullscreen = false;
-    let sidebarVisibleInFullscreen = false;
+    let currentPolygonLayer = null;
+    let polygonDrawer = null; 
+    let selectedAreaForCard = null;
 
-    // COORDENADAS DE CAMAÇARI
-    const CAMACARI_COORDS = {
+    // Coordenadas padrão (Camaçari)
+    const DEFAULT_COORDS = {
         lat: -12.713122,
         lng: -38.314544,
         zoom: 16
@@ -20,36 +23,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicialização
     function init() {
-        console.log('Iniciando sistema de mapa...');
+        console.log('Iniciando sistema de mapa simplificado...');
         initMap();
         setupColorPicker();
         setupEventListeners();
         loadAreas();
         checkPermissions();
-        setupCustomAnimations();
     }
 
     // Inicializar mapa
     function initMap() {
         try {
-            console.log('Criando mapa...', CAMACARI_COORDS);
+            console.log('Criando mapa...');
 
-            // Verificar se o container existe
             const mapContainer = document.getElementById('map');
             if (!mapContainer) {
                 console.error('Container #map não encontrado!');
                 return;
             }
 
-            // Criar mapa centralizado em Camaçari
+            // Criar mapa
             map = L.map('map', {
-                center: [CAMACARI_COORDS.lat, CAMACARI_COORDS.lng],
-                zoom: CAMACARI_COORDS.zoom,
+                center: [DEFAULT_COORDS.lat, DEFAULT_COORDS.lng],
+                zoom: DEFAULT_COORDS.zoom,
                 zoomControl: true,
                 preferCanvas: true
             });
-
-            window._leafletMap = map;
 
             // Tile layer do OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -61,7 +60,21 @@ document.addEventListener('DOMContentLoaded', function () {
             // Adicionar layer para itens desenhados
             drawnItems.addTo(map);
 
-            // Forçar redimensionamento após um pequeno delay
+            // Configurar interações com os polígonos
+            map.on('click', function (e) {
+                // Se não estiver desenhando, verificar clique em polígono
+                if (!isDrawing) {
+                    const clickedLayer = findLayerAtPoint(e.latlng);
+                    if (clickedLayer && clickedLayer.areaData) {
+                        showAreaInfoCard(clickedLayer.areaData);
+                    } else {
+                        // Se clicar fora de um polígono, fechar card
+                        closeAreaInfoCard();
+                    }
+                }
+            });
+
+            // Forçar redimensionamento
             setTimeout(() => {
                 if (map) {
                     map.invalidateSize();
@@ -77,11 +90,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Configurar seletor de cores
     function setupColorPicker() {
-        const colorPicker = document.getElementById('color-picker');
-        if (!colorPicker) {
-            console.error('Elemento color-picker não encontrado!');
-            return;
-        }
+        const colorPicker = document.getElementById('color-picker-popup');
+        if (!colorPicker) return;
+
+        // Limpar cores existentes
+        colorPicker.innerHTML = '';
 
         colors.forEach(color => {
             const div = document.createElement('div');
@@ -97,12 +110,13 @@ document.addEventListener('DOMContentLoaded', function () {
             div.addEventListener('click', function () {
                 selectedColor = this.dataset.color;
                 updateColorPicker();
+                // Atualizar cor do polígono atual se estiver sendo editado
+                updateCurrentPolygonColor();
             });
 
             colorPicker.appendChild(div);
         });
     }
-
 
     function updateColorPicker() {
         document.querySelectorAll('.color-option').forEach(option => {
@@ -110,242 +124,718 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ========== LÓGICA DE STATUS DA ÁREA ==========
-
-    function setupAreaStatusLogic() {
-        const agenteField = document.getElementById('agente-id');
-        const microareaGroup = document.getElementById('microarea-group');
-        const microareaField = document.getElementById('microarea');
-
-        if (!agenteField || !microareaGroup || !microareaField) {
-            console.error('Campos de ACS/microárea não encontrados!');
-            return;
-        }
-
-        // Escutar mudanças no campo do agente
-        agenteField.addEventListener('input', function () {
-            if (this.value.trim() !== '') {
-                // Tem ACS - mostrar campo de microárea
-                microareaGroup.style.display = 'block';
-                microareaField.required = true;
-                areaStatus = 'mapeada';
-            } else {
-                // Não tem ACS - ocultar campo de microárea
-                microareaGroup.style.display = 'none';
-                microareaField.required = false;
-                microareaField.value = '';
-                areaStatus = 'descoberta';
-            }
-        });
-
-        // Escutar no campo de microárea
-        microareaField.addEventListener('change', function () {
-            if (this.value !== '') {
-                areaStatus = 'mapeada';
-                // Se tiver microárea mas não tiver ACS, focar no campo ACS
-                if (!agenteField.value.trim()) {
-                    agenteField.placeholder = 'Informe o ACS desta microárea...';
-                    agenteField.focus();
-                }
-            } else if (!agenteField.value.trim()) {
-                areaStatus = 'descoberta';
-            }
-        });
-    }
-
-    // ========== CONFIGURAÇÃO DE EVENTOS ==========
-
+    // Configurar eventos
     function setupEventListeners() {
-        // Botões de desenho
-        document.getElementById('btn-draw-polygon').addEventListener('click', () => startDrawing('polygon'));
-        document.getElementById('btn-draw-rectangle').addEventListener('click', () => startDrawing('rectangle'));
-        document.getElementById('btn-draw-circle').addEventListener('click', () => startDrawing('circle'));
-        document.getElementById('btn-edit').addEventListener('click', toggleEditMode);
-        document.getElementById('btn-delete').addEventListener('click', () => {
-            if (confirm('Clique em uma área para excluir')) {
-                isEditing = true;
-                map.once('click', handleAreaDelete);
-            }
-        });
+        // Botão flutuante para criar mapa
+        document.getElementById('btn-create-map').addEventListener('click', startDrawingMode);
 
-        // Botão salvar área
-        document.getElementById('btn-save-area').addEventListener('click', saveCurrentArea);
+        // Botão de edição de forma
+        document.getElementById('btn-edit-shape').addEventListener('click', toggleEditMode);
+        document.getElementById('btn-delete-shape').addEventListener('click', deleteCurrentShape);
 
-        // Botão limpar formulário
-        document.getElementById('btn-clear-form').addEventListener('click', clearForm);
+        // Botões do popup
+        document.getElementById('btn-save-popup').addEventListener('click', saveCurrentArea);
+        document.getElementById('btn-cancel-popup').addEventListener('click', cancelDrawing);
+        document.getElementById('close-popup').addEventListener('click', closeEditPopup);
 
         // Botão tela cheia
         document.getElementById('fullscreen-toggle').addEventListener('click', toggleFullscreen);
 
-        // Modal
+        // Botões do card de informações
+        document.getElementById('close-card').addEventListener('click', closeAreaInfoCard);
+        document.getElementById('card-edit-btn').addEventListener('click', function () {
+            if (selectedAreaForCard) {
+                closeAreaInfoCard();
+                openEditPopup(selectedAreaForCard);
+            }
+            // Fechar card quando clicar no overlay (se estiver visível)
+            document.getElementById('popup-overlay').addEventListener('click', function () {
+                closeAreaInfoCard();
+            });
+            // Modal do Street View
+            document.getElementById('close-streetview').addEventListener('click', closeStreetViewModal);
+            document.getElementById('streetview-modal').addEventListener('click', function (e) {
+                if (e.target === this) closeStreetViewModal();
+            });
+        });
+
+        // Toggle das ferramentas de edição
+        const editToolsToggle = document.getElementById('edit-tools-toggle');
+        if (editToolsToggle) {
+            editToolsToggle.addEventListener('click', function () {
+                const expandedTools = document.getElementById('edit-tools-expanded');
+                const isVisible = expandedTools.style.display === 'block';
+                expandedTools.style.display = isVisible ? 'none' : 'block';
+                this.innerHTML = isVisible ?
+                    '<i class="fas fa-pencil-alt"></i> Ferramentas de Edição' :
+                    '<i class="fas fa-chevron-up"></i> Ocultar Ferramentas';
+            });
+        }
+
+        // Modal de confirmação
         document.getElementById('btn-cancel-delete').addEventListener('click', hideModal);
         document.getElementById('confirm-modal').addEventListener('click', function (e) {
             if (e.target === this) hideModal();
         });
 
-        // Eventos do mapa
-        map.on('draw:created', function (e) {
-            const layer = e.layer;
-            layer.setStyle({
+        // Overlay do popup
+        document.getElementById('popup-overlay').addEventListener('click', closeEditPopup);
+
+        // Tecla ESC para cancelar desenho ou fechar popup
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                if (isDrawing) {
+                    cancelDrawing();
+                } else {
+                    closeEditPopup();
+                }
+
+                if (isFullscreen) {
+                    toggleFullscreen();
+                }
+            }
+        });
+
+        // Redimensionar mapa
+        window.addEventListener('resize', () => {
+            if (map) {
+                setTimeout(() => map.invalidateSize(), 250);
+            }
+        });
+    }
+
+    // Iniciar modo de desenho - ATIVA A FERRAMENTA DE POLÍGONO DIRETAMENTE
+    function startDrawingMode() {
+        if (isDrawing) {
+            cancelDrawing();
+            return;
+        }
+
+        isDrawing = true;
+        console.log('Iniciando modo de desenho...');
+
+        // MUDAR CURSOR DO MAPA PARA CRUZ
+        document.getElementById('map').classList.add('map-drawing-mode');
+
+        // Limpar qualquer polígono temporário anterior
+        if (currentPolygonLayer) {
+            drawnItems.removeLayer(currentPolygonLayer);
+            currentPolygonLayer = null;
+        }
+
+        showMessage('Clique no mapa para começar a desenhar. Clique para adicionar pontos, duplo clique para finalizar.', 'info', 4000);
+
+        // Ativar desenho de polígono DIRETAMENTE
+        activatePolygonDrawing();
+    }
+
+    // Ativar desenho de polígono
+    function activatePolygonDrawing() {
+        // Remover controles anteriores
+        if (polygonDrawer) {
+            map.removeControl(polygonDrawer);
+            polygonDrawer = null;
+        }
+
+        // Remover eventos anteriores
+        map.off('draw:created');
+
+        // Criar instância do controle de desenho
+        polygonDrawer = new L.Draw.Polygon(map, {
+            shapeOptions: {
                 color: selectedColor,
                 fillColor: selectedColor,
                 fillOpacity: 0.4,
                 weight: 2
+            },
+            showArea: true,
+            metric: true,
+            repeatMode: false
+        });
+
+        // Adicionar evento quando o desenho for concluído
+        map.on('draw:created', function (e) {
+            handlePolygonCreated(e);
+        });
+
+        // Habilitar o desenho
+        polygonDrawer.enable();
+
+        console.log('Ferramenta de polígono ativada');
+    }
+
+    // Lidar com polígono criado (quando usuário dá duplo clique para terminar)
+    function handlePolygonCreated(e) {
+        console.log('Polígono criado, abrindo edição...');
+
+        const layer = e.layer;
+        currentPolygonLayer = layer;
+
+        // REMOVER CURSOR DE DESENHO (CRUZ)
+        document.getElementById('map').classList.remove('map-drawing-mode');
+
+        // Aplicar estilo com cor padrão
+        layer.setStyle({
+            color: selectedColor,
+            fillColor: selectedColor,
+            fillOpacity: 0.4,
+            weight: 2
+        });
+
+        // Adicionar ao layer
+        drawnItems.addLayer(layer);
+
+        // Desativar a ferramenta de desenho
+        if (polygonDrawer) {
+            polygonDrawer.disable();
+        }
+
+        // MOSTRAR POPUP DE EDIÇÃO APÓS CRIAR O POLÍGONO
+        setTimeout(() => {
+            openEditPopup();
+
+            // Gerar nome automático
+            const areaNameInput = document.getElementById('area-name-popup');
+            if (areaNameInput && !areaNameInput.value.trim()) {
+                // Contar quantas áreas já existem
+                let areaCount = 0;
+                drawnItems.eachLayer(function (layer) {
+                    if (layer.areaData) areaCount++;
+                });
+                areaNameInput.value = `Mapa ${areaCount + 1}`;
+                areaNameInput.focus();
+            }
+
+            showMessage('Polígono criado! Preencha as informações abaixo.', 'success', 3000);
+        }, 100);
+    }
+
+    // Alternar modo de edição de vértices
+    function toggleEditMode() {
+        if (drawnItems.getLayers().length === 0) {
+            showMessage('Não há área para editar!', 'warning');
+            return;
+        }
+
+        // Se estiver no popup editando um polígono específico
+        if (currentPolygonLayer) {
+            // Criar controle de edição
+            const editControl = new L.EditToolbar.Edit(map, {
+                featureGroup: drawnItems
             });
 
-            layer.bindPopup('<b>Nova Área</b><br>Preencha os dados e salve');
-            drawnItems.addLayer(layer);
+            // Ativar modo de edição
+            editControl.enable();
 
-            // Preencher nome automático
-            const areaCount = document.querySelectorAll('.area-item').length;
-            document.getElementById('area-name').value = `Área ${areaCount + 1}`;
-            document.getElementById('area-description').focus();
-        });
+            // Selecionar o polígono atual
+            drawnItems.eachLayer(function (layer) {
+                if (layer === currentPolygonLayer) {
+                    editControl._selectedFeatureGroup.addLayer(layer);
+                }
+            });
 
-        // Tecla ESC para sair da tela cheia
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && isFullscreen) {
-                toggleFullscreen();
-            }
-        });
-
-        // Redimensionar mapa quando a janela mudar
-        window.addEventListener('resize', () => {
-            if (map) {
-                setTimeout(() => {
-                    map.invalidateSize();
-                }, 250);
-            }
-        });
-    }
-
-    // ========== FUNÇÕES DE DESENHO ==========
-
-    function startDrawing(type) {
-        let drawOptions = {
-            shapeOptions: {
-                color: selectedColor,
-                fillColor: selectedColor,
-                fillOpacity: 0.4
-            }
-        };
-
-        switch (type) {
-            case 'polygon':
-                new L.Draw.Polygon(map, drawOptions).enable();
-                break;
-            case 'rectangle':
-                new L.Draw.Rectangle(map, drawOptions).enable();
-                break;
-            case 'circle':
-                new L.Draw.Circle(map, drawOptions).enable();
-                break;
+            showMessage('Modo edição ativado. Arraste os pontos para modificar a forma.', 'info', 3000);
         }
     }
 
-    function toggleEditMode() {
-        isEditing = !isEditing;
-        const btn = document.getElementById('btn-edit');
+    // Deletar forma atual
+    function deleteCurrentShape() {
+        if (!currentPolygonLayer) {
+            showMessage('Nenhuma área para excluir!', 'warning');
+            return;
+        }
 
-        if (isEditing) {
-            btn.classList.add('active');
-            btn.innerHTML = '<i class="fas fa-times"></i> Cancelar Edição';
-            showMessage('Clique em uma área para editar suas propriedades', 'info');
+        showDeleteConfirmation(currentAreaId);
+    }
+
+    // Abrir popup de edição
+    function openEditPopup(areaData = null) {
+        const popup = document.getElementById('edit-popup');
+        const overlay = document.getElementById('popup-overlay');
+
+        if (!popup || !overlay) {
+            console.error('Elementos do popup não encontrados!');
+            return;
+        }
+
+        popup.classList.add('active');
+        overlay.classList.add('active');
+
+        // Se for edição de um polígono existente
+        if (areaData) {
+            document.getElementById('area-name-popup').value = areaData.nome || '';
+            document.getElementById('area-type-popup').value = areaData.tipo || 'bairro';
+            document.getElementById('area-description-popup').value = areaData.descricao || '';
+            document.getElementById('agente-id-popup').value = areaData.agente_saude_id || '';
+            document.getElementById('streetview-link-popup').value = areaData.streetview_link || '';
+
+            selectedColor = areaData.cor || selectedColor;
+            updateColorPicker();
+
+            currentAreaId = areaData.id;
+
+            // Atualizar título do popup
+            document.querySelector('.popup-header h3').innerHTML =
+                '<i class="fas fa-edit"></i> Editar Área: ' + (areaData.nome || 'Sem nome');
+
+            // Encontrar o layer correspondente
+            drawnItems.eachLayer(function (layer) {
+                if (layer.areaId === areaData.id) {
+                    currentPolygonLayer = layer;
+                }
+            });
+
+            isDrawing = false;
         } else {
-            btn.classList.remove('active');
-            btn.innerHTML = '<i class="fas fa-edit"></i> Editar Área';
+            // Novo desenho - limpar formulário
+            clearForm();
+            currentAreaId = null;
+            document.querySelector('.popup-header h3').innerHTML =
+                '<i class="fas fa-plus"></i> Nova Área';
+        }
+
+        // Focar no primeiro campo
+        document.getElementById('area-name-popup').focus();
+    }
+
+    // Fechar popup de edição
+    function closeEditPopup() {
+        const popup = document.getElementById('edit-popup');
+        const overlay = document.getElementById('popup-overlay');
+
+        popup.classList.remove('active');
+        overlay.classList.remove('active');
+        closeAreaInfoCard();
+
+        // Se estava desenhando e fecha sem salvar, cancela o desenho
+        if (isDrawing && currentPolygonLayer) {
+            // Remove o polígono temporário se não foi salvo
+            drawnItems.removeLayer(currentPolygonLayer);
+            currentPolygonLayer = null;
+            isDrawing = false;
+
+            // REMOVER CURSOR DE DESENHO
+            document.getElementById('map').classList.remove('map-drawing-mode');
         }
     }
 
-    // ========== FUNÇÕES DE ÁREAS ==========
+    // Cancelar desenho
+    function cancelDrawing() {
+        isDrawing = false;
 
+        // REMOVER CLASSE DO CURSOR DE DESENHO
+        document.getElementById('map').classList.remove('map-drawing-mode');
+
+        // Remover polígono temporário
+        if (currentPolygonLayer) {
+            drawnItems.removeLayer(currentPolygonLayer);
+            currentPolygonLayer = null;
+        }
+
+        // Desabilitar ferramenta de desenho
+        if (polygonDrawer) {
+            polygonDrawer.disable();
+            polygonDrawer = null;
+        }
+
+        // Remover eventos
+        map.off('draw:created');
+
+        showMessage('Desenho cancelado.', 'info', 2000);
+    }
+
+    // Mostrar card de informações da área
+    function showAreaInfoCard(areaData) {
+        selectedAreaForCard = areaData;
+
+        // Preencher informações no card
+        document.getElementById('card-area-name').textContent = areaData.nome || 'Sem nome';
+        document.getElementById('card-area-type').textContent = formatAreaType(areaData.tipo);
+
+        // Status
+        const statusElement = document.getElementById('card-area-status');
+        if (areaData.status === 'mapeada') {
+            statusElement.textContent = '🟢 Mapeada';
+            statusElement.style.color = '#27ae60';
+        } else {
+            statusElement.textContent = '🟡 Descoberta';
+            statusElement.style.color = '#f39c12';
+        }
+
+        // Descrição
+        const descElement = document.getElementById('card-area-description');
+        descElement.textContent = areaData.descricao || 'Sem descrição';
+
+        // Agente
+        const agenteRow = document.getElementById('card-agente-row');
+        const agenteElement = document.getElementById('card-area-agente');
+        if (areaData.agente_saude_id) {
+            agenteElement.textContent = areaData.agente_saude_id;
+            agenteRow.style.display = 'flex';
+        } else {
+            agenteRow.style.display = 'none';
+        }
+
+        // Street View (se existir) - AGORA ABRE MODAL DE PREVIEW
+        const streetviewRow = document.getElementById('card-streetview-row');
+        const streetviewLink = document.getElementById('card-streetview-link');
+        if (areaData.streetview_link) {
+            // Muda o texto do link
+            streetviewLink.textContent = 'Abrir Street View';
+            streetviewLink.href = '#';
+
+            // Remove target="_blank" e adiciona evento para abrir modal
+            streetviewLink.removeAttribute('target');
+            streetviewLink.onclick = function (e) {
+                e.preventDefault();
+                openStreetViewModal(areaData.streetview_link);
+                return false;
+            };
+
+            streetviewRow.style.display = 'flex';
+        } else {
+            streetviewRow.style.display = 'none';
+        }
+
+        // Mostrar card
+        document.getElementById('area-info-card').classList.add('active');
+    }
+
+    // Fechar card de informações
+    function closeAreaInfoCard() {
+        document.getElementById('area-info-card').classList.remove('active');
+        selectedAreaForCard = null;
+    }
+
+    // Salvar área atual
     async function saveCurrentArea() {
-        const layers = drawnItems.getLayers();
-        if (layers.length === 0) {
-            showMessage('Desenhe uma área no mapa primeiro!', 'warning');
+        if (!currentPolygonLayer) {
+            showMessage('Não há área para salvar!', 'warning');
             return;
         }
 
-        const lastLayer = layers[layers.length - 1];
-        const geojson = lastLayer.toGeoJSON();
-
-        // Coletar dados
-        const nome = document.getElementById('area-name').value.trim();
-        const tipo = document.getElementById('area-type').value;
-        const descricao = document.getElementById('area-description').value.trim();
-        const agente = document.getElementById('agente-id').value.trim();
-        const microarea = document.getElementById('microarea').value;
-        const streetview = document.getElementById('streetview-link').value.trim();
-
-        // Validações
-        if (!nome) {
-            showMessage('Por favor, informe um nome para a área', 'warning');
-            document.getElementById('area-name').focus();
+        // Obter o GeoJSON do polígono
+        let geojson;
+        try {
+            geojson = currentPolygonLayer.toGeoJSON();
+            console.log('GeoJSON gerado:', geojson);
+        } catch (error) {
+            console.error('Erro ao converter polígono para GeoJSON:', error);
+            showMessage('Erro ao processar a área desenhada', 'error');
             return;
         }
 
-        // Preparar dados
+        // Coletar dados do formulário
+        const nome = document.getElementById('area-name-popup').value.trim();
+        const tipo = document.getElementById('area-type-popup').value;
+        const descricao = document.getElementById('area-description-popup').value.trim();
+        const agente = document.getElementById('agente-id-popup').value.trim();
+        const streetview = document.getElementById('streetview-link-popup').value.trim();
+
+        // Preparar dados (nenhum campo é obrigatório)
         let areaData = {
-            nome: nome,
+            nome: nome || 'Mapa sem descrição', // Nome padrão
             tipo: tipo,
-            cor: selectedColor,
+            cor: selectedColor, // Usa a cor padrão ou escolhida
             descricao: descricao,
             streetview_link: streetview || null,
             geojson: geojson,
             equipe: window.APP_CONFIG.nome_equipe.toLowerCase().replace(/\s+/g, ''),
-            status: 'descoberta',
-            microarea: null,
-            agente_saude_id: null
+            agente_saude_id: agente || null,
+            status: agente ? 'mapeada' : 'descoberta'
         };
 
-        // Lógica: Se tem microárea OU ACS, é área mapeada
-        if (microarea || agente) {
-            areaData.status = 'mapeada';
-
-            // Validações específicas para áreas mapeadas
-            if (agente && !microarea) {
-                showMessage('Para vincular um ACS, selecione uma microárea', 'warning');
-                document.getElementById('microarea').focus();
-                return;
-            }
-
-            if (microarea && !agente) {
-                showMessage('Para vincular uma microárea, informe o ACS responsável', 'warning');
-                document.getElementById('agente-id').focus();
-                return;
-            }
-
-            // Salvar dados de vinculação
-            if (microarea) areaData.microarea = microarea;
-            if (agente) areaData.agente_saude_id = agente;
+        // Se já existe ID (edição), adicionar
+        if (currentAreaId) {
+            areaData.id = currentAreaId;
         }
 
-        console.log('Enviando dados:', areaData);
+        console.log('Enviando dados para salvar:', areaData);
 
         try {
+            showMessage('Salvando área...', 'info', 2000);
+
             const response = await fetch('/api/salvar-area', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify(areaData)
             });
 
+            // Verificar se a resposta é JSON
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await response.text();
+                console.error('Resposta não é JSON:', text);
+                throw new Error('Resposta do servidor não é JSON: ' + text.substring(0, 100));
+            }
+
             const result = await response.json();
+            console.log('Resposta do servidor:', result);
 
             if (result.status === 'sucesso') {
-                const msg = areaData.status === 'mapeada'
-                    ? 'Área mapeada salva com sucesso!'
-                    : 'Área descoberta salva com sucesso!';
-                showMessage(msg, 'success');
-                clearForm();
-                loadAreas();
+                showMessage('Área salva com sucesso!', 'success');
+
+                // Atualizar tooltip do polígono
+                //currentPolygonLayer.bindTooltip(
+                  //  `<b>${areaData.nome}</b><br>${formatAreaType(areaData.tipo)}<br>Clique para ver`,
+                    //{ permanent: false, direction: 'center' }
+                //  );
+
+                // Adicionar dados da área ao layer
+                //currentPolygonLayer.areaId = result.id || currentAreaId;
+                //currentPolygonLayer.areaData = areaData;
+                //currentPolygonLayer.areaData.id = result.id || currentAreaId;
+
+                // Fechar popup
+                closeEditPopup();
+
+                // Resetar estado
+                isDrawing = false;
+                currentAreaId = null;
+
+                // REMOVER CURSOR DE DESENHO
+                document.getElementById('map').classList.remove('map-drawing-mode');
+
+                // Limpar o polígono temporário
+                currentPolygonLayer = null;
+
+                // Remover ferramenta de desenho
+                if (polygonDrawer) {
+                    polygonDrawer.disable();
+                    polygonDrawer = null;
+                }
+
+                // Recarregar áreas para atualizar a lista
+                setTimeout(() => {
+                    loadAreas();
+                }, 500);
+
             } else {
-                showMessage('Erro: ' + result.mensagem, 'error');
+                console.error('Erro do servidor:', result);
+                showMessage('Erro: ' + (result.mensagem || 'Erro desconhecido'), 'error');
             }
         } catch (error) {
+            console.error('Erro ao salvar área:', error);
             showMessage('Erro ao salvar: ' + error.message, 'error');
         }
     }
 
+    // Abrir modal do Street View
+    function openStreetViewModal(streetviewUrl) {
+        const modal = document.getElementById('streetview-modal');
+        const iframe = document.getElementById('streetview-iframe');
+        const externalLink = document.getElementById('open-external-streetview');
+
+        if (!modal || !iframe) return;
+
+        // Configurar iframe
+        iframe.src = streetviewUrl;
+
+        // Configurar link externo
+        externalLink.href = streetviewUrl;
+
+        // Mostrar modal
+        modal.classList.add('active');
+
+        // Bloquear scroll da página
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Fechar modal do Street View
+    function closeStreetViewModal() {
+        const modal = document.getElementById('streetview-modal');
+        const iframe = document.getElementById('streetview-iframe');
+
+        if (!modal || !iframe) return;
+
+        // Remover src do iframe para parar carregamento
+        iframe.src = '';
+
+        // Fechar modal
+        modal.classList.remove('active');
+
+        // Restaurar scroll da página
+        document.body.style.overflow = '';
+    }
+
+    // Extrair coordenadas da URL do Google Maps (se possível)
+    function extractCoordsFromUrl(url) {
+        try {
+            // Padrões comuns de URLs do Google Maps
+            const patterns = [
+                /@(-?\d+\.\d+),(-?\d+\.\d+),(\d+\.?\d*)z/, // @lat,lng,zoomz
+                /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,          // !3dlat!4dlng
+                /lat=(-?\d+\.\d+)&lng=(-?\d+\.\d+)/,       // lat=...&lng=...
+                /q=(-?\d+\.\d+),(-?\d+\.\d+)/              // q=lat,lng
+            ];
+
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) {
+                    let lat, lng;
+
+                    if (pattern.toString().includes('@')) {
+                        // Formato: @lat,lng,zoomz
+                        lat = parseFloat(match[1]);
+                        lng = parseFloat(match[2]);
+                    } else if (pattern.toString().includes('!3d')) {
+                        // Formato: !3dlat!4dlng
+                        lat = parseFloat(match[1]);
+                        lng = parseFloat(match[2]);
+                    } else if (pattern.toString().includes('lat=')) {
+                        // Formato: lat=...&lng=...
+                        lat = parseFloat(match[1]);
+                        lng = parseFloat(match[2]);
+                    } else {
+                        // Formato: q=lat,lng
+                        lat = parseFloat(match[1]);
+                        lng = parseFloat(match[2]);
+                    }
+
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        return { lat, lng };
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao extrair coordenadas:', error);
+        }
+
+        return null;
+    }
+
+    // Abrir modal do Street View (agora é preview)
+    function openStreetViewModal(streetviewUrl) {
+        const modal = document.getElementById('streetview-modal');
+        const urlDisplay = document.getElementById('streetview-url-display');
+        const openTabBtn = document.getElementById('open-streetview-tab');
+        const copyBtn = document.getElementById('copy-streetview-link');
+
+        if (!modal || !urlDisplay) return;
+
+        // Mostrar URL
+        urlDisplay.textContent = streetviewUrl;
+
+        // Configurar botão para abrir em nova aba
+        openTabBtn.onclick = function () {
+            window.open(streetviewUrl, '_blank', 'noopener,noreferrer');
+            closeStreetViewModal();
+        };
+
+        // Configurar botão de copiar
+        copyBtn.onclick = function () {
+            navigator.clipboard.writeText(streetviewUrl)
+                .then(() => {
+                    showMessage('Link copiado para a área de transferência!', 'success');
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar Link';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Erro ao copiar:', err);
+                    showMessage('Erro ao copiar link', 'error');
+                });
+        };
+
+        // Tentar extrair coordenadas e mostrar mini mapa
+        const coords = extractCoordsFromUrl(streetviewUrl);
+        if (coords) {
+            showMiniMap(coords.lat, coords.lng);
+        } else {
+            // Esconder mini mapa se não conseguir extrair coordenadas
+            document.getElementById('map-mini-preview').style.display = 'none';
+        }
+
+        // Mostrar modal
+        modal.classList.add('active');
+
+        // Bloquear scroll da página
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Mostrar mini mapa com localização
+    function showMiniMap(lat, lng) {
+        const miniMapContainer = document.getElementById('mini-map');
+        const mapPreview = document.getElementById('map-mini-preview');
+
+        if (!miniMapContainer || !mapPreview) return;
+
+        // Mostrar container
+        mapPreview.style.display = 'block';
+
+        // Limpar mapa anterior
+        miniMapContainer.innerHTML = '';
+
+        try {
+            // Criar mini mapa
+            const miniMap = L.map('mini-map', {
+                center: [lat, lng],
+                zoom: 15,
+                zoomControl: false,
+                attributionControl: false,
+                dragging: false,
+                touchZoom: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false
+            });
+
+            // Tile layer simplificado
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: ''
+            }).addTo(miniMap);
+
+            // Adicionar marcador
+            L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'custom-marker',
+                    html: '<div style="background: #e74c3c; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 26]
+                })
+            }).addTo(miniMap);
+
+            // Ajustar tamanho após um delay
+            setTimeout(() => {
+                miniMap.invalidateSize();
+            }, 100);
+
+        } catch (error) {
+            console.error('Erro ao criar mini mapa:', error);
+            mapPreview.style.display = 'none';
+        }
+    }
+
+    // Fechar modal do Street View
+    function closeStreetViewModal() {
+        const modal = document.getElementById('streetview-modal');
+
+        if (!modal) return;
+
+        // Fechar modal
+        modal.classList.remove('active');
+
+        // Restaurar scroll da página
+        document.body.style.overflow = '';
+
+        // Limpar mini mapa
+        const mapPreview = document.getElementById('map-mini-preview');
+        if (mapPreview) {
+            mapPreview.style.display = 'none';
+            const miniMapContainer = document.getElementById('mini-map');
+            if (miniMapContainer) {
+                miniMapContainer.innerHTML = '';
+            }
+        }
+    }
+
+    // Carregar áreas existentes
     async function loadAreas() {
         try {
             const response = await fetch('/api/areas-territoriais');
@@ -360,79 +850,51 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+
+    // Renderizar áreas no mapa
     function renderAreas(areas) {
+        // Limpar áreas antigas
         drawnItems.clearLayers();
-        areas.forEach(area => addAreaToMap(area));
-        updateAreasList(areas);
+
+        areas.forEach(area => {
+            addAreaToMap(area);
+        });
     }
 
+    // Adicionar área ao mapa
     function addAreaToMap(area) {
         try {
             const layer = L.geoJSON(area.geojson, {
                 style: {
-                    color: area.cor,
-                    fillColor: area.cor,
+                    color: area.cor || '#3498db', // Cor padrão se não tiver
+                    fillColor: area.cor || '#3498db',
                     fillOpacity: 0.4,
                     weight: 2
                 }
             }).addTo(drawnItems);
 
-            // Conteúdo do popup
-            let popupContent = `
-                <div style="min-width: 250px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <div style="width: 12px; height: 12px; background: ${area.cor}; border-radius: 50%;"></div>
-                        <h4 style="margin: 0; color: ${area.cor}">${area.nome}</h4>
-                    </div>
-                    
-                    <div style="background: ${area.status === 'mapeada' ? '#d4edda' : '#fff3cd'}; 
-                                padding: 8px; border-radius: 6px; margin-bottom: 10px;">
-                        <strong>Status:</strong> 
-                        ${area.status === 'mapeada' ? '🟢 Área Mapeada' : '🟡 Área Descoberta'}
-                    </div>
+            // Tooltip com informações básicas
+            const tooltipContent = `
+                <div style="text-align: center;">
+                    <b>${area.nome}</b><br>
+                    <small>${formatAreaType(area.tipo)}</small><br>
+                    <small>${area.descricao || 'Clique para ver informações'}</small>
+                </div>
             `;
 
-            if (area.status === 'mapeada') {
-                popupContent += `
-                    ${area.microarea ? `<p><strong>Microárea:</strong> ${area.microarea}</p>` : ''}
-                    ${area.agente_saude_id ? `<p><strong>ACS:</strong> ${area.agente_saude_id}</p>` : ''}
-                `;
-            } else {
-                popupContent += `<p><em>Área identificada sem vínculo com ACS</em></p>`;
-            }
+            //layer.bindTooltip(tooltipContent, {
+              //  permanent: false,
+                //direction: 'center',
+                //lassName: 'area-tooltip'
+            //});
 
-            popupContent += `
-                    <p><strong>Tipo:</strong> ${formatAreaType(area.tipo)}</p>
-                    ${area.descricao ? `<p><strong>Descrição:</strong> ${area.descricao}</p>` : ''}
-            `;
-
-            if (area.streetview_link) {
-                popupContent += `
-                    <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                        <a href="${area.streetview_link}" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           style="display: inline-flex; align-items: center; gap: 8px;
-                                  background: #4285f4; color: white; padding: 8px 12px;
-                                  border-radius: 6px; text-decoration: none; font-size: 14px;
-                                  font-weight: 500; transition: background 0.3s;">
-                            <i class="fas fa-street-view"></i>
-                            Ver no Street View
-                        </a>
-                    </div>
-                `;
-            }
-
-            popupContent += `</div>`;
-
-            layer.bindPopup(popupContent);
             layer.areaId = area.id;
             layer.areaData = area;
 
+            // Click para abrir popup de edição
             layer.on('click', function (e) {
-                if (isEditing) {
-                    editArea(area.id);
-                }
+                e.originalEvent.stopPropagation(); // Evitar propagação para o mapa
+                showAreaInfoCard(area);
             });
 
         } catch (error) {
@@ -440,122 +902,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function editArea(areaId) {
-        try {
-            const response = await fetch(`/api/area/${areaId}`);
-            const area = await response.json();
-
-            if (area) {
-                // Preencher formulário
-                document.getElementById('area-name').value = area.nome;
-                document.getElementById('area-type').value = area.tipo;
-                document.getElementById('area-description').value = area.descricao || '';
-                document.getElementById('streetview-link').value = area.streetview_link || '';
-                document.getElementById('agente-id').value = area.agente_saude_id || '';
-                document.getElementById('microarea').value = area.microarea || '';
-
-                // Mostrar/ocultar campo de microárea
-                const microareaGroup = document.getElementById('microarea-group');
-                if (area.agente_saude_id || area.microarea) {
-                    microareaGroup.style.display = 'block';
-                    areaStatus = 'mapeada';
-                } else {
-                    microareaGroup.style.display = 'none';
-                    areaStatus = 'descoberta';
-                }
-
-                // Cor
-                selectedColor = area.cor;
-                updateColorPicker();
-
-                // Focar
-                document.getElementById('area-name').focus();
-
-                showMessage(`Editando área: ${area.nome}`, 'info');
-            }
-        } catch (error) {
-            console.error('Erro ao carregar área para edição:', error);
+    // Atualizar cor do polígono atual
+    function updateCurrentPolygonColor() {
+        if (currentPolygonLayer) {
+            currentPolygonLayer.setStyle({
+                color: selectedColor,
+                fillColor: selectedColor
+            });
         }
     }
 
-    function updateAreasList(areas) {
-        const areasList = document.getElementById('areas-list');
-        const noAreas = areasList.querySelector('.no-areas');
-
-        if (areas.length === 0) {
-            if (!noAreas) {
-                areasList.innerHTML = `
-                    <div class="no-areas">
-                        <i class="fas fa-map"></i>
-                        <p>Nenhuma área salva ainda.<br>Desenhe uma área no mapa!</p>
-                    </div>
-                `;
-            }
-            updateAreasCount(0);
-            return;
-        }
-
-        // Remover mensagem de "nenhuma área"
-        if (noAreas) noAreas.remove();
-
-        // Ordenar: mapeadas primeiro
-        areas.sort((a, b) => {
-            if (a.status === b.status) return a.nome.localeCompare(b.nome);
-            return a.status === 'mapeada' ? -1 : 1;
-        });
-
-        areasList.innerHTML = areas.map(area => `
-            <div class="area-item" data-id="${area.id}" data-status="${area.status}" style="border-left-color: ${area.cor}">
-                <div class="area-header">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div class="area-name">${area.nome}</div>
-                        <span class="area-status ${area.status === 'mapeada' ? 'status-mapeada' : 'status-descoberta'}">
-                            ${area.status === 'mapeada' ? 'Mapeada' : 'Descoberta'}
-                        </span>
-                    </div>
-                    <div class="area-type">${formatAreaType(area.tipo)}</div>
-                </div>
-                
-                ${area.microarea ? `
-                    <div class="area-microarea" style="font-size: 13px; color: #3498db; margin: 5px 0;">
-                        <i class="fas fa-map-marker-alt"></i> Microárea: ${area.microarea}
-                    </div>
-                ` : ''}
-                
-                ${area.agente_saude_id ? `
-                    <div class="area-agente" style="font-size: 13px; color: #27ae60; margin: 5px 0;">
-                        <i class="fas fa-user-md"></i> ACS: ${area.agente_saude_id}
-                    </div>
-                ` : ''}
-                
-                ${area.descricao ? `<div class="area-description">${area.descricao}</div>` : ''}
-                
-                <div class="area-actions">
-                    <button class="area-action-btn" onclick="zoomToArea(${area.id})" title="Zoom">
-                        <i class="fas fa-search-plus"></i>
-                    </button>
-                    ${window.APP_CONFIG.usuario_logado && window.APP_CONFIG.nivel_usuario !== 'convidado' ? `
-                        <button class="area-action-btn" onclick="editArea(${area.id})" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="area-action-btn" onclick="confirmDeleteArea(${area.id})" title="Excluir">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    ` : ''}
-                </div>
-            </div>
-        `).join('');
-
-        updateAreasCount(areas.length);
-    }
-
-    function updateAreasCount(count) {
-        const countElement = document.getElementById('areas-count');
-        if (countElement) countElement.textContent = count;
-    }
-
-    // ========== FUNÇÕES UTILITÁRIAS ==========
-
+    // Formatar tipo de área
     function formatAreaType(type) {
         const types = {
             'bairro': 'Bairro',
@@ -568,23 +925,20 @@ document.addEventListener('DOMContentLoaded', function () {
         return types[type] || type;
     }
 
+    // Limpar formulário
     function clearForm() {
-        document.getElementById('area-name').value = '';
-        document.getElementById('area-type').value = 'bairro';
-        document.getElementById('area-description').value = '';
-        document.getElementById('agente-id').value = '';
-        document.getElementById('streetview-link').value = '';
-        document.getElementById('microarea').value = '';
+        document.getElementById('area-name-popup').value = '';
+        document.getElementById('area-type-popup').value = 'bairro';
+        document.getElementById('area-description-popup').value = '';
+        document.getElementById('agente-id-popup').value = '';
+        document.getElementById('streetview-link-popup').value = '';
 
-        // Resetar status
-        areaStatus = 'descoberta';
-        const microareaGroup = document.getElementById('microarea-group');
-        if (microareaGroup) microareaGroup.style.display = 'none';
-
+        // Mantém a cor padrão
         selectedColor = '#3498db';
         updateColorPicker();
     }
 
+    // Verificar permissões
     function checkPermissions() {
         if (!window.APP_CONFIG.usuario_logado || window.APP_CONFIG.nivel_usuario === 'convidado') {
             disableEditing();
@@ -592,39 +946,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function disableEditing() {
-        const editButtons = ['btn-draw-polygon', 'btn-draw-rectangle', 'btn-draw-circle',
-            'btn-edit', 'btn-delete', 'btn-save-area'];
+        document.getElementById('btn-create-map').disabled = true;
+        document.getElementById('btn-create-map').style.opacity = '0.5';
+        document.getElementById('btn-create-map').style.cursor = 'not-allowed';
 
-        editButtons.forEach(btnId => {
-            const btn = document.getElementById(btnId);
-            if (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'not-allowed';
-                btn.title = 'Modo visitante: apenas visualização';
-            }
-        });
-
-        const formFields = ['area-name', 'area-type', 'area-description', 'agente-id', 'streetview-link', 'microarea'];
-        formFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            if (field) {
-                field.disabled = true;
-                field.placeholder = 'Modo visitante';
-            }
-        });
+        showMessage('Modo visitante: apenas visualização', 'info', 3000);
     }
 
-    // ========== FUNÇÕES DE EXCLUSÃO ==========
-
-    function handleAreaDelete(e) {
-        const clickedLayer = findLayerAtPoint(e.latlng);
-        if (clickedLayer && clickedLayer.areaId) {
-            showDeleteConfirmation(clickedLayer.areaId);
-        }
-        isEditing = false;
-    }
-
+    // Encontrar layer em um ponto
     function findLayerAtPoint(latlng) {
         let foundLayer = null;
         drawnItems.eachLayer(function (layer) {
@@ -637,9 +966,76 @@ document.addEventListener('DOMContentLoaded', function () {
         return foundLayer;
     }
 
+    // Mostrar mensagem
+    function showMessage(text, type = 'info', duration = 3000) {
+        const existingMessages = document.querySelectorAll('.custom-message');
+        existingMessages.forEach(msg => msg.remove());
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'custom-message';
+        messageDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 100000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideInRight 0.3s ease;
+            font-size: 14px;
+        `;
+
+        const colors = {
+            success: '#27ae60',
+            error: '#e74c3c',
+            warning: '#f39c12',
+            info: '#3498db'
+        };
+
+        messageDiv.style.backgroundColor = colors[type] || colors.info;
+        messageDiv.innerHTML = text;
+
+        document.body.appendChild(messageDiv);
+
+        setTimeout(() => {
+            messageDiv.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 300);
+        }, duration);
+    }
+
+    // Tela cheia
+    function toggleFullscreen() {
+        const mapPage = document.querySelector('.map-page');
+        const fullscreenToggle = document.getElementById('fullscreen-toggle');
+
+        if (!isFullscreen) {
+            mapPage.classList.add('modo-tela-cheia');
+            fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i><span class="btn-text">Sair da Tela Cheia</span>';
+            isFullscreen = true;
+        } else {
+            mapPage.classList.remove('modo-tela-cheia');
+            fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i><span class="btn-text">Tela Cheia</span>';
+            isFullscreen = false;
+        }
+
+        setTimeout(() => {
+            if (map) {
+                map.invalidateSize();
+                map.setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lng], DEFAULT_COORDS.zoom);
+            }
+        }, 100);
+    }
+
+    // Modal de confirmação
     function showDeleteConfirmation(areaId) {
         currentAreaId = areaId;
-        document.getElementById('confirm-modal').style.display = 'flex';
+        document.getElementById('confirm-modal').classList.add('active');
         document.getElementById('btn-confirm-delete').onclick = function () {
             deleteArea(areaId);
             hideModal();
@@ -647,7 +1043,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function hideModal() {
-        document.getElementById('confirm-modal').style.display = 'none';
+        document.getElementById('confirm-modal').classList.remove('active');
         currentAreaId = null;
     }
 
@@ -658,7 +1054,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (result.status === 'sucesso') {
                 showMessage('Área excluída com sucesso!', 'success');
-                loadAreas();
+
+                // Remover do mapa
+                drawnItems.eachLayer(function (layer) {
+                    if (layer.areaId === areaId) {
+                        drawnItems.removeLayer(layer);
+                        if (layer === currentPolygonLayer) {
+                            currentPolygonLayer = null;
+                        }
+                    }
+                });
+
+                closeEditPopup();
             } else {
                 showMessage('Erro: ' + result.mensagem, 'error');
             }
@@ -667,154 +1074,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ========== FUNÇÕES DE TELA CHEIA ==========
-
-    function toggleFullscreen() {
-        const mapPage = document.querySelector('.map-page');
-        const fullscreenToggle = document.getElementById('fullscreen-toggle');
-        const header = document.querySelector('.map-header');
-        const sidebar = document.querySelector('.map-sidebar');
-
-        if (!isFullscreen) {
-            // Entrar em modo tela cheia
-            mapPage.classList.add('modo-tela-cheia');
-            if (header) header.style.display = 'none';
-
-            fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i><span class="btn-text">Sair da Tela Cheia</span>';
-
-            setTimeout(() => {
-                if (map) {
-                    map.invalidateSize();
-                    map.setView([CAMACARI_COORDS.lat, CAMACARI_COORDS.lng], CAMACARI_COORDS.zoom);
-                }
-            }, 100);
-
-            showMessage('Modo tela cheia ativado. Pressione ESC para sair.', 'info', 2000);
-            isFullscreen = true;
-
-        } else {
-            // Sair do modo tela cheia
-            mapPage.classList.remove('modo-tela-cheia');
-            if (header) header.style.display = 'block';
-
-            fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i><span class="btn-text">Tela Cheia</span>';
-
-            setTimeout(() => {
-                if (map) {
-                    map.invalidateSize();
-                    map.setView([CAMACARI_COORDS.lat, CAMACARI_COORDS.lng], CAMACARI_COORDS.zoom);
-                }
-            }, 100);
-
-            isFullscreen = false;
-        }
-    }
-
-    // ========== FUNÇÕES DE MENSAGENS ==========
-
-    function showMessage(text, type = 'info', duration = 3000) {
-        const existingMessages = document.querySelectorAll('.custom-message');
-        existingMessages.forEach(msg => msg.remove());
-
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'custom-message';
-        messageDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 25px;
-            border-radius: 10px;
-            color: white;
-            font-weight: 600;
-            z-index: 100000;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-            animation: slideDown 0.4s ease;
-            font-size: 16px;
-            text-align: center;
-            min-width: 300px;
-            max-width: 80%;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        `;
-
-        const colors = {
-            success: 'linear-gradient(135deg, #27ae60, #2ecc71)',
-            error: 'linear-gradient(135deg, #e74c3c, #c0392b)',
-            warning: 'linear-gradient(135deg, #f39c12, #e67e22)',
-            info: 'linear-gradient(135deg, #3498db, #2980b9)'
-        };
-
-        messageDiv.style.background = colors[type] || colors.info;
-
-        const icons = {
-            success: '✅',
-            error: '❌',
-            warning: '⚠️',
-            info: 'ℹ️'
-        };
-
-        messageDiv.innerHTML = `
-            <span style="font-size: 20px;">${icons[type] || 'ℹ️'}</span>
-            <span>${text}</span>
-        `;
-
-        document.body.appendChild(messageDiv);
-
-        setTimeout(() => {
-            messageDiv.style.animation = 'slideUp 0.4s ease';
-            setTimeout(() => {
-                if (messageDiv.parentNode) {
-                    messageDiv.parentNode.removeChild(messageDiv);
-                }
-            }, 400);
-        }, duration);
-    }
-
-    function setupCustomAnimations() {
-        if (!document.querySelector('#custom-animations')) {
-            const style = document.createElement('style');
-            style.id = 'custom-animations';
-            style.textContent = `
-                @keyframes slideDown {
-                    from { transform: translate(-50%, -100%); opacity: 0; }
-                    to { transform: translate(-50%, 0); opacity: 1; }
-                }
-                @keyframes slideUp {
-                    from { transform: translate(-50%, 0); opacity: 1; }
-                    to { transform: translate(-50%, -100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    }
-
-    // ========== FUNÇÕES GLOBAIS ==========
-
-    window.zoomToArea = function (areaId) {
-        drawnItems.eachLayer(function (layer) {
-            if (layer.areaId === areaId) {
-                if (layer.getBounds) {
-                    map.fitBounds(layer.getBounds());
-                    layer.openPopup();
-                }
-                return false;
-            }
-        });
-    };
-
-    window.confirmDeleteArea = function (areaId) {
-        currentAreaId = areaId;
-        document.getElementById('confirm-modal').style.display = 'flex';
-        document.getElementById('btn-confirm-delete').onclick = function () {
-            deleteArea(areaId);
-            hideModal();
-        };
-    };
-
-    // ========== INICIALIZAÇÃO ==========
-
+    // Inicializar
     init();
 });
