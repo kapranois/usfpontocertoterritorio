@@ -515,3 +515,813 @@ textarea.form-control {
             background: #3498db;
             color: #fff;
         }
+/* ========== NOVOS ESTILOS PARA O SISTEMA SIMPLIFICADO ========== */
+
+/* Botão flutuante para criar mapa */
+.floating-create-btn {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.create-btn {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+    .create-btn:hover {
+        background: linear-gradient(135deg, #219653, #27ae60);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+    }
+
+    .create-btn:active {
+        transform: translateY(0);
+    }
+
+    .create-btn i {
+        font-size: 18px;
+    }
+
+.tooltip {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-top: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.floating-create-btn:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Popup de edição */
+.edit-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    display: none;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+    .edit-popup.active {
+        display: block;
+        animation: slideIn 0.3s ease;
+    }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+    .popup-header h3 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+.close-popup {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+    .close-popup:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+.popup-content {
+    padding: 20px;
+}
+
+/* Ferramentas de edição colapsadas */
+.edit-tools-collapsed {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.edit-tools-toggle {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+    .edit-tools-toggle:hover {
+        background: #5a6268;
+    }
+
+/* Ferramentas de edição expandidas */
+.edit-tools-expanded {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.tool-group {
+    margin-bottom: 20px;
+}
+
+    .tool-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .tool-group h4 {
+        color: #495057;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+.draw-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.draw-btn {
+    flex: 1;
+    min-width: 100px;
+    background: #e9ecef;
+    border: 2px solid transparent;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+    .draw-btn:hover {
+        background: #dee2e6;
+    }
+
+    .draw-btn.active {
+        background: #3498db;
+        color: white;
+        border-color: #2980b9;
+    }
+
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn {
+    flex: 1;
+    background: #e9ecef;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+    .edit-btn:hover {
+        background: #dee2e6;
+    }
+
+#btn-delete-shape:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Informações da área */
+.area-info-section {
+    margin-top: 20px;
+}
+
+    .area-info-section h4 {
+        color: #495057;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+    }
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #495057;
+        font-weight: 500;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+/* Botões do popup */
+.popup-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.popup-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.popup-btn-success {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+}
+
+    .popup-btn-success:hover {
+        background: linear-gradient(135deg, #219653, #27ae60);
+    }
+
+.popup-btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+    .popup-btn-secondary:hover {
+        background: #7f8c8d;
+    }
+
+/* Overlay do popup */
+.popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    display: none;
+}
+
+    .popup-overlay.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal de confirmação */
+.modal.active {
+    display: flex;
+}
+
+.modal-header {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.modal-btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+    .modal-btn-danger:hover {
+        background: #c0392b;
+    }
+
+.modal-btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+    .modal-btn-secondary:hover {
+        background: #7f8c8d;
+    }
+
+/* Estilos dos polígonos no mapa */
+.leaflet-interactive {
+    cursor: pointer !important;
+}
+
+    .leaflet-interactive:hover {
+        stroke-width: 3px !important;
+    }
+
+/* Animações para mensagens */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Responsividade para o novo sistema */
+@media (max-width: 768px) {
+    .floating-create-btn {
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .create-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .edit-popup {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .draw-buttons {
+        flex-direction: column;
+    }
+
+    .draw-btn {
+        min-width: auto;
+    }
+
+    .edit-buttons {
+        flex-direction: column;
+    }
+}
+/* Cursor personalizado para modo de desenho */
+.map-drawing-mode {
+    cursor: crosshair !important;
+}
+
+    .map-drawing-mode .leaflet-interactive {
+        cursor: crosshair !important;
+    }
+
+/* Cursor para edição de vértices */
+.map-edit-mode {
+    cursor: move !important;
+}
+
+/* Cursor padrão para polígonos existentes */
+.leaflet-interactive {
+    cursor: pointer !important;
+}
+/* Indicador de modo de desenho */
+.map-drawing-mode::after {
+    content: "✏️ Modo Desenho";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(52, 152, 219, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Indicador de modo de edição */
+.map-edit-mode::after {
+    content: "🔧 Modo Edição";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(243, 156, 18, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+/* Card de informações da área */
+.area-info-card {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: none;
+    animation: slideInRight 0.3s ease;
+}
+
+    .area-info-card.active {
+        display: block;
+    }
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+    .card-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+.close-card {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+    .close-card:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+.card-content {
+    padding: 20px;
+}
+
+.card-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+    .card-info-row:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+.card-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    flex: 1;
+}
+
+.card-value {
+    color: #6c757d;
+    font-size: 14px;
+    flex: 2;
+    text-align: right;
+    word-break: break-word;
+}
+
+.card-link {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+    .card-link:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+
+/* Ações do card */
+.card-actions {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.card-edit-btn {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
+}
+
+    .card-edit-btn:hover {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+        transform: scale(1.1);
+        box-shadow: 0 6px 15px rgba(243, 156, 18, 0.4);
+    }
+
+    .card-edit-btn:active {
+        transform: scale(0.95);
+    }
+
+/* Responsividade para o card */
+@media (max-width: 768px) {
+    .area-info-card {
+        width: 90%;
+        right: 5%;
+        left: 5%;
+        max-width: 300px;
+    }
+}
+/* Modal do Street View - Versão Preview */
+.streetview-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.preview-placeholder {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    border: 2px dashed #dee2e6;
+}
+
+    .preview-placeholder i {
+        font-size: 64px;
+        color: #4285f4;
+        margin-bottom: 20px;
+    }
+
+    .preview-placeholder h4 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .preview-placeholder p {
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+
+.preview-info {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: left;
+    border: 1px solid #dee2e6;
+}
+
+.url-display {
+    display: block;
+    word-break: break-all;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 5px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #495057;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.preview-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    min-width: 180px;
+    justify-content: center;
+}
+
+.preview-btn-primary {
+    background: linear-gradient(135deg, #4285f4, #0d47a1);
+    color: white;
+}
+
+    .preview-btn-primary:hover {
+        background: linear-gradient(135deg, #3367d6, #0b3d91);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+    }
+
+.preview-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+    .preview-btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+/* Mini mapa */
+.map-mini-preview {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+}
+
+#mini-map {
+    height: 200px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .streetview-modal {
+        width: 95%;
+    }
+
+    .preview-actions {
+        flex-direction: column;
+    }
+
+    .preview-btn {
+        width: 100%;
+    }
+
+    .streetview-preview {
+        padding: 15px;
+    }
+}
+/* Marcador customizado para mini mapa */
+.custom-marker {
+    background: none;
+    border: none;
+}
