@@ -209,49 +209,6 @@
         </div>
     </div>
 </div>
-<!-- Modal do Street View -->
-<div class="modal" id="streetview-modal">
-    <div class="modal-content streetview-modal">
-        <div class="modal-header">
-            <i class="fas fa-street-view"></i>
-            Visualização do Street View
-            <button class="close-modal" id="close-streetview">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="streetview-preview">
-                <div class="preview-placeholder" id="streetview-preview">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <h4>Visualização do Street View</h4>
-                    <p>Este link será aberto em uma nova janela para sua segurança.</p>
-
-                    <div class="preview-info">
-                        <p><strong>URL:</strong> <span id="streetview-url-display" class="url-display"></span></p>
-                        <p><i class="fas fa-shield-alt"></i> Conexão segura com Google Maps</p>
-                    </div>
-
-                    <div class="preview-actions">
-                        <button class="preview-btn preview-btn-primary" id="open-streetview-tab">
-                            <i class="fas fa-external-link-alt"></i>
-                            Abrir no Google Maps
-                        </button>
-                        <button class="preview-btn preview-btn-secondary" id="copy-streetview-link">
-                            <i class="fas fa-copy"></i>
-                            Copiar Link
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Mini mapa de preview (opcional) -->
-                <div class="map-mini-preview" id="map-mini-preview">
-                    <div id="mini-map"></div>
-                    <small><i class="fas fa-info-circle"></i> Localização aproximada</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
