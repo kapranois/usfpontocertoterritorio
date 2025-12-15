@@ -970,17 +970,26 @@ def excluir_area(area_id):
                         'mensagem': 'Você não tem permissão para excluir esta área'
                     }), 403
                 
+                # REMOVER DA LISTA
                 dados['areas_territoriais'].pop(i)
-                salvar_dados_mapa(dados)
                 
-                return jsonify({
-                    'status': 'sucesso',
-                    'mensagem': 'Área excluída com sucesso'
-                })
+                # SALVAR NO ARQUIVO
+                if salvar_dados_mapa(dados):
+                    print(f"DEBUG: Área ID {area_id} excluída com sucesso")
+                    return jsonify({
+                        'status': 'sucesso',
+                        'mensagem': 'Área excluída com sucesso'
+                    })
+                else:
+                    return jsonify({
+                        'status': 'erro',
+                        'mensagem': 'Erro ao salvar alterações no arquivo'
+                    }), 500
         
         return jsonify({'status': 'erro', 'mensagem': 'Área não encontrada'}), 404
         
     except Exception as e:
+        print(f"DEBUG ERRO excluir_area: {str(e)}")
         return jsonify({
             'status': 'erro',
             'mensagem': f'Erro interno: {str(e)}'
