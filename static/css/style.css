@@ -50,68 +50,66 @@ body {
 }
 
 /* ============================================
-   CABEÇALHO COMPLETO
+   CABEÇALHO
    ============================================ */
 .header {
-    background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-    color: white;
-    padding: 15px 25px;
-    border-radius: 0;
-    margin-bottom: 25px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(15px);
+    height: 68px;
+    color: #1e293b;
+    padding: 0;
+    margin-bottom: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     width: 100%;
+    height: 70px;
 }
-
-    /* Efeito de brilho no cabeçalho */
-    .header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        opacity: 0.3;
-    }
 
 /* Logo */
 .logo {
     display: flex;
     align-items: center;
-    gap: 15px;
-    z-index: 1;
+    gap: 12px;
+    padding: 0 25px;
+    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
     .logo i {
-        font-size: 2.2rem;
-        background: rgba(255, 255, 255, 0.15);
-        padding: 12px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 1.8rem;
+        color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
+        padding: 10px;
+        border-radius: 10px;
         transition: all 0.3s ease;
     }
 
     .logo:hover i {
-        transform: rotate(10deg);
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(102, 126, 234, 0.12);
+        transform: translateY(-2px);
     }
 
     .logo h1 {
-        font-size: 1.6rem;
-        font-weight: 700;
-        margin-bottom: 3px;
-        letter-spacing: -0.3px;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+        letter-spacing: -0.5px;
     }
 
     .logo .subtitle {
-        font-size: 0.8rem;
-        opacity: 0.9;
+        font-size: 0.75rem;
+        color: #64748b;
         font-weight: 400;
+        opacity: 0.8;
     }
 
 /* Header right */
@@ -124,223 +122,339 @@ body {
 
 /* Equipe info */
 .equipe-info {
-    background: rgba(255, 255, 255, 0.12);
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-size: 0.85rem;
+    background: rgba(102, 126, 234, 0.1);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
     font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 8px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 6px;
+    color: #475569;
     transition: all 0.3s ease;
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    margin-right: 15px;
 }
-
     .equipe-info:hover {
-        background: rgba(255, 255, 255, 0.18);
+        background: rgba(102, 126, 234, 0.15);
+        border-color: rgba(102, 126, 234, 0.25);
         transform: translateY(-2px);
+        color: #4f46e5;
     }
 
     .equipe-info i {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         opacity: 0.9;
     }
 
 /* ============================================
-   MENU DROPDOWN DO USUÁRIO
+   MENU DROPDOWN DO USUÁRIO - VERSÃO COMPLETA
    ============================================ */
+
+/* Container principal */
 .user-dropdown-container {
     position: relative;
-    z-index: 1001;
+    margin-right: 25px;
 }
 
+/* Trigger do menu (botão que o usuário clica) */
 .user-menu-trigger {
     display: flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    position: relative;
-    z-index: 1001;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(241, 245, 249, 0.8) !important;
+    border: 1px solid rgba(226, 232, 240, 0.6) !important;
 }
 
     .user-menu-trigger:hover {
-        background: rgba(255, 255, 255, 0.18);
+        background: rgba(226, 232, 240, 0.9) !important;
+        border-color: rgba(148, 163, 184, 0.5) !important;
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
-/* User info */
+/* Estado quando o menu está aberto */
+.user-dropdown-container.active .user-menu-trigger {
+    background: rgba(203, 213, 225, 0.9) !important;
+    border-color: rgba(148, 163, 184, 0.6) !important;
+    transform: translateY(0) !important; /* Remove a elevação do hover */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* User info dentro do trigger */
 .user-info {
-    background: rgba(255, 255, 255, 0.12);
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-size: 0.85rem;
-    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 8px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #475569;
+    pointer-events: none; /* Permite clicar no container pai */
 }
-
-    .user-info:hover {
-        background: rgba(255, 255, 255, 0.18);
-        transform: translateY(-2px);
-    }
 
     .user-info i {
-        font-size: 0.9rem;
-        opacity: 0.9;
+        font-size: 1rem;
+        color: #667eea;
     }
 
-    .user-info.convidado-user {
-        background: linear-gradient(135deg, rgba(255, 152, 0, 0.25), rgba(245, 124, 0, 0.25));
-        border: 1px solid rgba(255, 152, 0, 0.3);
-    }
-
-        .user-info.convidado-user:hover {
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.35), rgba(245, 124, 0, 0.35));
-        }
-
-.convidado-badge {
-    background: linear-gradient(135deg, #ff9800, #f57c00);
-    color: white;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin-left: 5px;
-    animation: pulse 2s infinite;
-    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
-}
-
+/* Seta do dropdown */
 .dropdown-arrow {
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.8);
-    transition: transform 0.3s ease;
+    color: #94a3b8;
+    transition: transform 0.3s ease !important;
+    margin-left: 4px;
 }
 
-/* MENU DROPDOWN */
+/* Rotação da seta quando menu está aberto */
+.user-dropdown-container.active .dropdown-arrow {
+    transform: rotate(180deg) !important;
+}
+
+/* O MENU DROPDOWN EM SI (estava faltando isso!) */
 .user-dropdown-menu {
-    position: fixed;
-    top: 80px;
-    right: 10px;
-    width: 200px;
-    background: white;
+    position: fixed; /* Mudado de absolute para fixed */
+    top: 70px; /* Ajuste conforme a altura do header */
+    right: 25px;
+    width: 280px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(226, 232, 240, 0.6);
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 9999;
     overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.08);
     max-height: calc(100vh - 100px);
     overflow-y: auto;
 }
 
+    /* Estado visível do menu */
     .user-dropdown-menu.show {
         opacity: 1;
         visibility: visible;
         transform: translateY(0);
     }
 
+/* Conteúdo do dropdown (mantenha seu CSS existente) */
 .dropdown-user-info {
-    padding: 20px;
-    background: linear-gradient(135deg, #f8fafd, #f0f3f9);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 16px;
+    gap: 12px;
     display: flex;
     align-items: center;
-    gap: 15px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
     .dropdown-user-info i {
-        font-size: 2.5rem;
-        color: #1a73e8;
+        font-size: 1.8rem;
+        color: #667eea;
         background: white;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .dropdown-user-info div {
-        flex: 1;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
     }
 
     .dropdown-user-info strong {
+        color: #1e293b;
+        font-size: 0.95rem;
         display: block;
-        color: #2c3e50;
-        font-size: 1.1rem;
         margin-bottom: 4px;
     }
 
     .dropdown-user-info small {
-        color: #7f8c8d;
-        font-size: 0.85rem;
+        color: #64748b;
+        font-size: 0.8rem;
     }
 
 .dropdown-divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
-    margin: 5px 0;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.08), transparent);
+    margin: 8px 0;
 }
 
 .dropdown-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 15px 20px;
-    color: #2c3e50;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #475569;
     text-decoration: none;
     transition: all 0.2s ease;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(241, 245, 249, 0.8);
 }
 
-    .dropdown-item:last-child {
-        border-bottom: none;
-    }
-
     .dropdown-item:hover {
-        background: #f8f9fa;
-        padding-left: 25px;
-        color: #1a73e8;
+        background: linear-gradient(to right, rgba(102, 126, 234, 0.05), rgba(102, 126, 234, 0.02));
+        padding-left: 20px;
+        color: #667eea;
     }
 
     .dropdown-item i {
-        width: 20px;
+        color: #94a3b8;
+        width: 18px;
         text-align: center;
-        color: #7f8c8d;
-        font-size: 1rem;
     }
 
     .dropdown-item:hover i {
-        color: #1a73e8;
+        color: #667eea;
     }
 
     .dropdown-item.logout-item {
-        color: #e74c3c;
+        color: #ef4444;
     }
 
         .dropdown-item.logout-item:hover {
-            background: rgba(231, 76, 60, 0.05);
-            color: #c0392b;
+            background: rgba(239, 68, 68, 0.04);
+            color: #dc2626;
         }
 
-        .dropdown-item.logout-item i {
-            color: #e74c3c;
+.dropdown-footer {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    text-align: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+    .dropdown-footer small {
+        color: #7f8c8d;
+        font-size: 0.75rem;
+    }
+
+/* Overlay para mobile */
+.user-dropdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+    .user-dropdown-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .user-dropdown-menu {
+        position: fixed;
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: calc(100% - 20px);
+    }
+
+    .user-dropdown-container {
+        margin-right: 15px;
+    }
+}
+
+/* Acessibilidade */
+.user-menu-trigger:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* Remove qualquer estado active indesejado no trigger */
+.user-menu-trigger.active {
+    /* Não use esta classe no trigger! */
+    background: rgba(241, 245, 249, 0.8) !important;
+    border-color: rgba(226, 232, 240, 0.6) !important;
+}
+
+.dropdown-arrow {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    transition: transform 0.3s ease;
+}
+
+/* MENU DROPDOWN */
+.user-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 280px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.dropdown-user-info {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 16px;
+    gap: 12px;
+}
+
+    .dropdown-user-info i {
+        font-size: 1.8rem;
+        color: #667eea;
+        background: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+
+    .dropdown-user-info strong {
+        color: #1e293b;
+        font-size: 0.95rem;
+    }
+
+    .dropdown-user-info small {
+        color: #64748b;
+        font-size: 0.8rem;
+    }
+
+.dropdown-item {
+    padding: 12px 16px;
+    color: #475569;
+    border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+    gap: 12px;
+}
+
+    .dropdown-item:hover {
+        background: #f8fafc;
+        padding-left: 20px;
+        color: #667eea;
+    }
+
+    .dropdown-item i {
+        color: #94a3b8;
+        width: 18px;
+    }
+
+    .dropdown-item:hover i {
+        color: #667eea;
+    }
+
+    .dropdown-item.logout-item {
+        color: #ef4444;
+    }
+
+        .dropdown-item.logout-item:hover {
+            background: rgba(239, 68, 68, 0.04);
+            color: #dc2626;
         }
 
 .dropdown-footer {
@@ -364,74 +478,67 @@ body {
    ============================================ */
 .navbar {
     display: flex;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 6px;
-    border-radius: 25px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    backdrop-filter: none;
+    border: none;
+    height: 100%;
 }
 
     .navbar a {
-        color: white;
+        color: #64748b;
         text-decoration: none;
-        padding: 8px 18px;
-        border-radius: 20px;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        padding: 0 20px;
+        border-radius: 0;
+        transition: all 0.3s ease;
         display: flex;
         align-items: center;
         gap: 8px;
         font-weight: 500;
         font-size: 0.85rem;
+        height: 100%;
         position: relative;
-        overflow: hidden;
+        border-bottom: 3px solid transparent;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
         .navbar a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.6s;
-        }
-
-        .navbar a:hover::before {
-            left: 100%;
+            display: none; /* Remove o efeito antigo */
         }
 
         .navbar a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.04);
+            transform: none;
+            box-shadow: none;
         }
 
         .navbar a.active {
-            background: white;
-            color: #1a73e8;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.02);
+            border-bottom: 3px solid #667eea;
             font-weight: 600;
         }
 
             .navbar a.active:hover {
-                background: #f8f9fa;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+                background: rgba(102, 126, 234, 0.04);
+                transform: none;
+                box-shadow: none;
             }
 
         .navbar a i {
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: transform 0.3s ease;
         }
 
         .navbar a:hover i {
-            transform: scale(1.1);
+            transform: translateY(-2px);
         }
 
         .navbar a.active i {
-            color: #1a73e8;
+            color: #667eea;
         }
 
 
@@ -1043,6 +1150,23 @@ body {
 /* ============================================
    ANIMAÇÕES GERAIS
    ============================================ */
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    animation: fadeInDown 0.4s ease-out;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -1093,6 +1217,7 @@ body {
     color: inherit;
     transition: all 0.3s ease;
     margin-right: 20px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
     .equipe-info-link:hover {
@@ -1277,6 +1402,81 @@ body {
 /* ============================================
    RESPONSIVIDADE
    ============================================ */
+
+@media (max-width: 992px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px 0;
+        gap: 15px;
+    }
+
+    .logo {
+        padding: 0 15px;
+    }
+
+    .navbar {
+        width: 100%;
+        justify-content: center;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 10px;
+    }
+
+        .navbar a {
+            padding: 0 15px;
+        }
+
+    .user-dropdown-container {
+        margin-right: 15px;
+    }
+}
+@media (max-width: 768px) {
+    .header {
+        height: auto;
+        min-height: 68px;
+        padding: 10px 0;
+    }
+
+    .navbar a.active {
+        border-bottom: 2px solid #667eea;
+        /* Linha mais fina em mobile */
+    }
+
+    /* Ajuste no logo para mobile */
+    .logo h1 {
+        font-size: 1.2rem;
+    }
+
+    .logo .subtitle {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px;
+    }
+
+        .navbar a {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+            .navbar a.active {
+                border-bottom: 2px solid #667eea;
+            }
+
+    .equipe-info {
+        margin-right: 10px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+}
+
 @media (max-width: 1200px) {
     .metrics-grid {
         grid-template-columns: repeat(3, 1fr);
