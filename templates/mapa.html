@@ -22,61 +22,62 @@
     <!-- Botão tela cheia -->
     <button id="fullscreen-toggle">
         <i class="fas fa-expand"></i>
-        <span class="btn-text">Tela Cheia</span>
+        <span class="btn-text"></span>
     </button>
+
+    <!-- Botão flutuante para criar mapa -->
+    <div class="floating-create-btn" id="floating-create-btn">
+        <button class="create-btn" id="btn-create-map">
+            <i class="fas fa-plus"></i>
+            <span>Criar Mapa</span>
+        </button>
+        <div class="tooltip">
+            Clique aqui para começar a desenhar uma nova área
+        </div>
+    </div>
+        <!-- Card de informações da área (inicialmente oculto) -->
+        <div class="area-info-card" id="area-info-card">
+            <div class="card-header">
+                <h4 id="card-area-name">Nome da Área</h4>
+                <button class="close-card" id="close-card">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="card-info-row">
+                    <span class="card-label">Tipo:</span>
+                    <span class="card-value" id="card-area-type">Bairro</span>
+                </div>
+                <div class="card-info-row">
+                    <span class="card-label">Status:</span>
+                    <span class="card-value" id="card-area-status">Descoberta</span>
+                </div>
+                <div class="card-info-row">
+                    <span class="card-label">Descrição:</span>
+                    <span class="card-value" id="card-area-description">Sem descrição</span>
+                </div>
+                <div class="card-info-row" id="card-agente-row" style="display: none;">
+                    <span class="card-label">Agente:</span>
+                    <span class="card-value" id="card-area-agente">-</span>
+                </div>
+                <div class="card-info-row" id="card-streetview-row" style="display: none;">
+                    <span class="card-label">Street View:</span>
+                    <a href="#" target="_blank" id="card-streetview-link" class="card-link">Ver no mapa</a>
+                </div>
+
+                <!-- Botão de edição (apenas ícone) -->
+                <div class="card-actions">
+                    <button class="card-edit-btn" id="card-edit-btn" title="Editar esta área">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    <
 
     <div class="map-container">
         <!-- Container do Mapa -->
         <div id="map"></div>
-
-        <!-- Botão flutuante para criar mapa -->
-        <div class="floating-create-btn" id="floating-create-btn">
-            <button class="create-btn" id="btn-create-map">
-                <i class="fas fa-plus"></i>
-                <span>Criar Mapa</span>
-            </button>
-            <div class="tooltip">
-                Clique aqui para começar a desenhar uma nova área
-            </div>
-            <!-- Card de informações da área (inicialmente oculto) -->
-            <div class="area-info-card" id="area-info-card">
-                <div class="card-header">
-                    <h4 id="card-area-name">Nome da Área</h4>
-                    <button class="close-card" id="close-card">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="card-content">
-                    <div class="card-info-row">
-                        <span class="card-label">Tipo:</span>
-                        <span class="card-value" id="card-area-type">Bairro</span>
-                    </div>
-                    <div class="card-info-row">
-                        <span class="card-label">Status:</span>
-                        <span class="card-value" id="card-area-status">Descoberta</span>
-                    </div>
-                    <div class="card-info-row">
-                        <span class="card-label">Descrição:</span>
-                        <span class="card-value" id="card-area-description">Sem descrição</span>
-                    </div>
-                    <div class="card-info-row" id="card-agente-row" style="display: none;">
-                        <span class="card-label">Agente:</span>
-                        <span class="card-value" id="card-area-agente">-</span>
-                    </div>
-                    <div class="card-info-row" id="card-streetview-row" style="display: none;">
-                        <span class="card-label">Street View:</span>
-                        <a href="#" target="_blank" id="card-streetview-link" class="card-link">Ver no mapa</a>
-                    </div>
-
-                    <!-- Botão de edição (apenas ícone) -->
-                    <div class="card-actions">
-                        <button class="card-edit-btn" id="card-edit-btn" title="Editar esta área">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Popup de edição (inicialmente oculto) -->
         <div class="edit-popup" id="edit-popup">
@@ -87,8 +88,8 @@
                 </button>
             </div>
 
+            <!-- Ferramentas de edição (ícone de lápis que expande) -->
             <div class="popup-content">
-                <!-- Ferramentas de edição (ícone de lápis que expande) -->
                 <div class="edit-tools-collapsed">
                     <button class="edit-tools-toggle" id="edit-tools-toggle">
                         <i class="fas fa-pencil-alt"></i>
@@ -136,9 +137,6 @@
                         <label for="area-type-popup">Tipo:</label>
                         <select id="area-type-popup" class="form-control">
                             <option value="bairro">Bairro</option>
-                            <option value="comunidade">Comunidade</option>
-                            <option value="microarea">Microárea</option>
-                            <option value="setor">Setor</option>
                             <option value="condominio">Condomínio</option>
                             <option value="outro">Outro</option>
                         </select>
@@ -160,7 +158,7 @@
                     <div class="form-group">
                         <label for="agente-id-popup">
                             <i class="fas fa-user-md"></i>
-                            Agente Responsável (opcional):
+                            Agente Responsável :
                         </label>
                         <input type="text" id="agente-id-popup" class="form-control"
                                placeholder="Nome do agente">
@@ -169,7 +167,7 @@
                     <div class="form-group">
                         <label for="streetview-link-popup">
                             <i class="fas fa-street-view"></i>
-                            Link do Street View/Google Earth (opcional)
+                            Link do Street View/Google Earth
                         </label>
                         <input type="url" id="streetview-link-popup" class="form-control"
                                placeholder="Cole o link do Google Earth ou Street View">
@@ -182,9 +180,9 @@
                         <i class="fas fa-check"></i>
                         Concluir
                     </button>
-                    <button class="popup-btn popup-btn-secondary" id="btn-cancel-popup">
+                    <button class="popup-btn popup-btn-danger" id="btn-delete-popup">
                         <i class="fas fa-times"></i>
-                        Cancelar
+                        Deletar
                     </button>
                 </div>
             </div>
@@ -217,7 +215,7 @@
 <script>
     // Configuração inicial
     window.APP_CONFIG = window.APP_CONFIG || {
-        nivel_usuario: '{{ nivel_usuario }}',
+        //nivel_usuario: '{{ nivel_usuario }}',
         usuario_logado: {{ 'true' if usuario_logado else 'false' }},
         nome_equipe: '{{ nome_equipe }}'
     };
