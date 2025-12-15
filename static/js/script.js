@@ -29,17 +29,6 @@ function formatarNumero(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-/**
- * Função para bloquear ações de convidado em outras páginas
- */
-function bloquearAcaoConvidado() {
-    if (window.APP_CONFIG?.nivel_usuario === 'convidado') {
-        alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para realizar esta ação, faça login como usuário cadastrado.');
-        return true;
-    }
-    return false;
-}
-
 // ============================================
 // FUNÇÕES PARA MOBILE/RESPONSIVIDADE
 // ============================================
@@ -80,18 +69,38 @@ function adjustForMobile() {
 }
 
 // ============================================
-// FUNÇÕES DE NOTIFICAÇÃO E ALERTA
+// FUNÇÕES DE VERIFICAÇÃO DE USUÁRIO
 // ============================================
 
 /**
- * Mostra notificação de convidado
+ * Verifica se usuário pode realizar ação (GLOBAL - versão simplificada)
  */
-function mostrarNotificacaoConvidado() {
-    alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para adicionar ou editar conteúdo, faça login como usuário cadastrado.');
+function podeRealizarAcao() {
+    if (!window.APP_CONFIG) {
+        console.error('APP_CONFIG não definido');
+        return false;
+    }
+
+    // 1. Verifica se é convidado
+    if (window.APP_CONFIG.nivel_usuario === 'convidado') {
+        alert('🔒 Modo Visitante\n\nVocê está no modo de visualização apenas. Para realizar esta ação, faça login como usuário cadastrado.');
+        return false;
+    }
+
+    // 2. Verifica se está logado
+    if (!window.APP_CONFIG.usuario_logado) {
+        alert('🔒 Para realizar esta ação, faça login no sistema');
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 1500);
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * Valida se usuário está logado
+ * Valida se usuário está logado (simplificado)
  */
 function verificarLogin() {
     if (!window.APP_CONFIG?.usuario_logado) {
@@ -202,16 +211,26 @@ function scrollToElement(elementId, offset = 100) {
  */
 function toggleUserMenu() {
     const dropdown = document.getElementById('userDropdown');
-    const trigger = document.querySelector('.user-menu-trigger');
+    const container = document.querySelector('.user-dropdown-container');
 
-    if (dropdown.classList.contains('show')) {
+    // Verifica se o menu já está aberto
+    if (dropdown?.classList.contains('show')) {
         closeUserMenu();
     } else {
         // Fechar outros dropdowns abertos
         closeAllDropdowns();
 
-        dropdown.classList.add('show');
-        trigger.classList.add('active');
+        // Abre o menu atual
+        if (dropdown) dropdown.classList.add('show');
+        if (container) container.classList.add('active');
+
+        // Fecha o menu se clicar fora
+        document.addEventListener('click', function closeDropdown(e) {
+            if (!container?.contains(e.target)) {
+                closeUserMenu();
+                document.removeEventListener('click', closeDropdown);
+            }
+        });
 
         // Adicionar overlay apenas em mobile
         if (window.innerWidth <= 768) {
@@ -223,46 +242,44 @@ function toggleUserMenu() {
     }
 }
 
-/**
- * Fecha o menu do usuário
- */
 function closeUserMenu() {
     const dropdown = document.getElementById('userDropdown');
-    const trigger = document.querySelector('.user-menu-trigger');
+    const container = document.querySelector('.user-dropdown-container');
+
+    // Remove classes
+    if (dropdown) dropdown.classList.remove('show');
+    if (container) container.classList.remove('active');
+
+    // Remove overlay se existir
     const overlay = document.querySelector('.user-dropdown-overlay');
-
-    if (dropdown) {
-        dropdown.classList.remove('show');
-    }
-
-    if (trigger) {
-        trigger.classList.remove('active');
-    }
-
-    if (overlay) {
-        overlay.remove();
-    }
+    if (overlay) overlay.remove();
 }
 
-/**
- * Fecha todos os dropdowns abertos
- */
 function closeAllDropdowns() {
-    const dropdowns = document.querySelectorAll('.user-dropdown-menu.show');
-    dropdowns.forEach(dropdown => {
+    // Fecha todos os dropdowns de usuário
+    document.querySelectorAll('.user-dropdown-menu.show').forEach(dropdown => {
         dropdown.classList.remove('show');
     });
 
-    const triggers = document.querySelectorAll('.user-menu-trigger.active');
-    triggers.forEach(trigger => {
-        trigger.classList.remove('active');
+    document.querySelectorAll('.user-dropdown-container.active').forEach(container => {
+        container.classList.remove('active');
     });
 
-    const overlays = document.querySelectorAll('.user-dropdown-overlay');
-    overlays.forEach(overlay => {
+    // Remove overlays
+    document.querySelectorAll('.user-dropdown-overlay').forEach(overlay => {
         overlay.remove();
     });
 }
+
+// Fecha dropdown ao pressionar ESC
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeUserMenu();
+    }
+});
+
+// Fecha dropdown ao mudar de página
+window.addEventListener('beforeunload', closeUserMenu);
 
 /**
  * Configura eventos do dropdown do usuário
@@ -306,7 +323,7 @@ function setupUserDropdown() {
 }
 
 // ============================================
-// INICIALIZAÇÃO
+// INICIALIZAÇÃO GLOBAL
 // ============================================
 
 /**
@@ -334,8 +351,7 @@ function initGeneralUtilities() {
 
 // Exportar funções utilitárias
 window.formatarNumero = formatarNumero;
-window.bloquearAcaoConvidado = bloquearAcaoConvidado;
-window.mostrarNotificacaoConvidado = mostrarNotificacaoConvidado;
+window.podeRealizarAcao = podeRealizarAcao;
 window.verificarLogin = verificarLogin;
 window.setButtonLoading = setButtonLoading;
 window.validarCampoObrigatorio = validarCampoObrigatorio;
@@ -376,11 +392,3 @@ function debugUserConfig() {
 
 // Expor função de debug
 window.debugUserConfig = debugUserConfig;
-
-// REMOVA daqui: Tudo relacionado a:
-// - dashboard.atualizarMetricas
-// - mostrarTodosACS
-// - mostrarDetalhesACS
-// - showNotification
-// - etc... (tudo que é específico do dashboard)
-// Pois isso já está no dashboard.js
