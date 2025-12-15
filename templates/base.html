@@ -9,16 +9,16 @@
     <title>{% block title %}{% endblock %}</title>
 
     <!-- CSS PRINCIPAL -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
-    <!-- CSS ESPECÍFICO DO DASHBOARD (será carregado apenas na página do dashboard) -->
+    <!-- CSS ESPECÍFICO DA PÁGINA -->
     {% block extra_css %}{% endblock %}
 
     <!-- ICONES E FONTES -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Configurações do backend (IMPORTANTE: isso deve vir ANTES dos scripts) -->
+    <!-- Configurações do backend -->
     <script>
         // Configuração global do sistema
         window.APP_CONFIG = {
@@ -28,11 +28,6 @@
             nome_equipe: {{ nome_equipe|tojson }},
             microareas: {{ microareas|tojson|safe if microareas is defined else []|tojson }},
             current_page: '{{ request.endpoint }}'
-        };
-
-        // Debug helper
-        window.logConfig = function() {
-            console.log('APP_CONFIG:', window.APP_CONFIG);
         };
     </script>
 </head>
@@ -44,7 +39,7 @@
             <i class="fas fa-map-marked-alt"></i>
             <div>
                 <h1>USF Ponto Certo</h1>
-                <p class="subtitle">Territorialização</p>
+                <p class="subtitle">Territorio</p>
             </div>
         </div>
         <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
@@ -140,13 +135,13 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- RODA PÉ -->
+    <!-- RODAPÉ -->
     <footer class="footer-simple-horizontal">
         <div class="footer-simple-container">
             <!-- Logos em linha contínua -->
             <div class="logos-inline">
                 <div class="logo-inline-wrapper">
-                    <img src="{{ url_for('static', filename='img/acs.png') }}" alt="ACS">
+                    <img src="{{ url_for('static', filename='img/acs.png') }}" alt="ACS" class="no-interaction">
                     <img src="{{ url_for('static', filename='img/maissaudecomagente.png') }}" alt="msca">
                     <img src="{{ url_for('static', filename='img/saudedafamilia.png') }}" alt="Saúde da Família">
                     <img src="{{ url_for('static', filename='img/acs2.png') }}" alt="Agente de Saude">
@@ -172,15 +167,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Sistema inicializado - Página: {{ request.endpoint }}');
 
-            // Verificar se é dashboard e inicializar
-            if (typeof dashboard !== 'undefined' && typeof dashboard.init === 'function') {
-                console.log('Inicializando dashboard...');
-                dashboard.init();
-            }
-            
             // Debug (remova em produção)
             if (window.location.search.includes('debug')) {
-                window.logConfig();
+                console.log('APP_CONFIG:', window.APP_CONFIG);
             }
         });
     </script>
