@@ -7,7 +7,6 @@ const CondominiosPage = (function () {
             acs: 'todos',
             cobertura: 0
         },
-        currentStep: 1,
         isLoading: false,
         modalOpen: false,
         editingId: null
@@ -25,11 +24,10 @@ const CondominiosPage = (function () {
         console.log('👤 Configuração do usuário:', window.APP_CONFIG);
 
         setupEventListeners();
-        setupFilters();
+        setupModalCloseHandlers();
         checkPermissions();
         updateCurrentDate();
-        setupCardAnimations();
-        setupModalCloseHandlers();
+        setupCardButtons();
     }
 
     /**
@@ -65,7 +63,7 @@ const CondominiosPage = (function () {
         // Delegação de eventos para ações
         document.addEventListener('click', handleActionClick);
 
-        // Botão de novo condomínio
+        // Botão de novo condomínio (se existir)
         const btnNovo = document.querySelector('.btn-add-condominio');
         if (btnNovo) {
             btnNovo.addEventListener('click', function (e) {
@@ -73,6 +71,37 @@ const CondominiosPage = (function () {
                 showCreateModal();
             });
         }
+    }
+
+    /**
+     * Configura botões dos cards
+     */
+    function setupCardButtons() {
+        document.addEventListener('click', function (event) {
+            const target = event.target;
+
+            // Verificar se clicou em um botão de ação nos cards
+            if (target.closest('.action-btn-small')) {
+                const button = target.closest('.action-btn-small');
+                const id = button.getAttribute('data-id');
+
+                if (!id) return;
+
+                // Determinar tipo de ação
+                if (button.classList.contains('edit')) {
+                    event.preventDefault();
+                    editarCondominio(id);
+                } else if (button.classList.contains('delete')) {
+                    event.preventDefault();
+                    const card = button.closest('.condominio-card-modern');
+                    const nome = card ? card.querySelector('.card-title').textContent : 'Condomínio';
+                    confirmarExclusao(id, nome);
+                } else if (button.classList.contains('view')) {
+                    event.preventDefault();
+                    verDetalhes(id);
+                }
+            }
+        });
     }
 
     /**
@@ -111,7 +140,28 @@ const CondominiosPage = (function () {
     }
 
     /**
-     * Verifica se usuário pode realizar ação
+     * Atualiza data atual específica para a página
+     */
+    function updateCurrentDate() {
+        const dateElement = document.querySelector('.stats-badges .stat-badge:last-child span');
+        if (dateElement) {
+            dateElement.textContent = new Date().toLocaleDateString('pt-BR');
+        }
+    }
+
+    /**
+     * Verifica permissões específicas da página
+     */
+    function checkPermissions() {
+        console.log('Verificando permissões para condomínios...');
+    }
+
+    // ============================================
+    // FUNÇÕES DE PERMISSÃO ESPECÍFICAS
+    // ============================================
+
+    /**
+     * Verifica se usuário pode realizar ação (ESPECÍFICO PARA CONDOMÍNIOS)
      */
     function canPerformAction() {
         if (!window.APP_CONFIG) {
@@ -137,684 +187,45 @@ const CondominiosPage = (function () {
         return true;
     }
 
+    // ============================================
+    // FUNÇÕES DE NOTIFICAÇÃO (ESPECÍFICAS)
+    // ============================================
+
     /**
-     * Mostra modal de novo condomínio
+     * Mostra notificação elegante (ESPECÍFICO PARA CONDOMÍNIOS)
      */
-    function showCreateModal() {
-        if (!canPerformAction()) return false;
+    function showNotification(message, type = 'info') {
+        // Remove notificações existentes
+        document.querySelectorAll('.notification').forEach(n => n.remove());
 
-        state.currentStep = 1;
-        state.modalOpen = true;
-
-        // Obter microáreas da equipe atual
-        const microareas = window.APP_CONFIG?.microareas || ['Microárea 01', 'Microárea 02', 'Microárea 03', 'Microárea 04'];
-        const microareaOptions = microareas.map(area => `<option value="${area}">${area}</option>`).join('');
-
-        // Cria conteúdo do modal moderno com 3 etapas
-        const modalContent = `
-    <div class="modal-header">
-        <div class="modal-header-content">
-            <div class="modal-icon">
-                <i class="fas fa-plus-circle"></i>
-            </div>
-            <div>
-                <h3>Novo Condomínio</h3>
-                <p class="modal-subtitle">Complete as etapas para adicionar um novo condomínio</p>
-            </div>
-        </div>
-        <button class="modal-close" onclick="window.CondominiosPage.closeModal()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    <div class="modal-body">
-        <div class="form-steps-indicator">
-            <div class="step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-label">Informações Básicas</div>
-            </div>
-            <div class="step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-label">Cobertura ACS</div>
-            </div>
-            <div class="step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-label">Dados Complementares</div>
-            </div>
-        </div>
-
-        <form id="formNovoCondominio" class="modal-form modern-form">
-            <!-- ETAPA 1: Informações Básicas -->
-            <div class="form-step active" id="step1">
-                <div class="form-section">
-                    <h4 class="form-section-title">
-                        <i class="fas fa-info-circle"></i>
-                        Informações Básicas
-                    </h4>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="nomeCondominio" class="form-label">
-                                <i class="fas fa-building"></i>
-                                Nome do Condomínio *
-                            </label>
-                            <input type="text" id="nomeCondominio" class="form-input" required 
-                                   placeholder="Ex: Condomínio Lucaia">
-                            <div class="form-hint">Nome completo do condomínio</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid columns-3">
-                        <div class="form-group">
-                            <label for="torres" class="form-label">
-                                <i class="fas fa-layer-group"></i>
-                                Total de Blocos *
-                            </label>
-                            <input type="number" id="torres" class="form-input" min="1" required 
-                                   placeholder="Ex: 23">
-                        </div>
-                        <div class="form-group">
-                            <label for="apartamentos" class="form-label">
-                                <i class="fas fa-door-closed"></i>
-                                Total de Apartamentos *
-                            </label>
-                            <input type="number" id="apartamentos" class="form-input" min="1" required 
-                                   placeholder="Ex: 460">
-                        </div>
-                        <div class="form-group">
-                            <label for="moradores" class="form-label">
-                                <i class="fas fa-users"></i>
-                                Total de Moradores *
-                            </label>
-                            <input type="number" id="moradores" class="form-input" min="1" required 
-                                   placeholder="Ex: 1610">
-                        </div>
-                    </div>
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-icon">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
                 </div>
-            </div>
-
-            <!-- ETAPA 2: Cobertura por ACS -->
-            <div class="form-step" id="step2" style="display: none;">
-                <div class="form-section">
-                    <h4 class="form-section-title">
-                        <i class="fas fa-user-md"></i>
-                        Cobertura por Agente Comunitário de Saúde
-                    </h4>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Condomínio possui ACS?</label>
-                            <div class="radio-group">
-                                <label class="radio-option">
-                                    <input type="radio" name="tem_acs" value="sim" checked onchange="window.CondominiosPage.toggleACSFields(true)">
-                                    <div class="radio-content">
-                                        <i class="fas fa-user-check"></i>
-                                        <div>
-                                            <strong>Com ACS</strong>
-                                            <small>Existe ACS trabalhando neste condomínio</small>
-                                        </div>
-                                    </div>
-                                </label>
-                                <label class="radio-option">
-                                    <input type="radio" name="tem_acs" value="nao" onchange="window.CondominiosPage.toggleACSFields(false)">
-                                    <div class="radio-content">
-                                        <i class="fas fa-user-times"></i>
-                                        <div>
-                                            <strong>Sem ACS</strong>
-                                            <small>Não há ACS trabalhando neste condomínio</small>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="acs-fields" style="margin-top: 20px;">
-                        <div class="form-grid columns-2">
-                            <div class="form-group">
-                                <label for="acs_responsavel" class="form-label">
-                                    <i class="fas fa-user-md"></i>
-                                    Nome do ACS
-                                </label>
-                                <input type="text" id="acs_responsavel" class="form-input" 
-                                       placeholder="Ex: Maria Silva">
-                            </div>
-                            <div class="form-group">
-                                <label for="blocos_ativos" class="form-label">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    Blocos Atendidos
-                                </label>
-                                <input type="text" id="blocos_ativos" class="form-input" 
-                                       placeholder="Ex: 1-13 ou 1,2,3,5-8" oninput="window.CondominiosPage.calcularCobertura()">
-                                <div class="form-hint">Informe os blocos que o ACS atende</div>
-                            </div>
-                        </div>
-                        
-                        <div class="cobertura-preview">
-                            <div class="preview-header">
-                                <h5><i class="fas fa-chart-pie"></i> Prévia da Cobertura</h5>
-                            </div>
-                            <div class="preview-content">
-                                <div class="cobertura-visual">
-                                    <div class="cobertura-barra">
-                                        <div class="coberto" id="preview-coberto" style="width: 0%"></div>
-                                        <div class="descoberto" id="preview-descoberto" style="width: 100%"></div>
-                                    </div>
-                                    <div class="cobertura-numbers">
-                                        <span id="text-coberto">0 blocos cobertos (0%)</span>
-                                        <span id="text-descoberto">0 blocos descobertos (0%)</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ETAPA 3: Dados Complementares -->
-            <div class="form-step" id="step3" style="display: none;">
-                <div class="form-section">
-                    <h4 class="form-section-title">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Dados Complementares
-                    </h4>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="microarea" class="form-label">
-                                <i class="fas fa-map-pin"></i>
-                                Microárea *
-                            </label>
-                            <select id="microarea" class="form-select" required>
-                                <option value="">Selecione uma microárea</option>
-                                ${microareaOptions}
-                            </select>
-                            <div class="form-hint">Selecione a microárea onde o condomínio está localizado</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid columns-3">
-                        <div class="form-group">
-                            <label for="hipertensos" class="form-label">
-                                <i class="fas fa-heartbeat"></i>
-                                Hipertensos
-                            </label>
-                            <input type="number" id="hipertensos" class="form-input" min="0" value="0">
-                            <div class="form-hint">Número de hipertensos registrados</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="diabeticos" class="form-label">
-                                <i class="fas fa-prescription-bottle"></i>
-                                Diabéticos
-                            </label>
-                            <input type="number" id="diabeticos" class="form-input" min="0" value="0">
-                            <div class="form-hint">Número de diabéticos registrados</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="gestantes" class="form-label">
-                                <i class="fas fa-female"></i>
-                                Gestantes
-                            </label>
-                            <input type="number" id="gestantes" class="form-input" min="0" value="0">
-                            <div class="form-hint">Número de gestantes registradas</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navegação entre etapas -->
-            <div class="form-navigation">
-                <button type="button" class="btn-secondary btn-prev" id="btnVoltar" style="display: none;" onclick="window.CondominiosPage.navegarEtapa('prev')">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </button>
-                <button type="button" class="btn-primary btn-next" id="btnProximaEtapa" onclick="window.CondominiosPage.navegarEtapa('next')">
-                    Próxima Etapa <i class="fas fa-arrow-right"></i>
+                <div class="notification-message">${message}</div>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-        </form>
-    </div>
-`;
+        `;
 
-        // Insere no modal
-        const modal = document.getElementById('modalCondominio');
-        if (!modal) {
-            createModalContainer();
-            return false;
-        }
+        document.body.appendChild(notification);
 
-        modal.querySelector('.modal-content').innerHTML = modalContent;
-        modal.style.display = 'block';
+        // Mostra com animação
+        setTimeout(() => notification.classList.add('show'), 10);
 
-        // Configura eventos do formulário
-        const form = document.getElementById('formNovoCondominio');
-        if (form) {
-            form.addEventListener('submit', handleCreateSubmit);
-        }
-
-        // Configura eventos para os campos
-        const blocosInput = document.getElementById('blocos_ativos');
-        if (blocosInput) {
-            blocosInput.addEventListener('input', calcularCoberturaPreview);
-        }
-
-        const torresInput = document.getElementById('torres');
-        if (torresInput) {
-            torresInput.addEventListener('input', calcularCoberturaPreview);
-        }
-
-        return true;
+        // Remove após 5 segundos
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
     }
 
     /**
-     * Cria container do modal se não existir
-     */
-    function createModalContainer() {
-        const modalHTML = `
-        <div id="modalCondominio" class="modal">
-            <div class="modal-content" style="max-width: 800px;"></div>
-        </div>
-        <div id="modalEditarCondominio" class="modal">
-            <div class="modal-content" style="max-width: 800px;"></div>
-        </div>
-    `;
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        console.log('Containers de modal criados dinamicamente');
-    }
-
-    /**
-     * Calcula prévia da cobertura
-     */
-    function calcularCoberturaPreview() {
-        const torresInput = document.getElementById('torres');
-        const blocosInput = document.getElementById('blocos_ativos');
-
-        if (!torresInput || !blocosInput) return;
-
-        const totalTorres = parseInt(torresInput.value) || 0;
-        const blocosCobertosText = blocosInput.value.trim();
-
-        if (totalTorres <= 0) {
-            atualizarPreviewCobertura(0, totalTorres);
-            return;
-        }
-
-        // Se não há texto de blocos cobertos, retorna 0
-        if (!blocosCobertosText) {
-            atualizarPreviewCobertura(0, totalTorres);
-            return;
-        }
-
-        let blocosCobertos = 0;
-
-        try {
-            // Divide por vírgula ou ponto e vírgula
-            const partes = blocosCobertosText.split(/[,;]/).map(p => p.trim()).filter(p => p.length > 0);
-
-            // Conjunto para evitar duplicatas
-            const numerosCobertos = new Set();
-
-            for (const parte of partes) {
-                if (parte.includes('-')) {
-                    // Faixa (ex: 1-5 ou 1 - 5)
-                    const faixa = parte.split('-').map(n => n.trim()).filter(n => n.length > 0);
-                    if (faixa.length === 2) {
-                        const inicio = parseInt(faixa[0]);
-                        const fim = parseInt(faixa[1]);
-
-                        if (!isNaN(inicio) && !isNaN(fim) && inicio <= fim) {
-                            // Adiciona todos os números da faixa
-                            for (let i = inicio; i <= fim; i++) {
-                                if (i >= 1 && i <= totalTorres) {
-                                    numerosCobertos.add(i);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    // Número único
-                    const num = parseInt(parte);
-                    if (!isNaN(num) && num >= 1 && num <= totalTorres) {
-                        numerosCobertos.add(num);
-                    }
-                }
-            }
-
-            // Conta os blocos cobertos únicos
-            blocosCobertos = numerosCobertos.size;
-
-        } catch (e) {
-            console.warn('Erro ao calcular blocos cobertos:', e);
-            blocosCobertos = 0;
-        }
-
-        // Limita ao total de torres
-        blocosCobertos = Math.min(blocosCobertos, totalTorres);
-
-        atualizarPreviewCobertura(blocosCobertos, totalTorres);
-    }
-
-    /**
-     * Atualiza visualização da cobertura
-     */
-    function atualizarPreviewCobertura(cobertos, total) {
-        const percentual = total > 0 ? Math.round((cobertos / total) * 100) : 0;
-        const descobertos = total - cobertos;
-
-        // Atualiza barras
-        const barraCoberto = document.getElementById('preview-coberto');
-        const barraDescoberto = document.getElementById('preview-descoberto');
-
-        if (barraCoberto) barraCoberto.style.width = `${percentual}%`;
-        if (barraDescoberto) barraDescoberto.style.width = `${100 - percentual}%`;
-
-        // Atualiza textos
-        const textCoberto = document.getElementById('text-coberto');
-        const textDescoberto = document.getElementById('text-descoberto');
-
-        if (textCoberto) {
-            textCoberto.textContent = `${cobertos} bloco${cobertos !== 1 ? 's' : ''} coberto${cobertos !== 1 ? 's' : ''} (${percentual}%)`;
-        }
-
-        if (textDescoberto) {
-            textDescoberto.textContent = `${descobertos} bloco${descobertos !== 1 ? 's' : ''} descoberto${descobertos !== 1 ? 's' : ''} (${100 - percentual}%)`;
-        }
-    }
-
-    /**
-     * Alterna campos de ACS
-     */
-    function toggleACSFields(temACS) {
-        const acsFields = document.getElementById('acs-fields');
-        if (acsFields) {
-            acsFields.style.display = temACS ? 'block' : 'none';
-        }
-
-        // Se não tem ACS, limpa os campos
-        if (!temACS) {
-            const acsResponsavel = document.getElementById('acs_responsavel');
-            const blocosAtivos = document.getElementById('blocos_ativos');
-
-            if (acsResponsavel) acsResponsavel.value = '';
-            if (blocosAtivos) blocosAtivos.value = '';
-
-            const torresInput = document.getElementById('torres');
-            const totalTorres = torresInput ? parseInt(torresInput.value) || 0 : 0;
-            atualizarPreviewCobertura(0, totalTorres);
-        }
-    }
-
-    /**
-     * Navega entre etapas do formulário
-     */
-    function navegarEtapa(direction) {
-        const currentStep = state.currentStep;
-        const totalSteps = 3;
-
-        // Valida etapa atual antes de sair
-        if (!validarEtapaAtual(currentStep)) {
-            return;
-        }
-
-        let newStep;
-        if (direction === 'next') {
-            newStep = currentStep + 1;
-        } else if (direction === 'prev') {
-            newStep = currentStep - 1;
-        } else {
-            newStep = parseInt(direction);
-        }
-
-        // Limites
-        if (newStep < 1 || newStep > totalSteps) return;
-
-        // Oculta etapa atual
-        const currentStepEl = document.getElementById(`step${currentStep}`);
-        const currentStepIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
-
-        if (currentStepEl) {
-            currentStepEl.classList.remove('active');
-            currentStepEl.style.display = 'none';
-        }
-
-        if (currentStepIndicator) currentStepIndicator.classList.remove('active');
-
-        // Mostra nova etapa
-        const newStepEl = document.getElementById(`step${newStep}`);
-        const newStepIndicator = document.querySelector(`.step[data-step="${newStep}"]`);
-
-        if (newStepEl) {
-            newStepEl.classList.add('active');
-            newStepEl.style.display = 'block';
-        }
-
-        if (newStepIndicator) newStepIndicator.classList.add('active');
-
-        // Atualiza estado
-        state.currentStep = newStep;
-
-        // Atualiza botões de navegação
-        atualizarTextoBotoes();
-    }
-
-    /**
-     * Atualiza texto dos botões de navegação
-     */
-    function atualizarTextoBotoes() {
-        const btnProxima = document.getElementById('btnProximaEtapa');
-        const btnVoltar = document.getElementById('btnVoltar');
-
-        if (btnProxima) {
-            if (state.currentStep === 3) {
-                btnProxima.innerHTML = 'Finalizar <i class="fas fa-check"></i>';
-                // CORREÇÃO: Não usar onclick direto, usar event listener
-                btnProxima.setAttribute('onclick', '');
-                btnProxima.onclick = function (e) {
-                    e.preventDefault();
-                    // Valida e submete o formulário programaticamente
-                    if (validarEtapaAtual(3)) {
-                        handleCreateSubmit(new Event('submit'));
-                    }
-                };
-            } else {
-                btnProxima.innerHTML = 'Próxima Etapa <i class="fas fa-arrow-right"></i>';
-                btnProxima.setAttribute('onclick', 'window.CondominiosPage.navegarEtapa("next")');
-            }
-        }
-
-        if (btnVoltar) {
-            btnVoltar.style.display = state.currentStep > 1 ? 'inline-flex' : 'none';
-        }
-    }
-
-    /**
-     * Valida etapa atual antes de avançar
-     */
-    function validarEtapaAtual(step) {
-        switch (step) {
-            case 1:
-                const nome = document.getElementById('nomeCondominio');
-                const torres = document.getElementById('torres');
-                const apartamentos = document.getElementById('apartamentos');
-                const moradores = document.getElementById('moradores');
-
-                const campos = [
-                    { campo: nome, mensagem: 'Nome do condomínio é obrigatório' },
-                    { campo: torres, mensagem: 'Total de blocos é obrigatório' },
-                    { campo: apartamentos, mensagem: 'Total de apartamentos é obrigatório' },
-                    { campo: moradores, mensagem: 'Total de moradores é obrigatório' }
-                ];
-
-                for (const item of campos) {
-                    if (!item.campo || !item.campo.value || item.campo.value.trim() === '') {
-                        showNotification(`❌ ${item.mensagem}`, 'error');
-                        if (item.campo) {
-                            highlightField(item.campo.id, 'error');
-                            item.campo.focus();
-                        }
-                        return false;
-                    }
-
-                    if (item.campo && item.campo.type === 'number' && parseInt(item.campo.value) <= 0) {
-                        const label = item.campo.previousElementSibling?.textContent || 'Campo';
-                        showNotification(`❌ ${label} deve ser maior que zero`, 'error');
-                        highlightField(item.campo.id, 'error');
-                        item.campo.focus();
-                        return false;
-                    }
-                }
-                return true;
-
-            case 2:
-            case 3:
-                return true;
-
-            default:
-                return true;
-        }
-    }
-
-    /**
-     * Manipula envio do formulário de criação
-     */
-    async function handleCreateSubmit(event) {
-        event.preventDefault();
-
-        if (state.isLoading) return;
-        state.isLoading = true;
-
-        let submitBtn = document.querySelector('#btnProximaEtapa');
-        let originalText = submitBtn ? submitBtn.innerHTML : '';
-
-        if (submitBtn) {
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-            submitBtn.disabled = true;
-        }
-
-        // Coleta dados
-        const data = {
-            nome: document.getElementById('nomeCondominio')?.value || '',
-            torres: parseInt(document.getElementById('torres')?.value) || 0,
-            apartamentos: parseInt(document.getElementById('apartamentos')?.value) || 0,
-            moradores: parseInt(document.getElementById('moradores')?.value) || 0,
-            hipertensos: parseInt(document.getElementById('hipertensos')?.value) || 0,
-            diabeticos: parseInt(document.getElementById('diabeticos')?.value) || 0,
-            gestantes: parseInt(document.getElementById('gestantes')?.value) || 0,
-            microarea: document.getElementById('microarea')?.value || '',
-            acs_responsavel: document.getElementById('acs_responsavel')?.value || null,
-            blocos_ativos: document.getElementById('blocos_ativos')?.value || '',
-            ultima_visita: new Date().toISOString().split('T')[0]
-        };
-
-        // Validação
-        if (!validateCreateForm(data)) {
-            state.isLoading = false;
-            if (submitBtn) {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/novo-condominio', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (result.status === 'sucesso') {
-                showNotification('✅ Condomínio adicionado com sucesso!', 'success');
-                closeModal();
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showNotification(`❌ ${result.mensagem}`, 'error');
-            }
-
-        } catch (error) {
-            console.error('Erro:', error);
-            showNotification('❌ Erro ao conectar com o servidor', 'error');
-        } finally {
-            state.isLoading = false;
-            if (submitBtn) {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        }
-    }
-
-    /**
-     * Valida formulário de criação
-     */
-    function validateCreateForm(data) {
-        const errors = [];
-
-        if (!data.nome || data.nome.trim().length < 3) {
-            errors.push('Nome deve ter pelo menos 3 caracteres');
-            highlightField('nomeCondominio', 'error');
-        }
-
-        if (data.torres <= 0) {
-            errors.push('Total de blocos deve ser maior que zero');
-            highlightField('torres', 'error');
-        }
-
-        if (data.apartamentos <= 0) {
-            errors.push('Total de apartamentos deve ser maior que zero');
-            highlightField('apartamentos', 'error');
-        }
-
-        if (data.moradores <= 0) {
-            errors.push('Total de moradores deve ser maior que zero');
-            highlightField('moradores', 'error');
-        }
-
-        if (errors.length > 0) {
-            showNotification(errors.join('<br>'), 'error');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Destaca campo com feedback visual
-     */
-    function highlightField(fieldId, type) {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            field.style.borderColor = type === 'error' ? '#e74c3c' : '#2ecc71';
-            field.style.boxShadow = type === 'error' ? '0 0 0 2px rgba(231, 76, 60, 0.2)' : '0 0 0 2px rgba(46, 204, 113, 0.2)';
-            setTimeout(() => {
-                field.style.borderColor = '';
-                field.style.boxShadow = '';
-            }, 3000);
-        }
-    }
-
-    /**
-     * Fecha modal com animação
-     */
-    function closeModal() {
-        const modal = document.getElementById('modalCondominio');
-        if (modal) {
-            modal.style.opacity = '0';
-            modal.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                modal.style.display = 'none';
-                modal.style.opacity = '1';
-                modal.style.transform = 'scale(1)';
-                modal.querySelector('.modal-content').innerHTML = '';
-                state.modalOpen = false;
-                state.currentStep = 1;
-            }, 300);
-        }
-    }
-
-    /**
-     * Mostra modal para convidado
+     * Mostra modal para convidado (ESPECÍFICO PARA CONDOMÍNIOS)
      */
     function showModalConvidado() {
         const modalContent = `
@@ -872,42 +283,67 @@ const CondominiosPage = (function () {
         modal.style.display = 'block';
     }
 
+    // ============================================
+    // FUNÇÕES DE FORMULÁRIO (ESPECÍFICAS PARA CONDOMÍNIOS)
+    // ============================================
+
     /**
-     * Mostra notificação elegante
+     * Destaca campo com feedback visual (ESPECÍFICO)
      */
-    function showNotification(message, type = 'info') {
-        // Remove notificações existentes
-        document.querySelectorAll('.notification').forEach(n => n.remove());
+    function highlightField(fieldId, type) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.style.borderColor = type === 'error' ? '#e74c3c' : '#2ecc71';
+            field.style.boxShadow = type === 'error' ? '0 0 0 2px rgba(231, 76, 60, 0.2)' : '0 0 0 2px rgba(46, 204, 113, 0.2)';
+            setTimeout(() => {
+                field.style.borderColor = '';
+                field.style.boxShadow = '';
+            }, 3000);
+        }
+    }
 
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                <div class="notification-icon">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                </div>
-                <div class="notification-message">${message}</div>
-                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
+    // ============================================
+    // FUNÇÕES DE MODAL DE CRIAÇÃO (USANDO HTML)
+    // ============================================
 
-        document.body.appendChild(notification);
+    /**
+     * Mostra modal de novo condomínio (usa o modal do HTML)
+     */
+    function showCreateModal() {
+        if (!canPerformAction()) return false;
 
-        // Mostra com animação
-        setTimeout(() => notification.classList.add('show'), 10);
+        // Usa o modal existente no HTML
+        const modal = document.getElementById('modalCondominio');
+        if (!modal) {
+            console.error('Modal não encontrado no HTML');
+            return false;
+        }
 
-        // Remove após 5 segundos
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
+        // Mostra o modal
+        modal.classList.add('active');
+        state.modalOpen = true;
+
+        return true;
     }
 
     /**
-* Edita condomínio
-*/
+     * Fecha modal de criação
+     */
+    function closeModal() {
+        const modal = document.getElementById('modalCondominio');
+        if (modal) {
+            modal.classList.remove('active');
+            state.modalOpen = false;
+        }
+    }
+
+    // ============================================
+    // FUNÇÕES DE EDIÇÃO DE CONDOMÍNIO
+    // ============================================
+
+    /**
+     * Edita condomínio
+     */
     async function editarCondominio(id) {
         if (!canPerformAction()) return;
 
@@ -928,9 +364,10 @@ const CondominiosPage = (function () {
             showNotification('❌ Erro ao carregar dados do condomínio', 'error');
         }
     }
+
     /**
-* Mostra modal de edição de condomínio
-*/
+     * Mostra modal de edição de condomínio
+     */
     function showModalEdicao(condominio) {
         state.modalOpen = true;
         state.editingId = condominio.id;
@@ -1052,19 +489,28 @@ const CondominiosPage = (function () {
                                    value="${condominio.acs_responsavel || ''}" 
                                    placeholder="Ex: Maria Silva">
                         </div>
-                        <div class="form-group">
-                            <label for="edit-blocos_ativos" class="form-label">
-                                <i class="fas fa-map-marker-alt"></i>
-                                Blocos Atendidos
-                            </label>
-                            <input type="text" id="edit-blocos_ativos" class="form-input" 
-                                   value="${condominio.blocos_ativos || ''}" 
-                                   placeholder="Ex: 1-13 ou 1,2,3,5-8" 
-                                   onchange="CondominiosPage._calcularEditCobertura()">
-                            <div class="form-hint">Informe os blocos que o ACS atende</div>
-                        </div>
-                    </div>
-                    
+<div class="form-group">
+    <label for="edit-blocos_cobertos" class="form-label">
+        <i class="fas fa-map-marker-alt"></i>
+        Blocos Cobertos
+    </label>
+    <input type="number" id="edit-blocos_cobertos" class="form-input"
+           min="0" max="${condominio.torres}"
+           value="${condominio.blocos_cobertos || 0}" 
+           onchange="CondominiosPage._calcularEditCobertura()">
+    <div class="form-hint">Número de blocos cobertos pelo ACS</div>
+</div>
+<div class="form-group">
+    <label for="edit-blocos_descobertos" class="form-label">
+        <i class="fas fa-map-marker-alt"></i>
+        Blocos Descobertos
+    </label>
+    <input type="number" id="edit-blocos_descobertos" class="form-input"
+           min="0" max="${condominio.torres}"
+           value="${condominio.blocos_descobertos || condominio.torres || 0}" 
+           onchange="CondominiosPage._calcularEditCobertura()">
+    <div class="form-hint">Número de blocos não cobertos</div>
+</div>
                     <div class="cobertura-preview">
                         <div class="preview-header">
                             <h5><i class="fas fa-chart-pie"></i> Prévia da Cobertura</h5>
@@ -1177,32 +623,42 @@ const CondominiosPage = (function () {
 </div>
 `;
 
-        // Insere no modal de edição
-        const modal = document.getElementById('modalEditarCondominio');
-        if (modal) {
-            modal.querySelector('.modal-content').innerHTML = modalContent;
-            modal.style.display = 'block';
+        // Cria ou obtém o modal de edição
+        let modal = document.getElementById('modalEditarCondominio');
+        if (!modal) {
+            // Cria o modal dinamicamente se não existir
+            const modalHTML = `
+            <div id="modalEditarCondominio" class="modal">
+                <div class="modal-content" style="max-width: 800px;"></div>
+            </div>
+        `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            modal = document.getElementById('modalEditarCondominio');
+        }
 
-            // Configura eventos do formulário de edição
-            const form = document.getElementById('formEditarCondominio');
-            if (form) {
-                form.addEventListener('submit', handleEditSubmit);
-            }
+        modal.querySelector('.modal-content').innerHTML = modalContent;
+        modal.style.display = 'block';
 
-            // Configura eventos para cálculo de cobertura
-            const blocosInput = document.getElementById('edit-blocos_ativos');
-            const torresInput = document.getElementById('edit-torres');
+        // Configura eventos do formulário de edição
+        const form = document.getElementById('formEditarCondominio');
+        if (form) {
+            form.addEventListener('submit', handleEditSubmit);
+        }
 
-            if (blocosInput) {
-                blocosInput.addEventListener('input', calcularEditCobertura);
-            }
-            if (torresInput) {
-                torresInput.addEventListener('input', calcularEditCobertura);
-            }
+        // Configura eventos para cálculo de cobertura
+        const blocosInput = document.getElementById('edit-blocos_ativos');
+        const torresInput = document.getElementById('edit-torres');
+
+        if (blocosInput) {
+            blocosInput.addEventListener('input', calcularEditCobertura);
+        }
+        if (torresInput) {
+            torresInput.addEventListener('input', calcularEditCobertura);
         }
 
         return true;
     }
+
     /**
  * Manipula envio do formulário de edição
  */
@@ -1218,7 +674,7 @@ const CondominiosPage = (function () {
         submitBtn.disabled = true;
 
         try {
-            // Coleta dados
+            // Coleta e CONVERTE dados
             const data = {
                 nome: document.getElementById('edit-nome').value,
                 torres: parseInt(document.getElementById('edit-torres').value) || 0,
@@ -1233,17 +689,84 @@ const CondominiosPage = (function () {
                 blocos_ativos: document.getElementById('edit-blocos_ativos')?.value || ''
             };
 
+            // CALCULAR COBERTURA NOVA LÓGICA
+            const temACS = data.acs_responsavel && data.acs_responsavel.trim() !== '';
+            const blocosAtivosArray = data.blocos_ativos.split(/[,;]/).map(p => p.trim()).filter(p => p.length > 0);
+
+            let blocosCobertos = 0;
+            if (temACS && data.blocos_ativos) {
+                const numerosCobertos = new Set();
+
+                for (const parte of blocosAtivosArray) {
+                    if (parte.includes('-')) {
+                        const faixa = parte.split('-').map(n => n.trim()).filter(n => n.length > 0);
+                        if (faixa.length === 2) {
+                            const inicio = parseInt(faixa[0]);
+                            const fim = parseInt(faixa[1]);
+
+                            if (!isNaN(inicio) && !isNaN(fim) && inicio <= fim) {
+                                for (let i = inicio; i <= fim; i++) {
+                                    if (i >= 1 && i <= data.torres) {
+                                        numerosCobertos.add(i);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        const num = parseInt(parte);
+                        if (!isNaN(num) && num >= 1 && num <= data.torres) {
+                            numerosCobertos.add(num);
+                        }
+                    }
+                }
+
+                blocosCobertos = numerosCobertos.size;
+            }
+
+            // Calcular percentual
+            const cobertura = data.torres > 0 ? Math.round((blocosCobertos / data.torres) * 100) : 0;
+            data.cobertura = cobertura;
+            data.blocos_cobertos = blocosCobertos;
+            data.blocos_descobertos = data.torres - blocosCobertos;
+
+            // Determinar status
+            if (cobertura >= 67) {
+                data.status_cobertura = 'completo';
+            } else if (cobertura >= 34) {
+                data.status_cobertura = 'parcial';
+            } else {
+                data.status_cobertura = 'descoberto';
+            }
+
             // Validação básica
+            const erros = [];
+
             if (!data.nome || data.nome.trim().length < 3) {
-                showNotification('❌ Nome deve ter pelo menos 3 caracteres', 'error');
+                erros.push('Nome deve ter pelo menos 3 caracteres');
                 highlightField('edit-nome', 'error');
-                throw new Error('Nome inválido');
             }
 
             if (data.torres <= 0) {
-                showNotification('❌ Total de blocos deve ser maior que zero', 'error');
+                erros.push('Total de blocos deve ser maior que zero');
                 highlightField('edit-torres', 'error');
-                throw new Error('Blocos inválidos');
+            }
+
+            if (data.apartamentos <= 0) {
+                erros.push('Total de apartamentos deve ser maior que zero');
+            }
+
+            if (data.moradores <= 0) {
+                erros.push('Total de moradores deve ser maior que zero');
+            }
+
+            // Validação ACS
+            if (temACS && blocosCobertos <= 0) {
+                erros.push('Se há ACS responsável, deve informar blocos atendidos válidos');
+            }
+
+            if (erros.length > 0) {
+                showNotification('❌ ' + erros.join('<br>'), 'error');
+                throw new Error('Erros de validação');
             }
 
             // Envia para API
@@ -1269,7 +792,7 @@ const CondominiosPage = (function () {
 
         } catch (error) {
             console.error('Erro ao atualizar condomínio:', error);
-            if (error.message !== 'Nome inválido' && error.message !== 'Blocos inválidos') {
+            if (error.message !== 'Erros de validação') {
                 showNotification('❌ Erro ao atualizar condomínio', 'error');
             }
         } finally {
@@ -1286,61 +809,22 @@ const CondominiosPage = (function () {
      */
     function calcularEditCobertura() {
         const torresInput = document.getElementById('edit-torres');
-        const blocosInput = document.getElementById('edit-blocos_ativos');
+        const cobertosInput = document.getElementById('edit-blocos_cobertos');
+        const descobertosInput = document.getElementById('edit-blocos_descobertos');
 
-        if (!torresInput || !blocosInput) return;
+        if (!torresInput || !cobertosInput) return;
 
         const totalTorres = parseInt(torresInput.value) || 0;
-        const blocosCobertosText = blocosInput.value.trim();
+        const cobertos = parseInt(cobertosInput.value) || 0;
 
-        if (totalTorres <= 0) {
-            atualizarEditPreviewCobertura(0, totalTorres);
-            return;
-        }
+        // Ajustar valores para garantir consistência
+        const cobertosEfetivos = Math.min(cobertos, totalTorres);
+        const descobertos = totalTorres - cobertosEfetivos;
 
-        if (!blocosCobertosText) {
-            atualizarEditPreviewCobertura(0, totalTorres);
-            return;
-        }
+        if (cobertosInput) cobertosInput.value = cobertosEfetivos;
+        if (descobertosInput) descobertosInput.value = descobertos;
 
-        let blocosCobertos = 0;
-
-        try {
-            const partes = blocosCobertosText.split(/[,;]/).map(p => p.trim()).filter(p => p.length > 0);
-            const numerosCobertos = new Set();
-
-            for (const parte of partes) {
-                if (parte.includes('-')) {
-                    const faixa = parte.split('-').map(n => n.trim()).filter(n => n.length > 0);
-                    if (faixa.length === 2) {
-                        const inicio = parseInt(faixa[0]);
-                        const fim = parseInt(faixa[1]);
-
-                        if (!isNaN(inicio) && !isNaN(fim) && inicio <= fim) {
-                            for (let i = inicio; i <= fim; i++) {
-                                if (i >= 1 && i <= totalTorres) {
-                                    numerosCobertos.add(i);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    const num = parseInt(parte);
-                    if (!isNaN(num) && num >= 1 && num <= totalTorres) {
-                        numerosCobertos.add(num);
-                    }
-                }
-            }
-
-            blocosCobertos = numerosCobertos.size;
-
-        } catch (e) {
-            console.warn('Erro ao calcular blocos cobertos:', e);
-            blocosCobertos = 0;
-        }
-
-        blocosCobertos = Math.min(blocosCobertos, totalTorres);
-        atualizarEditPreviewCobertura(blocosCobertos, totalTorres);
+        atualizarEditPreviewCobertura(cobertosEfetivos, totalTorres);
     }
 
     /**
@@ -1367,7 +851,6 @@ const CondominiosPage = (function () {
             textDescoberto.textContent = `${descobertos} bloco${descobertos !== 1 ? 's' : ''} descoberto${descobertos !== 1 ? 's' : ''} (${100 - percentual}%)`;
         }
     }
-
 
     /**
      * Alterna campos de ACS no modal de edição
@@ -1410,9 +893,13 @@ const CondominiosPage = (function () {
         }
     }
 
+    // ============================================
+    // FUNÇÕES DE EXCLUSÃO
+    // ============================================
+
     /**
- * Exclui condomínio
- */
+     * Exclui condomínio
+     */
     async function excluirCondominio(id) {
         try {
             // Adiciona feedback visual
@@ -1482,12 +969,9 @@ const CondominiosPage = (function () {
         }
     }
 
-
-
-
     /**
- * Confirma exclusão com modal elegante
- */
+     * Confirma exclusão com modal elegante
+     */
     async function confirmarExclusao(id, nome) {
         if (!canPerformAction()) return;
 
@@ -1522,6 +1006,17 @@ const CondominiosPage = (function () {
         }
     }
 
+    // ============================================
+    // FUNÇÕES AUXILIARES
+    // ============================================
+
+    /**
+     * Ver detalhes do condomínio
+     */
+    function verDetalhes(id) {
+        showNotification(`👁️ Visualizando detalhes do condomínio ID: ${id}`, 'info');
+        // Aqui você pode implementar a lógica para mostrar detalhes
+    }
 
     // ============================================
     // FUNÇÕES PÚBLICAS
@@ -1540,7 +1035,7 @@ const CondominiosPage = (function () {
         },
 
         /**
-         * Mostra modal de novo condomínio
+         * Mostra modal de novo condomínio (usa o modal do HTML)
          */
         mostrarModal: function () {
             return showCreateModal();
@@ -1555,7 +1050,7 @@ const CondominiosPage = (function () {
         },
 
         /**
-         * Fecha modal
+         * Fecha modal de criação
          */
         closeModal: function () {
             closeModal();
@@ -1569,24 +1064,27 @@ const CondominiosPage = (function () {
         },
 
         /**
-         * Alterna campos de ACS
+         * Alterna campos de ACS (para compatibilidade)
          */
         toggleACSFields: function (temACS) {
-            toggleACSFields(temACS);
+            // Esta função agora está no JavaScript inline do HTML
+            console.log('toggleACSFields chamado:', temACS);
         },
 
         /**
-         * Calcular cobertura
+         * Calcular cobertura (para compatibilidade)
          */
         calcularCobertura: function () {
-            calcularCoberturaPreview();
+            // Esta função agora está no JavaScript inline do HTML
+            console.log('calcularCobertura chamado');
         },
 
         /**
-         * Navegar entre etapas
+         * Navegar entre etapas (para compatibilidade)
          */
         navegarEtapa: function (direction) {
-            navegarEtapa(direction);
+            // Esta função agora está no JavaScript inline do HTML
+            console.log('navegarEtapa chamado:', direction);
         },
 
         /**
@@ -1607,6 +1105,7 @@ const CondominiosPage = (function () {
          * Aplica filtro rápido
          */
         filtrar: function (tipo) {
+            console.log('Filtrar por:', tipo);
             // Implementação do filtro
         },
 
@@ -1614,8 +1113,29 @@ const CondominiosPage = (function () {
          * Ver detalhes do condomínio
          */
         verDetalhes: function (id) {
-            showNotification(`👁️ Visualizando detalhes do condomínio ID: ${id}`, 'info');
+            verDetalhes(id);
         },
+
+        /**
+         * Editar condomínio
+         */
+        editarCondominio: function (id) {
+            editarCondominio(id);
+        },
+
+        /**
+         * Confirmar exclusão
+         */
+        confirmarExclusao: function (id, nome) {
+            confirmarExclusao(id, nome);
+        },
+
+        /**
+         * Mostrar notificação
+         */
+        showNotification: function (message, type) {
+            showNotification(message, type);
+        }
     };
 })();
 
