@@ -5,6 +5,237 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/condominios.css') }}">
+<style>
+    /* Estilos específicos para o formulário de 3 etapas */
+    .form-step {
+        display: none;
+    }
+    
+    .form-step.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .form-progress {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .form-progress::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: #e2e8f0;
+        z-index: 1;
+    }
+    
+    .progress-step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #94a3b8;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+    
+    .progress-step.active {
+        border-color: #667eea;
+        background: #667eea;
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .progress-step.completed {
+        border-color: #10b981;
+        background: #10b981;
+        color: white;
+    }
+    
+    .step-label {
+        position: absolute;
+        top: 45px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: #94a3b8;
+        white-space: nowrap;
+        width: 80px;
+        text-align: center;
+    }
+    
+    .progress-step.active .step-label {
+        color: #667eea;
+        font-weight: 500;
+    }
+    
+    .progress-step.completed .step-label {
+        color: #10b981;
+    }
+    
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #475569;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.2s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .health-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 15px;
+        margin-top: 10px;
+    }
+    
+    .health-input {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .health-input label {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 4px;
+    }
+    
+    .health-input input {
+        background: transparent;
+        border: none;
+        padding: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    
+    .health-input input:focus {
+        box-shadow: none;
+    }
+    
+    .cobertura-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 10px;
+    }
+    
+    .cobertura-box {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        text-align: center;
+    }
+    
+    .cobertura-box label {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .cobertura-box input {
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 8px;
+    }
+    
+    .cobertura-box input:focus {
+        border-color: #667eea;
+    }
+    
+    .form-preview {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .preview-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .preview-item:last-child {
+        border-bottom: none;
+    }
+    
+    .preview-label {
+        color: #64748b;
+        font-size: 14px;
+    }
+    
+    .preview-value {
+        font-weight: 600;
+        color: #1e293b;
+        text-align: right;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -21,54 +252,71 @@
 </script>
 
 <div class="container condominios-page">
-    <!-- Cabeçalho da página-->
+    <!-- Cabeçalho da página -->
     <div class="page-header">
-        <div class="header-info">
-            
-            <div class="header-subtitle">
-                
-                
-                
+        <div class="header-main">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Condomínios</h1>
+                    <p>
+                        <i class="fas fa-users"></i>
+                        Equipe {{ nome_equipe }}
+                    </p>
+                </div>
+            </div>
+            <div class="stats-badges">
+                <div class="stat-badge">
+                    <i class="fas fa-building"></i>
+                    <strong>{{ condominios|length }}</strong> Condomínios
+                </div>
+                <div class="stat-badge">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <strong>{{ microareas|length }}</strong> Microáreas
+                </div>
+                <div class="stat-badge">
+                    <i class="fas fa-chart-line"></i>
+                    <span id="dataAtual"></span>
+                </div>
             </div>
         </div>
-
+    </div>
 
     <!-- Controles Superiores -->
-    <div class="controles-superiores">
-        <div class="botoes-acao-principais">
+    <div class="controls-bar">
+        <div class="controls-left">
             {% if usuario_logado and nivel_usuario != 'convidado' %}
-            <button class="btn-add-condominio" onclick="mostrarModal()">
+            <button class="btn-modern btn-primary" onclick="mostrarModal()">
                 <i class="fas fa-plus-circle"></i>
                 Novo Condomínio
             </button>
-            <button class="btn-exportar">
+            <button class="btn-modern btn-secondary">
                 <i class="fas fa-file-export"></i>
                 Exportar
             </button>
-            <button class="btn-atualizar" onclick="location.reload()">
+            <button class="btn-modern btn-secondary" onclick="location.reload()">
                 <i class="fas fa-sync-alt"></i>
                 Atualizar
             </button>
             {% endif %}
         </div>
-
-        <div class="filtros-rapidos">
-            <button class="filter-btn active" onclick="CondominiosPage.filtrar('todos')" title="Mostrar todos">
-                <i class="fas fa-th"></i>
-                Todos
-            </button>
-            <button class="filter-btn" onclick="CondominiosPage.filtrar('microarea')" title="Filtrar por microárea">
-                <i class="fas fa-map-pin"></i>
-                Por Microárea
-            </button>
-            <button class="filter-btn" onclick="CondominiosPage.filtrar('cobertura')" title="Ordenar por cobertura">
-                <i class="fas fa-sort-amount-down"></i>
-                Por Cobertura
-            </button>
-            <button class="btn-filtros-avancados btn-pequeno">
-                <i class="fas fa-filter"></i>
-                Filtros
-            </button>
+        <div class="controls-right">
+            <div class="quick-filters">
+                <div class="filter-tag active" onclick="filtrarCondominios('todos')">
+                    <i class="fas fa-th"></i>
+                    Todos
+                </div>
+                <div class="filter-tag" onclick="filtrarCondominios('microarea')">
+                    <i class="fas fa-map-pin"></i>
+                    Por Microárea
+                </div>
+                <div class="filter-tag" onclick="filtrarCondominios('cobertura')">
+                    <i class="fas fa-sort-amount-down"></i>
+                    Por Cobertura
+                </div>
+            </div>
         </div>
     </div>
 
@@ -76,23 +324,35 @@
     <!-- Grid de Cards -->
     <div class="condominios-grid">
         {% for cond in condominios %}
-        {% set cobertura_percent = cond.cobertura|default(0)|int %}
-        <div class="condominio-card microarea-{{ cond.microarea|replace(' ', '-')|lower }} status-{{ cond.status_cobertura }}"
+        <div class="condominio-card-modern" 
+             style="--index: {{ loop.index0 }};"
              data-id="{{ cond.id }}"
-             data-cobertura="{{ cobertura_percent }}"
              data-microarea="{{ cond.microarea }}"
-             data-status="{{ cond.status_cobertura }}"
-             data-acs="{{ 'com_acs' if cond.acs_responsavel else 'sem_acs' }}">
-
-            <!-- Cabeçalho -->
-            <div class="condominio-header">
-                <h3>{{ cond.nome }}</h3>
-                <div class="condominio-badges">
-                    <span class="badge microarea-badge">
+             data-status="{{ cond.status_cobertura }}">
+            
+            <div class="card-header-modern">
+                <div class="card-title-section">
+                    <h3 class="card-title">{{ cond.nome }}</h3>
+                    <div class="card-actions">
+                        <button class="action-btn-small view" title="Visualizar" data-id="{{ cond.id }}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        {% if usuario_logado and nivel_usuario != 'convidado' %}
+                        <button class="action-btn-small edit" title="Editar" data-id="{{ cond.id }}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn-small delete" title="Excluir" data-id="{{ cond.id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag tag-primary">
                         <i class="fas fa-map-pin"></i>
-                        {{ cond.microarea|upper }}
+                        {{ cond.microarea }}
                     </span>
-                    <span class="badge status-{{ cond.status_cobertura }}">
+                    <span class="tag tag-{{ cond.status_cobertura }}">
                         {% if cond.status_cobertura == 'completo' %}
                         <i class="fas fa-check-circle"></i> COBERTO
                         {% elif cond.status_cobertura == 'parcial' %}
@@ -104,111 +364,103 @@
                 </div>
             </div>
 
-            <!-- Informações -->
-            <div class="condominio-info">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <i class="fas fa-layer-group"></i>
-                        <span>Blocos:</span>
-                        <span class="info-value">{{ cond.torres }}</span>
+            <div class="card-body-modern">
+                <div class="info-grid-modern">
+                    <div class="info-item-modern">
+                        <div class="info-label">
+                            <i class="fas fa-layer-group"></i>
+                            Blocos
+                        </div>
+                        <div class="info-value">{{ cond.torres }}</div>
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-door-closed"></i>
-                        <span>Apartamentos:</span>
-                        <span class="info-value">{{ cond.apartamentos }}</span>
+                    <div class="info-item-modern">
+                        <div class="info-label">
+                            <i class="fas fa-door-closed"></i>
+                            Apartamentos
+                        </div>
+                        <div class="info-value">{{ cond.apartamentos }}</div>
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-users"></i>
-                        <span>Moradores:</span>
-                        <span class="info-value">{{ cond.moradores }}</span>
+                    <div class="info-item-modern">
+                        <div class="info-label">
+                            <i class="fas fa-users"></i>
+                            Moradores
+                        </div>
+                        <div class="info-value">{{ cond.moradores }}</div>
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-user-md"></i>
-                        <span>ACS:</span>
-                        <span class="info-value">
+                    <div class="info-item-modern">
+                        <div class="info-label">
+                            <i class="fas fa-user-md"></i>
+                            ACS
+                        </div>
+                        <div class="info-value">
                             {% if cond.acs_responsavel %}
-                            {{ cond.acs_responsavel|truncate(15) }}
+                            <span class="small">{{ cond.acs_responsavel|truncate(15) }}</span>
                             {% else %}
-                            <span class="sem-acs">Sem ACS</span>
+                            <span class="small" style="color: #ef4444;">Sem ACS</span>
                             {% endif %}
-                        </span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Dados de Saúde -->
-                <div class="saude-mini-chart">
-                    <div class="saude-chart-title">
+                <!-- Mini Gráfico de Saúde -->
+                <div class="health-mini">
+                    <div class="health-title">
                         <i class="fas fa-heartbeat"></i>
                         Dados de Saúde
                     </div>
-                    <div class="saude-chart-bars">
-                        <div class="saude-bar" style="height: {{ (cond.hipertensos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
-                        <div class="saude-bar" style="height: {{ (cond.diabeticos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
-                        <div class="saude-bar" style="height: {{ (cond.gestantes / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
+                    <div class="health-bars">
+                        <div class="health-bar" style="--bar-color: #e74c3c; --bar-light: #ec7063; height: {{ (cond.hipertensos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
+                        <div class="health-bar" style="--bar-color: #f39c12; --bar-light: #f5b041; height: {{ (cond.diabeticos / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
+                        <div class="health-bar" style="--bar-color: #9b59b6; --bar-light: #af7ac5; height: {{ (cond.gestantes / cond.moradores * 100 if cond.moradores > 0 else 0) | round(1) }}%"></div>
                     </div>
-                    <div class="saude-labels">
+                    <div class="health-labels">
                         <span>{{ cond.hipertensos }} Hipertensos</span>
                         <span>{{ cond.diabeticos }} Diabéticos</span>
                         <span>{{ cond.gestantes }} Gestantes</span>
                     </div>
                 </div>
 
-                <!-- Cobertura -->
-                <div class="cobertura-condominio">
-                    <div class="cobertura-header">
-                        <div class="cobertura-label">
+                <!-- Barra de Progresso -->
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <div class="progress-label">
                             <i class="fas fa-chart-pie"></i>
                             Cobertura de Blocos
                         </div>
-                        <div class="cobertura-percent">{{ cond.cobertura }}%</div>
+                        <div class="progress-percent">{{ cond.cobertura }}%</div>
                     </div>
-                    <div class="cobertura-barra-container">
-                        <div class="cobertura-barra">
-                            <div class="coberto" style="width: {{ cond.cobertura }}%"></div>
-                            <div class="descoberto" style="width: {{ 100 - cond.cobertura }}%"></div>
-                        </div>
+                    <div class="progress-bar-modern">
+                        <div class="progress-fill" style="width: {{ cond.cobertura }}%"></div>
                     </div>
-                    <div class="cobertura-numbers">
-                        <span>{{ cond.blocos_cobertos }} blocos cobertos</span>
-                        <span>{{ cond.blocos_descobertos }} blocos descobertos</span>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748b;">
+                        <span>{{ cond.blocos_cobertos }} cobertos</span>
+                        <span>{{ cond.blocos_descobertos }} descobertos</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Rodapé -->
-            <div class="condominio-footer">
-                <div class="cobertura-info">
-                    <span class="status-indicator">
-                        {% if cond.status_cobertura == 'completo' %}
-                        <i class="fas fa-check-circle"></i> COBERTO
-                        {% elif cond.status_cobertura == 'parcial' %}
-                        <i class="fas fa-exclamation-triangle"></i> PARCIAL
-                        {% else %}
-                        <i class="fas fa-times-circle"></i> DESCOBERTO
-                        {% endif %}
-                    </span>
-                    <span class="microarea-info">
-                        <i class="fas fa-map-marker-alt"></i> {{ cond.microarea }}
-                    </span>
-                </div>
-                <div class="ultima-visita">
+            <div class="card-footer-modern">
+                <div class="last-visit">
                     <i class="far fa-calendar-alt"></i>
                     <span>{{ cond.ultima_visita }}</span>
                 </div>
-            </div>
-
-            <!-- Botões de ação -->
-            <div class="card-actions">
-                {% if usuario_logado and nivel_usuario != 'convidado' %}
-                {% endif %}
+                <div class="status-indicator-modern status-{{ cond.status_cobertura }}">
+                    {% if cond.status_cobertura == 'completo' %}
+                    <i class="fas fa-check-circle"></i> COBERTO
+                    {% elif cond.status_cobertura == 'parcial' %}
+                    <i class="fas fa-exclamation-triangle"></i> PARCIAL
+                    {% else %}
+                    <i class="fas fa-times-circle"></i> DESCOBERTO
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Tabela -->
-    <div class="table-container">
-        <table class="condominios-table" id="condominiosTable">
+    <!-- Tabela Moderna -->
+    <div class="table-modern-container">
+        <table class="table-modern">
             <thead>
                 <tr>
                     <th>Condomínio</th>
@@ -227,14 +479,13 @@
                 <tr data-id="{{ cond.id }}"
                     data-status="{{ cond.status_cobertura }}"
                     data-microarea="{{ cond.microarea }}"
-                    data-acs="{{ 'com_acs' if cond.acs_responsavel else 'sem_acs' }}"
                     data-cobertura="{{ cond.cobertura }}">
                     <td>
                         <strong>{{ cond.nome }}</strong>
-                        <div>{{ cond.apartamentos }} aptos</div>
+                        <div style="font-size: 12px; color: #64748b;">{{ cond.apartamentos }} aptos</div>
                     </td>
                     <td>
-                        <span class="table-badge badge-status-{{ cond.status_cobertura }}">
+                        <span class="tag tag-{{ cond.status_cobertura }}" style="font-size: 11px;">
                             {% if cond.status_cobertura == 'completo' %}
                             <i class="fas fa-check-circle"></i> COBERTO
                             {% elif cond.status_cobertura == 'parcial' %}
@@ -245,73 +496,79 @@
                         </span>
                     </td>
                     <td>
-                        <span class="table-badge badge-microarea">
+                        <span class="tag tag-primary" style="font-size: 11px;">
                             <i class="fas fa-map-pin"></i> {{ cond.microarea }}
                         </span>
                     </td>
                     <td>
                         {% if cond.acs_responsavel %}
-                        <div class="acs-nome">{{ cond.acs_responsavel }}</div>
-                        <div class="acs-blocos">{{ cond.blocos_ativos }}</div>
+                        <div style="font-weight: 500;">{{ cond.acs_responsavel }}</div>
+                        <div style="font-size: 11px; color: #64748b;">{{ cond.blocos_ativos }} blocos</div>
                         {% else %}
-                        <span class="sem-acs"><i class="fas fa-user-times"></i> Sem ACS</span>
+                        <span style="color: #ef4444; font-size: 12px;">
+                            <i class="fas fa-user-times"></i> Sem ACS
+                        </span>
                         {% endif %}
                     </td>
                     <td>
-                        <div>
-                            <span class="coberto"><i class="fas fa-check"></i> {{ cond.blocos_cobertos }}</span> cobertos
-                        </div>
-                        <div>
-                            <span class="descoberto"><i class="fas fa-times"></i> {{ cond.blocos_descobertos }}</span> descobertos
-                        </div>
-                    </td>
-                    <td>
-                        <div class="cobertura-cell">
-                            <span>{{ cond.cobertura }}%</span>
-                            <div class="mini-progress-table">
-                                <div class="mini-progress-bar-table" style="width: {{ cond.cobertura }}%"></div>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <span style="color: #059669;">{{ cond.blocos_cobertos }}</span>
+                                <span style="font-size: 11px; color: #64748b;">cobertos</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <span style="color: #dc2626;">{{ cond.blocos_descobertos }}</span>
+                                <span style="font-size: 11px; color: #64748b;">descobertos</span>
                             </div>
                         </div>
                     </td>
                     <td>
-                        <div class="moradores-count">{{ cond.moradores }}</div>
-                        <div class="moradores-avg">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: 600; min-width: 40px;">{{ cond.cobertura }}%</span>
+                            <div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: {{ cond.cobertura }}%;"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; font-size: 16px;">{{ cond.moradores }}</div>
+                        <div style="font-size: 11px; color: #64748b;">
                             {{ (cond.moradores / cond.apartamentos)|round(1) }} por apto
                         </div>
                     </td>
                     <td>
-                        <div class="saude-indicadores">
-                            <div title="Hipertensos">
-                                <div class="hipertensos">{{ cond.hipertensos }}</div>
-                                <i class="fas fa-heartbeat"></i>
+                        <div style="display: flex; gap: 12px;">
+                            <div style="text-align: center;">
+                                <div style="font-weight: 600; color: #e74c3c;">{{ cond.hipertensos }}</div>
+                                <i class="fas fa-heartbeat" style="color: #e74c3c; font-size: 12px;"></i>
                             </div>
-                            <div title="Diabéticos">
-                                <div class="diabeticos">{{ cond.diabeticos }}</div>
-                                <i class="fas fa-prescription-bottle"></i>
+                            <div style="text-align: center;">
+                                <div style="font-weight: 600; color: #f39c12;">{{ cond.diabeticos }}</div>
+                                <i class="fas fa-prescription-bottle" style="color: #f39c12; font-size: 12px;"></i>
                             </div>
-                            <div title="Gestantes">
-                                <div class="gestantes">{{ cond.gestantes }}</div>
-                                <i class="fas fa-female"></i>
+                            <div style="text-align: center;">
+                                <div style="font-weight: 600; color: #9b59b6;">{{ cond.gestantes }}</div>
+                                <i class="fas fa-female" style="color: #9b59b6; font-size: 12px;"></i>
                             </div>
                         </div>
                     </td>
                     <td>
-                        <div class="table-actions">
-                            <button class="btn-action btn-view" title="Visualizar" data-id="{{ cond.id }}">
+                        <div style="display: flex; gap: 4px;">
+                            <button class="action-btn-small view" title="Visualizar" data-id="{{ cond.id }}">
                                 <i class="fas fa-eye"></i>
                             </button>
                             {% if usuario_logado and nivel_usuario != 'convidado' %}
-                            <button class="btn-action btn-edit" title="Editar" data-id="{{ cond.id }}">
+                            <button class="action-btn-small edit" title="Editar" data-id="{{ cond.id }}">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn-action btn-delete" title="Excluir" data-id="{{ cond.id }}" data-nome="{{ cond.nome }}">
+                            <button class="action-btn-small delete" title="Excluir" data-id="{{ cond.id }}">
                                 <i class="fas fa-trash"></i>
                             </button>
                             {% else %}
-                            <button class="btn-action disabled" title="Modo visitante">
+                            <button class="action-btn-small disabled" title="Modo visitante" disabled>
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn-action disabled" title="Modo visitante">
+                            <button class="action-btn-small disabled" title="Modo visitante" disabled>
                                 <i class="fas fa-trash"></i>
                             </button>
                             {% endif %}
@@ -324,16 +581,16 @@
     </div>
 
     <!-- Resumo -->
-    <div class="section-summary">
+    <div class="section-summary" style="background: white; padding: 16px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
         <div>
             <i class="fas fa-chart-bar"></i>
             <strong>Resumo:</strong>
             {% set cobertos = condominios|selectattr('status_cobertura', 'equalto', 'completo')|list|length %}
             {% set parciais = condominios|selectattr('status_cobertura', 'equalto', 'parcial')|list|length %}
             {% set descobertos = condominios|selectattr('status_cobertura', 'equalto', 'descoberto')|list|length %}
-            <span class="cobertos">{{ cobertos }} cobertos</span> •
-            <span class="parciais">{{ parciais }} parciais</span> •
-            <span class="descobertos">{{ descobertos }} descobertos</span>
+            <span style="color: #059669; font-weight: 600;">{{ cobertos }} cobertos</span> •
+            <span style="color: #d97706; font-weight: 600;">{{ parciais }} parciais</span> •
+            <span style="color: #dc2626; font-weight: 600;">{{ descobertos }} descobertos</span>
         </div>
         <div>
             <i class="fas fa-filter"></i>
@@ -342,123 +599,755 @@
     </div>
     {% else %}
     <!-- Estado Vazio -->
-    <div class="empty-state">
-        <i class="fas fa-building"></i>
+    <div class="empty-state-modern">
+        <div class="empty-icon">
+            <i class="fas fa-building"></i>
+        </div>
         <h3>Nenhum condomínio cadastrado</h3>
         <p>Comece adicionando condomínios para monitorar a cobertura da sua equipe.</p>
         {% if usuario_logado and nivel_usuario != 'convidado' %}
-        <button class="btn-primary" onclick="mostrarModal()">
+        <button class="btn-modern btn-primary" onclick="mostrarModal()">
             <i class="fas fa-plus"></i>
             Adicionar Primeiro Condomínio
         </button>
         {% else %}
-        <button class="btn-primary btn-convidado-disabled" onclick="mostrarModalConvidado()">
+        <button class="btn-modern btn-secondary" onclick="alert('Faça login para adicionar condomínios.')">
             <i class="fas fa-plus"></i>
             Adicionar Primeiro Condomínio
         </button>
         {% endif %}
     </div>
     {% endif %}
+</div>
 
-    <!-- Informações de resumo -->
-    <div class="page-summary">
-        <p>
-            <i class="fas fa-info-circle"></i>
-            <span class="items-counter">Mostrando {{ condominios|length }} condomínio(s)</span>
-        </p>
+<!-- Modal de Cadastro de Condomínio -->
+<div id="modalCondominio" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-building"></i> Novo Condomínio</h3>
+            <button class="close" onclick="fecharModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- Barra de progresso das etapas -->
+            <div class="form-progress">
+                <div class="progress-step active" data-step="1">
+                    <span>1</span>
+                    <div class="step-label">Informações Básicas</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <span>2</span>
+                    <div class="step-label">Dados de Saúde</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <span>3</span>
+                    <div class="step-label">Cobertura</div>
+                </div>
+            </div>
+            
+            <!-- Formulário em 3 etapas -->
+            <form id="formCondominio" onsubmit="return false">
+                <!-- Etapa 1: Informações Básicas -->
+                <div class="form-step active" id="step1">
+                    <div class="form-group">
+                        <label for="nomeCondominio">Nome do Condomínio *</label>
+                        <input type="text" id="nomeCondominio" name="nome" required placeholder="Ex: Condomínio Sol Nascente">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="microarea">Microárea *</label>
+                            <select id="microarea" name="microarea" required>
+                                <option value="">Selecione uma microárea</option>
+                                {% for microarea in microareas %}
+                                <option value="{{ microarea }}">{{ microarea }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="acsResponsavel">ACS Responsável</label>
+                            <select id="acsResponsavel" name="acs_responsavel">
+                                <option value="">Sem ACS atribuído</option>
+                                <option value="ACS Maria Silva">ACS Maria Silva</option>
+                                <option value="ACS João Santos">ACS João Santos</option>
+                                <option value="ACS Ana Oliveira">ACS Ana Oliveira</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="torres">Número de Blocos/Torres *</label>
+                            <input type="number" id="torres" name="torres" min="1" required placeholder="Ex: 5">
+                        </div>
+                        <div class="form-group">
+                            <label for="apartamentos">Número de Apartamentos *</label>
+                            <input type="number" id="apartamentos" name="apartamentos" min="1" required placeholder="Ex: 120">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="moradores">Número Total de Moradores *</label>
+                        <input type="number" id="moradores" name="moradores" min="1" required placeholder="Ex: 360">
+                        <small style="display: block; color: #64748b; margin-top: 4px;">Média de 3 moradores por apartamento</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" id="endereco" name="endereco" placeholder="Rua, número, bairro">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="observacoes">Observações</label>
+                        <textarea id="observacoes" name="observacoes" rows="3" placeholder="Informações adicionais sobre o condomínio"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Etapa 2: Dados de Saúde -->
+                <div class="form-step" id="step2">
+                    <div class="form-group">
+                        <p style="color: #64748b; margin-bottom: 20px;">
+                            <i class="fas fa-info-circle"></i>
+                            Informe os dados de saúde dos moradores deste condomínio
+                        </p>
+                    </div>
+                    
+                    <div class="health-inputs">
+                        <div class="health-input">
+                            <label>Hipertensos</label>
+                            <input type="number" id="hipertensos" name="hipertensos" min="0" value="0" style="color: #e74c3c;">
+                        </div>
+                        <div class="health-input">
+                            <label>Diabéticos</label>
+                            <input type="number" id="diabeticos" name="diabeticos" min="0" value="0" style="color: #f39c12;">
+                        </div>
+                        <div class="health-input">
+                            <label>Gestantes</label>
+                            <input type="number" id="gestantes" name="gestantes" min="0" value="0" style="color: #9b59b6;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="outrosCasos">Outros Casos Especiais</label>
+                        <textarea id="outrosCasos" name="outros_casos" rows="2" placeholder="Pacientes acamados, crianças especiais, etc."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ultimaVisita">Data da Última Visita</label>
+                        <input type="date" id="ultimaVisita" name="ultima_visita">
+                    </div>
+                </div>
+                
+                <!-- Etapa 3: Cobertura -->
+                <div class="form-step" id="step3">
+                    <div class="form-group">
+                        <p style="color: #64748b; margin-bottom: 20px;">
+                            <i class="fas fa-info-circle"></i>
+                            Informe os dados de cobertura da equipe neste condomínio
+                        </p>
+                    </div>
+                    
+                    <div class="cobertura-inputs">
+                        <div class="cobertura-box">
+                            <label>Blocos Cobertos</label>
+                            <input type="number" id="blocosCobertos" name="blocos_cobertos" min="0" value="0">
+                        </div>
+                        <div class="cobertura-box">
+                            <label>Blocos Descobertos</label>
+                            <input type="number" id="blocosDescobertos" name="blocos_descobertos" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="statusCobertura">Status de Cobertura</label>
+                        <select id="statusCobertura" name="status_cobertura">
+                            <option value="descoberto">Descoberto (0-33%)</option>
+                            <option value="parcial">Parcial (34-66%)</option>
+                            <option value="completo">Completo (67-100%)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="blocosAtivos">Blocos Ativos do ACS</label>
+                        <input type="number" id="blocosAtivos" name="blocos_ativos" min="0" value="0" placeholder="Blocos que o ACS atende regularmente">
+                    </div>
+                    
+                    <!-- Preview dos dados -->
+                    <div class="form-preview" id="formPreview">
+                        <div style="text-align: center; margin-bottom: 15px; color: #667eea; font-weight: 600;">
+                            <i class="fas fa-eye"></i> Pré-visualização
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Condomínio:</span>
+                            <span class="preview-value" id="previewNome">-</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Microárea:</span>
+                            <span class="preview-value" id="previewMicroarea">-</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Blocos:</span>
+                            <span class="preview-value" id="previewBlocos">-</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Cobertura:</span>
+                            <span class="preview-value" id="previewCobertura">0%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navegação entre etapas -->
+                <div class="form-navigation">
+                    <div class="form-actions">
+                        <button type="button" class="modal-btn modal-btn-secondary" id="btnVoltar" onclick="voltarEtapa()" style="display: none;">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </button>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="modal-btn modal-btn-secondary" onclick="fecharModal()">
+                            Cancelar
+                        </button>
+                        <button type="button" class="modal-btn modal-btn-primary" id="btnAvancar" onclick="avancarEtapa()">
+                            Próximo <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button type="submit" class="modal-btn modal-btn-success" id="btnSalvar" style="display: none;">
+                            <i class="fas fa-save"></i> Salvar Condomínio
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- Modais -->
-<div id="modalCondominio" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 700px;">
-        <!-- O conteúdo será gerado pelo JavaScript -->
-    </div>
-</div>
-
-<div id="modalEditarCondominio" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 700px;">
-        <!-- Conteúdo será preenchido pelo JavaScript -->
-    </div>
-</div>
-
-<!-- Botões Flutuantes -->
-{% if usuario_logado and nivel_usuario != 'convidado' %}
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/condominios.js') }}"></script>
 <script>
+    // Configuração inicial
+    window.APP_CONFIG = {
+        usuario_logado: {% if usuario_logado %}true{% else %}false{% endif %},
+        nome_usuario: {{ nome_usuario|default('Visitante')|tojson }},
+        nivel_usuario: {{ nivel_usuario|default('')|tojson }},
+        nome_equipe: {{ nome_equipe|tojson }},
+        condominios_count: {{ condominios|length }},
+        microareas: {{ microareas|tojson|safe }}
+    };
+
+    // Variáveis para controle do formulário
+    let etapaAtual = 1;
+    const totalEtapas = 3;
+
     document.addEventListener('DOMContentLoaded', function () {
         console.log('Página de condomínios carregada');
 
-        // Configurar botões de ação
-        const btnAdd = document.querySelector('.btn-add-condominio');
-        if (btnAdd) {
-            btnAdd.addEventListener('click', function () {
-                mostrarModal();
-            });
-        }
-
-        // Configurar botões de ação nos cards
-        document.querySelectorAll('.btn-view').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const id = this.getAttribute('data-id');
-                CondominiosPage.verDetalhes(id);
-            });
-        });
-
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const id = this.getAttribute('data-id');
-                CondominiosPage.editarCondominio(id);
-            });
-        });
-
-        // Configurar botões na tabela (delegação de eventos)
-        document.addEventListener('click', function (event) {
-            // Editar na tabela
-            if (event.target.closest('.btn-edit')) {
-                const btn = event.target.closest('.btn-edit');
-                if (!btn.classList.contains('disabled')) {
-                    const id = btn.getAttribute('data-id');
-                    CondominiosPage.editarCondominio(id);
-                }
-            }
-
-            // Excluir na tabela
-            if (event.target.closest('.btn-delete')) {
-                const btn = event.target.closest('.btn-delete');
-                if (!btn.classList.contains('disabled')) {
-                    const id = btn.getAttribute('data-id');
-                    const nome = btn.getAttribute('data-nome');
-                    CondominiosPage.confirmarExclusao(id, nome);
-                }
-            }
-
-            // Visualizar na tabela
-            if (event.target.closest('.btn-view')) {
-                const btn = event.target.closest('.btn-view');
-                const id = btn.getAttribute('data-id');
-                CondominiosPage.verDetalhes(id);
-            }
-        });
-
         // Configurar data atual
         document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR');
+
+        // Configurar eventos dos botões
+        configurarEventosBotoes();
+
+        // Configurar preview
+        configurarPreview();
+
+        // Configurar cálculo de cobertura
+        configurarCalculoCobertura();
+
+        // Configurar evento do formulário
+        const form = document.getElementById('formCondominio');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                salvarCondominio();
+            });
+        }
     });
 
-    function mostrarModal() {
-        return CondominiosPage.mostrarModal();
+    // ============================================
+    // FUNÇÕES DO MODAL HTML
+    // ============================================
+
+    function configurarEventosBotoes() {
+        // Botões de visualização
+        document.querySelectorAll('.action-btn-small.view').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                verDetalhesCondominio(id);
+            });
+        });
+
+        // Botões de edição - usar o JS do CondominiosPage
+        document.querySelectorAll('.action-btn-small.edit').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (!this.disabled) {
+                    const id = this.getAttribute('data-id');
+                    if (window.CondominiosPage && window.CondominiosPage.editarCondominio) {
+                        window.CondominiosPage.editarCondominio(id);
+                    }
+                }
+            });
+        });
+
+        // Botões de exclusão - usar o JS do CondominiosPage
+        document.querySelectorAll('.action-btn-small.delete').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (!this.disabled) {
+                    const id = this.getAttribute('data-id');
+                    const card = this.closest('.condominio-card-modern');
+                    const nome = card ? card.querySelector('.card-title').textContent : 'Condomínio';
+                    if (window.CondominiosPage && window.CondominiosPage.confirmarExclusao) {
+                        window.CondominiosPage.confirmarExclusao(id, nome);
+                    }
+                }
+            });
+        });
     }
 
-    function mostrarModalConvidado() {
-        return CondominiosPage.mostrarModalConvidado();
+    function configurarPreview() {
+        const inputsPreview = ['nomeCondominio', 'microarea', 'torres', 'blocosCobertos', 'blocosDescobertos'];
+        inputsPreview.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', atualizarPreview);
+            }
+        });
+    }
+
+    function configurarCalculoCobertura() {
+        const blocosCobertos = document.getElementById('blocosCobertos');
+        const blocosDescobertos = document.getElementById('blocosDescobertos');
+        const torres = document.getElementById('torres');
+        const acsResponsavel = document.getElementById('acsResponsavel');
+
+        function calcularCobertura() {
+            if (torres) {
+                const total = parseInt(torres.value) || 0;
+                const temACS = acsResponsavel ? acsResponsavel.value !== '' : false;
+
+                let percentual = 0;
+                let status = 'descoberto';
+
+                // Se tem ACS, usa os valores dos campos
+                if (temACS && total > 0) {
+                    const cobertos = parseInt(blocosCobertos?.value || 0);
+                    const descobertos = parseInt(blocosDescobertos?.value || 0);
+
+                    // Garantir que cobertos + descobertos = total
+                    if (cobertos + descobertos !== total) {
+                        // Ajustar automaticamente
+                        if (blocosDescobertos) {
+                            blocosDescobertos.value = total - cobertos;
+                        }
+                    }
+
+                    percentual = Math.round((cobertos / total) * 100);
+
+                    // Definir status baseado no percentual
+                    if (percentual >= 67) {
+                        status = 'completo';
+                    } else if (percentual >= 34) {
+                        status = 'parcial';
+                    } else {
+                        status = 'descoberto';
+                    }
+                } else if (!temACS) {
+                    // Se não tem ACS, tudo é descoberto
+                    percentual = 0;
+                    status = 'descoberto';
+                    if (blocosCobertos) blocosCobertos.value = 0;
+                    if (blocosDescobertos && total > 0) blocosDescobertos.value = total;
+                }
+
+                // Atualizar status
+                const statusSelect = document.getElementById('statusCobertura');
+                if (statusSelect) {
+                    statusSelect.value = status;
+                }
+
+                atualizarPreview();
+            }
+        }
+
+        // Configurar eventos
+        if (torres) torres.addEventListener('input', calcularCobertura);
+        if (blocosCobertos) blocosCobertos.addEventListener('input', calcularCobertura);
+        if (blocosDescobertos) blocosDescobertos.addEventListener('input', calcularCobertura);
+        if (acsResponsavel) {
+            acsResponsavel.addEventListener('change', function () {
+                calcularCobertura();
+                // Se remover o ACS, limpar blocos cobertos
+                if (!this.value) {
+                    if (blocosCobertos) blocosCobertos.value = '0';
+                    if (blocosDescobertos && torres.value) {
+                        blocosDescobertos.value = torres.value;
+                    }
+                }
+            });
+        }
+    }
+
+    function atualizarPreview() {
+        // Nome do condomínio
+        const nome = document.getElementById('nomeCondominio')?.value || '-';
+        document.getElementById('previewNome').textContent = nome;
+
+        // Microárea
+        const microarea = document.getElementById('microarea')?.value || '-';
+        document.getElementById('previewMicroarea').textContent = microarea;
+
+        // Blocos
+        const torres = document.getElementById('torres')?.value || '0';
+        document.getElementById('previewBlocos').textContent = torres;
+
+        // Cálculo de cobertura
+        const acsResponsavel = document.getElementById('acsResponsavel')?.value || '';
+        const blocosCobertos = parseInt(document.getElementById('blocosCobertos')?.value || 0);
+        const blocosDescobertos = parseInt(document.getElementById('blocosDescobertos')?.value || 0);
+        const total = parseInt(torres) || 1;
+
+        let percentual = 0;
+        let statusText = 'Sem ACS';
+
+        if (acsResponsavel && total > 0) {
+            // Usar o valor direto do campo blocosCobertos
+            const cobertosEfetivos = Math.min(blocosCobertos, total);
+            percentual = Math.round((cobertosEfetivos / total) * 100);
+            statusText = `${percentual}% (${cobertosEfetivos}/${total} blocos)`;
+        }
+
+        document.getElementById('previewCobertura').textContent = statusText;
+    }
+
+    function mostrarModal() {
+        const modal = document.getElementById('modalCondominio');
+        if (modal) {
+            modal.classList.add('active');
+            etapaAtual = 1;
+            atualizarEtapa();
+            atualizarPreview();
+        }
     }
 
     function fecharModal() {
-        return CondominiosPage.closeModal();
+        const modal = document.getElementById('modalCondominio');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+        resetarFormulario();
+    }
+
+    function resetarFormulario() {
+        etapaAtual = 1;
+        document.getElementById('formCondominio').reset();
+        atualizarEtapa();
+        atualizarPreview();
+    }
+
+    function atualizarEtapa() {
+        // Esconder todas as etapas
+        for (let i = 1; i <= totalEtapas; i++) {
+            const step = document.getElementById(`step${i}`);
+            const progressStep = document.querySelector(`.progress-step[data-step="${i}"]`);
+
+            if (step) {
+                step.classList.remove('active');
+            }
+
+            if (progressStep) {
+                progressStep.classList.remove('active', 'completed');
+                if (i < etapaAtual) {
+                    progressStep.classList.add('completed');
+                } else if (i === etapaAtual) {
+                    progressStep.classList.add('active');
+                }
+            }
+        }
+
+        // Mostrar etapa atual
+        const etapaAtualElement = document.getElementById(`step${etapaAtual}`);
+        if (etapaAtualElement) {
+            etapaAtualElement.classList.add('active');
+        }
+
+        // Atualizar botões de navegação
+        const btnVoltar = document.getElementById('btnVoltar');
+        const btnAvancar = document.getElementById('btnAvancar');
+        const btnSalvar = document.getElementById('btnSalvar');
+
+        if (btnVoltar) {
+            btnVoltar.style.display = etapaAtual > 1 ? 'inline-flex' : 'none';
+        }
+
+        if (btnAvancar && btnSalvar) {
+            if (etapaAtual === totalEtapas) {
+                btnAvancar.style.display = 'none';
+                btnSalvar.style.display = 'inline-flex';
+            } else {
+                btnAvancar.style.display = 'inline-flex';
+                btnSalvar.style.display = 'none';
+            }
+        }
+
+        // Atualizar texto do botão Avançar
+        if (btnAvancar) {
+            if (etapaAtual === totalEtapas - 1) {
+                btnAvancar.innerHTML = 'Finalizar <i class="fas fa-check"></i>';
+            } else {
+                btnAvancar.innerHTML = 'Próximo <i class="fas fa-arrow-right"></i>';
+            }
+        }
+    }
+
+    function avancarEtapa() {
+        if (!validarEtapaAtual()) {
+            return;
+        }
+
+        if (etapaAtual < totalEtapas) {
+            etapaAtual++;
+            atualizarEtapa();
+            atualizarPreview();
+        }
+    }
+
+    function voltarEtapa() {
+        if (etapaAtual > 1) {
+            etapaAtual--;
+            atualizarEtapa();
+        }
+    }
+
+    function validarEtapaAtual() {
+        const etapa = document.getElementById(`step${etapaAtual}`);
+        const inputs = etapa.querySelectorAll('[required]');
+
+        let valido = true;
+        const erros = [];
+
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.style.borderColor = '#ef4444';
+                valido = false;
+                erros.push(`${input.name || input.id} é obrigatório`);
+
+                input.addEventListener('input', function () {
+                    this.style.borderColor = '#e2e8f0';
+                }, { once: true });
+            }
+
+            // Validação específica para números
+            if (input.type === 'number' && input.value.trim()) {
+                const valor = parseInt(input.value);
+                if (isNaN(valor) || valor <= 0) {
+                    input.style.borderColor = '#ef4444';
+                    valido = false;
+                    erros.push(`${input.name || input.id} deve ser um número positivo`);
+                }
+            }
+        });
+
+        if (!valido) {
+            alert('Por favor, corrija os seguintes erros:\n\n' + erros.join('\n'));
+        }
+
+        return valido;
+    }
+
+    // ============================================
+    // FUNÇÃO PARA SALVAR CONDOMÍNIO (AGORA REAL)
+    // ============================================
+
+    function atualizarPreview() {
+        // Nome do condomínio
+        const nome = document.getElementById('nomeCondominio')?.value || '-';
+        document.getElementById('previewNome').textContent = nome;
+
+        // Microárea
+        const microarea = document.getElementById('microarea')?.value || '-';
+        document.getElementById('previewMicroarea').textContent = microarea;
+
+        // Blocos
+        const torres = document.getElementById('torres')?.value || '0';
+        document.getElementById('previewBlocos').textContent = torres;
+
+        // Cálculo de cobertura
+        const acsResponsavel = document.getElementById('acsResponsavel')?.value || '';
+        const blocosCobertos = parseInt(document.getElementById('blocosCobertos')?.value || 0);
+        const blocosDescobertos = parseInt(document.getElementById('blocosDescobertos')?.value || 0);
+        const total = parseInt(torres) || 1;
+
+        let percentual = 0;
+        let statusText = 'Sem ACS';
+
+        if (acsResponsavel && total > 0) {
+            // Usar o valor direto do campo blocosCobertos
+            const cobertosEfetivos = Math.min(blocosCobertos, total);
+            percentual = Math.round((cobertosEfetivos / total) * 100);
+            statusText = `${percentual}% (${cobertosEfetivos}/${total} blocos)`;
+        }
+
+        document.getElementById('previewCobertura').textContent = statusText;
+    }
+
+    async function salvarCondominio() {
+        // Coletar todos os dados do formulário
+        const formData = new FormData(document.getElementById('formCondominio'));
+        const dados = Object.fromEntries(formData.entries());
+
+        // CONVERTER VALORES NUMÉRICOS
+        const total = parseInt(dados.torres) || 0;
+        const apartamentos = parseInt(dados.apartamentos) || 0;
+        const moradores = parseInt(dados.moradores) || 0;
+        const hipertensos = parseInt(dados.hipertensos) || 0;
+        const diabeticos = parseInt(dados.diabeticos) || 0;
+        const gestantes = parseInt(dados.gestantes) || 0;
+        const blocosCobertos = parseInt(dados.blocos_cobertos) || 0;
+        const blocosDescobertos = parseInt(dados.blocos_descobertos) || 0;
+
+        // CALCULAR COBERTURA CORRETAMENTE
+        const temACS = dados.acs_responsavel && dados.acs_responsavel.trim() !== '';
+
+        let cobertura = 0;
+        let statusCobertura = 'descoberto';
+
+        if (temACS && total > 0) {
+            // Usar o valor do campo blocos_cobertos diretamente
+            const cobertosEfetivos = Math.min(blocosCobertos, total);
+            cobertura = Math.round((cobertosEfetivos / total) * 100);
+
+            // Determinar status
+            if (cobertura >= 67) {
+                statusCobertura = 'completo';
+            } else if (cobertura >= 34) {
+                statusCobertura = 'parcial';
+            } else {
+                statusCobertura = 'descoberto';
+            }
+        } else {
+            cobertura = 0;
+            statusCobertura = 'descoberto';
+        }
+
+        // Ajustar blocos_descobertos para garantir consistência
+        const blocosCobertosFinal = temACS ? Math.min(blocosCobertos, total) : 0;
+        const blocosDescobertosFinal = total - blocosCobertosFinal;
+
+        // Atualizar dados
+        dados.torres = total;
+        dados.apartamentos = apartamentos;
+        dados.moradores = moradores;
+        dados.hipertensos = hipertensos;
+        dados.diabeticos = diabeticos;
+        dados.gestantes = gestantes;
+        dados.blocos_cobertos = blocosCobertosFinal;
+        dados.blocos_descobertos = blocosDescobertosFinal;
+        dados.cobertura = cobertura;
+        dados.status_cobertura = statusCobertura;
+
+        console.log('Dados para salvar:', dados);
+
+        // VALIDAÇÃO ANTES DE ENVIAR
+        const erros = [];
+
+        if (!dados.nome || dados.nome.trim().length < 3) {
+            erros.push('Nome deve ter pelo menos 3 caracteres');
+        }
+
+        if (dados.torres <= 0) {
+            erros.push('Total de blocos deve ser maior que zero');
+        }
+
+        if (dados.apartamentos <= 0) {
+            erros.push('Total de apartamentos deve ser maior que zero');
+        }
+
+        if (dados.moradores <= 0) {
+            erros.push('Total de moradores deve ser maior que zero');
+        }
+
+        if (!dados.microarea) {
+            erros.push('Microárea é obrigatória');
+        }
+
+        // Validação específica: se tem ACS, deve ter pelo menos 1 bloco ativo
+        if (temACS && blocosAtivos <= 0) {
+            erros.push('Se há ACS responsável, deve informar pelo menos 1 bloco ativo');
+        }
+
+        if (erros.length > 0) {
+            alert('Erros de validação:\n\n' + erros.join('\n'));
+            return;
+        }
+
+        // Mostrar estado de carregamento
+        const btnSalvar = document.getElementById('btnSalvar');
+        const originalText = btnSalvar.innerHTML;
+        btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+        btnSalvar.disabled = true;
+
+        try {
+            const response = await fetch('/api/novo-condominio', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'sucesso') {
+                // Usar a notificação do CondominiosPage
+                if (window.CondominiosPage && window.CondominiosPage.showNotification) {
+                    window.CondominiosPage.showNotification('✅ Condomínio adicionado com sucesso!', 'success');
+                } else {
+                    alert('Condomínio salvo com sucesso!');
+                }
+
+                fecharModal();
+
+                // Recarregar a página após 1.5 segundos
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                alert('Erro: ' + result.mensagem);
+            }
+
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao conectar com o servidor');
+        } finally {
+            btnSalvar.innerHTML = originalText;
+            btnSalvar.disabled = false;
+        }
+    }
+
+    // ============================================
+    // OUTRAS FUNÇÕES
+    // ============================================
+
+    function verDetalhesCondominio(id) {
+        if (window.CondominiosPage && window.CondominiosPage.verDetalhes) {
+            window.CondominiosPage.verDetalhes(id);
+        }
+    }
+
+    function editarCondominio(id) {
+        if (window.CondominiosPage && window.CondominiosPage.editarCondominio) {
+            window.CondominiosPage.editarCondominio(id);
+        }
+    }
+
+    function confirmarExclusaoCondominio(id) {
+        if (window.CondominiosPage && window.CondominiosPage.confirmarExclusao) {
+            const card = document.querySelector(`[data-id="${id}"]`);
+            const nome = card ? card.querySelector('.card-title').textContent : 'Condomínio';
+            window.CondominiosPage.confirmarExclusao(id, nome);
+        }
+    }
+
+    function filtrarCondominios(tipo) {
+        // Implementar lógica de filtragem
+        console.log('Filtrar por: ' + tipo);
     }
 </script>
 {% endblock %}
