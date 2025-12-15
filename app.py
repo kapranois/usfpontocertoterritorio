@@ -516,21 +516,48 @@ def novo_condominio():
         if torres <= 0:
             return jsonify({'status': 'erro', 'mensagem': 'Número de blocos inválido'}), 400
         
-        blocos_ativos = novo.get('blocos_ativos', '')
-        blocos_cobertos, blocos_descobertos, cobertura, status_cobertura = calcular_cobertura(blocos_ativos, torres)
+        # Dados de cobertura (agora são números simples)
+        blocos_cobertos = int(novo.get('blocos_cobertos', 0))
+        blocos_descobertos = int(novo.get('blocos_descobertos', 0))
         
-        # Garantir campos de cobertura
+        # Se não veio blocos_descobertos, calcular
+        if blocos_descobertos == 0:
+            blocos_descobertos = torres - blocos_cobertos
+        
+        # Garantir consistência
+        if blocos_cobertos < 0:
+            blocos_cobertos = 0
+        if blocos_descobertos < 0:
+            blocos_descobertos = 0
+        
+        # Garantir que cobertos + descobertos = total
+        if blocos_cobertos + blocos_descobertos != torres:
+            blocos_descobertos = torres - blocos_cobertos
+        
+        # CALCULAR COBERTURA (agora simples)
+        cobertura = 0
+        if torres > 0:
+            cobertura = round((blocos_cobertos / torres) * 100)
+        
+        # DETERMINAR STATUS
+        status_cobertura = 'descoberto'
+        if cobertura >= 67:
+            status_cobertura = 'completo'
+        elif cobertura >= 34:
+            status_cobertura = 'parcial'
+        
+        # Se não tem ACS, garantir que status seja 'descoberto'
+        if not novo.get('acs_responsavel'):
+            status_cobertura = 'descoberto'
+            cobertura = 0
+            blocos_cobertos = 0
+            blocos_descobertos = torres
+        
+        # Garantir campos de cobertura no objeto
         novo['blocos_cobertos'] = blocos_cobertos
         novo['blocos_descobertos'] = blocos_descobertos
         novo['cobertura'] = cobertura
         novo['status_cobertura'] = status_cobertura
-        
-        # Se não tem ACS, garantir que status seja 'descoberto'
-        if not novo.get('acs_responsavel'):
-            novo['status_cobertura'] = 'descoberto'
-            novo['cobertura'] = 0
-            novo['blocos_cobertos'] = 0
-            novo['blocos_descobertos'] = torres
         
         # Pertence à equipe atual
         novo['equipe'] = session['equipe']
@@ -540,10 +567,14 @@ def novo_condominio():
             novo['ultima_visita'] = datetime.now().strftime('%Y-%m-%d')
         
         # Garantir campos de saúde com valor padrão
-        novo['hipertensos'] = novo.get('hipertensos', 0)
-        novo['diabeticos'] = novo.get('diabeticos', 0)
-        novo['gestantes'] = novo.get('gestantes', 0)
+        novo['hipertensos'] = int(novo.get('hipertensos', 0))
+        novo['diabeticos'] = int(novo.get('diabeticos', 0))
+        novo['gestantes'] = int(novo.get('gestantes', 0))
         novo['microarea'] = novo.get('microarea', MICROAREAS.get(session['equipe'], ['Microárea A'])[0])
+        
+        # Converter outros campos numéricos
+        novo['apartamentos'] = int(novo.get('apartamentos', 0))
+        novo['moradores'] = int(novo.get('moradores', 0))
         
         # Gerar ID
         if dados['condominios']:
@@ -552,6 +583,7 @@ def novo_condominio():
             novo['id'] = 1
         
         # Se tem ACS, registrar também na lista de ACS
+        # NOTA: Como removemos blocos_ativos como texto, usamos blocos_cobertos
         acs_responsavel = novo.get('acs_responsavel')
         if acs_responsavel:
             if 'acs' not in dados:
@@ -568,14 +600,15 @@ def novo_condominio():
                     acs_existente['condominios'] = []
                 if novo['id'] not in acs_existente['condominios']:
                     acs_existente['condominios'].append(novo['id'])
-                acs_existente['blocos_ativos'] = blocos_ativos
+                # Usar blocos_cobertos em vez de blocos_ativos
+                acs_existente['blocos_ativos'] = str(blocos_cobertos)
             else:
                 novo_acs = {
                     'id': len(dados['acs']) + 1,
                     'nome': acs_responsavel,
                     'equipe': session['equipe'],
                     'condominios': [novo['id']],
-                    'blocos_ativos': blocos_ativos,
+                    'blocos_ativos': str(blocos_cobertos),
                     'total_moradores': novo.get('moradores', 0),
                     'total_hipertensos': novo.get('hipertensos', 0)
                 }
