@@ -4,7 +4,6 @@
     {% block title %}{{ nome_equipe }} - Dashboard{% endblock %}
 
     {% block extra_css %}
-    <!-- CSS específico do dashboard -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     {% endblock %}
 
@@ -123,7 +122,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Gestantes -->
                 <div class="metric-card card-gestantes" data-card-index="3">
                     <div class="metric-header">
