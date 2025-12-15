@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let isDrawing = false;
     let isFullscreen = false;
     let currentPolygonLayer = null;
-    let polygonDrawer = null; 
+    let polygonDrawer = null;
     let selectedAreaForCard = null;
 
     // Coordenadas padrão (Camaçari)
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Botões do popup
         document.getElementById('btn-save-popup').addEventListener('click', saveCurrentArea);
-        document.getElementById('btn-cancel-popup').addEventListener('click', cancelDrawing);
+        document.getElementById('btn-delete-popup').addEventListener('click', deleteCurrentAreaFromPopup);
         document.getElementById('close-popup').addEventListener('click', closeEditPopup);
 
         // Botão tela cheia
@@ -180,6 +180,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Overlay do popup
         document.getElementById('popup-overlay').addEventListener('click', closeEditPopup);
+
+        // Tecla ESC para cancelar desenho ou fechar popup
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                if (isDrawing) {
+                    cancelDrawing();
+                } else if (window.currentEditControl) {
+                    // Se está em modo de edição, cancelar
+                    disableEditMode();
+                    const cancelBtn = document.getElementById('cancel-edit-btn');
+                    if (cancelBtn) cancelBtn.remove();
+                } else {
+                    closeEditPopup();
+                    closeAreaInfoCard();
+                }
+
+                if (isFullscreen) {
+                    toggleFullscreen();
+                }
+            }
+        });
 
         // Tecla ESC para cancelar desenho ou fechar popup
         document.addEventListener('keydown', function (e) {
@@ -311,37 +332,248 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 100);
     }
 
-    // Alternar modo de edição de vértices
+    // Alternar modo de edição de vértices - APENAS A ÁREA ATUAL
     function toggleEditMode() {
-        if (drawnItems.getLayers().length === 0) {
-            showMessage('Não há área para editar!', 'warning');
-            return;
+        console.log('Ativando modo de edição para a área atual...');
+
+        // Verificar se há uma área selecionada para edição
+        if (!currentPolygonLayer) {
+            // Tentar encontrar pelo ID se não tiver o layer
+            if (currentAreaId) {
+                console.log('Procurando layer pelo ID:', currentAreaId);
+                drawnItems.eachLayer(function (layer) {
+                    if (layer.areaId === currentAreaId) {
+                        currentPolygonLayer = layer;
+                        console.log('Layer encontrado pelo ID:', layer);
+                    }
+                });
+            }
+
+            // Se ainda não encontrou, mostrar mensagem
+            if (!currentPolygonLayer) {
+                showMessage('Selecione uma área para editar primeiro!', 'warning');
+                return;
+            }
         }
 
-        // Se estiver no popup editando um polígono específico
-        if (currentPolygonLayer) {
-            // Criar controle de edição
-            const editControl = new L.EditToolbar.Edit(map, {
-                featureGroup: drawnItems
-            });
+        console.log('Editando área:', currentPolygonLayer.areaData?.nome || 'Sem nome');
 
-            // Ativar modo de edição
-            editControl.enable();
+        // Remover modo de edição anterior se existir
+        if (window.currentEditControl) {
+            window.currentEditControl.disable();
+            window.currentEditControl = null;
+        }
 
-            // Selecionar o polígono atual
-            drawnItems.eachLayer(function (layer) {
-                if (layer === currentPolygonLayer) {
-                    editControl._selectedFeatureGroup.addLayer(layer);
+        // Aplicar estilo de edição APENAS à área atual
+        currentPolygonLayer.setStyle({
+            color: '#f39c12', // Borda laranja durante edição
+            fillColor: currentPolygonLayer.options.fillColor || selectedColor,
+            fillOpacity: 0.4,
+            weight: 3, // Borda mais grossa
+            opacity: 0.8
+        });
+
+        // Marcar como em edição
+        currentPolygonLayer._editing = true;
+
+        // Adicionar classe CSS para animação
+        if (currentPolygonLayer._path) {
+            currentPolygonLayer._path.classList.add('editing');
+        }
+
+        // Criar controle de edição
+        window.currentEditControl = new L.EditToolbar.Edit(map, {
+            featureGroup: drawnItems,
+            selectedPathOptions: {
+                color: '#e74c3c', // Cor diferente para o selecionado
+                weight: 4
+            }
+        });
+
+        // Quando a edição terminar, voltar ao estilo sem bordas
+        map.on('editable:disable', function () {
+            console.log('Modo de edição desativado');
+
+            // Remover borda da área editada
+            if (currentPolygonLayer && currentPolygonLayer._editing) {
+                currentPolygonLayer.setStyle({
+                    color: 'transparent',
+                    fillColor: currentPolygonLayer.options.fillColor || selectedColor,
+                    fillOpacity: 0.4,
+                    weight: 0,
+                    opacity: 0
+                });
+
+                // Remover classe CSS
+                if (currentPolygonLayer._path) {
+                    currentPolygonLayer._path.classList.remove('editing');
                 }
+
+                currentPolygonLayer._editing = false;
+            }
+
+            // Remover controle
+            if (window.currentEditControl) {
+                window.currentEditControl = null;
+            }
+
+            // Remover botão de cancelar
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            if (cancelBtn) cancelBtn.remove();
+        });
+
+        // Ativar modo de edição
+        window.currentEditControl.enable();
+
+        // Selecionar APENAS a área atual para edição
+        window.currentEditControl._selectedFeatureGroup.addLayer(currentPolygonLayer);
+
+        // Adicionar botão para cancelar edição
+        addCancelEditButton();
+
+        showMessage('Modo edição ativado. Arraste os pontos para modificar a forma.', 'info', 3000);
+    }
+
+    // Adicionar botão para cancelar edição
+    function addCancelEditButton() {
+        // Remover botão anterior se existir
+        const oldBtn = document.getElementById('cancel-edit-btn');
+        if (oldBtn) oldBtn.remove();
+
+        // Criar novo botão
+        const cancelBtn = document.createElement('button');
+        cancelBtn.id = 'cancel-edit-btn';
+        cancelBtn.innerHTML = '<i class="fas fa-times"></i> Cancelar Edição';
+        cancelBtn.style.cssText = `
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        `;
+
+        cancelBtn.addEventListener('click', function () {
+            disableEditMode();
+            this.remove();
+        });
+
+        document.querySelector('.map-container').appendChild(cancelBtn);
+    }
+
+    // Desativar modo de edição
+    function disableEditMode() {
+        console.log('Desativando modo de edição...');
+
+        if (window.currentEditControl) {
+            window.currentEditControl.disable();
+            window.currentEditControl = null;
+        }
+
+        // Remover bordas de todos os polígonos
+        const layers = drawnItems.getLayers();
+        layers.forEach(layer => {
+            if (layer.setStyle) {
+                layer.setStyle({
+                    color: 'transparent',
+                    fillColor: layer.options.fillColor || selectedColor,
+                    fillOpacity: 0.4,
+                    weight: 0,
+                    opacity: 0
+                });
+
+                // Remover classe CSS
+                if (layer._path) {
+                    layer._path.classList.remove('editing');
+                }
+
+                layer._editing = false;
+            }
+        });
+
+        showMessage('Modo edição desativado', 'info', 2000);
+    }
+
+
+    // Desativar modo de edição
+    function disableEditMode() {
+        console.log('Desativando modo de edição...');
+
+        if (window.currentEditControl) {
+            window.currentEditControl.disable();
+            window.currentEditControl = null;
+        }
+
+        // Remover borda da área editada
+        if (currentPolygonLayer && currentPolygonLayer._editing) {
+            currentPolygonLayer.setStyle({
+                color: 'transparent',
+                fillColor: currentPolygonLayer.options.fillColor || selectedColor,
+                fillOpacity: 0.4,
+                weight: 0,
+                opacity: 0
             });
 
-            showMessage('Modo edição ativado. Arraste os pontos para modificar a forma.', 'info', 3000);
+            // Remover classe CSS
+            if (currentPolygonLayer._path) {
+                currentPolygonLayer._path.classList.remove('editing');
+            }
+
+            currentPolygonLayer._editing = false;
         }
+
+        // Remover botão de cancelar
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        if (cancelBtn) cancelBtn.remove();
+
+        showMessage('Modo edição desativado', 'info', 2000);
+    }
+
+
+    // Encontrar layer pelo ID da área
+    function findLayerByAreaId(areaId) {
+        let foundLayer = null;
+        drawnItems.eachLayer(function (layer) {
+            if (layer.areaId === areaId) {
+                foundLayer = layer;
+                return true; // Parar a iteração
+            }
+        });
+        return foundLayer;
+    }
+
+    // Encontrar layer pelos dados da área
+    function findLayerByAreaData(areaData) {
+        let foundLayer = null;
+        drawnItems.eachLayer(function (layer) {
+            // Verificar por ID
+            if (layer.areaId === areaData.id) {
+                foundLayer = layer;
+                return true;
+            }
+            // Verificar por nome (fallback)
+            if (layer.areaData && layer.areaData.nome === areaData.nome) {
+                foundLayer = layer;
+                return true;
+            }
+        });
+        return foundLayer;
     }
 
     // Deletar forma atual
     function deleteCurrentShape() {
-        if (!currentPolygonLayer) {
+        if (!currentPolygonLayer && !currentAreaId) {
             showMessage('Nenhuma área para excluir!', 'warning');
             return;
         }
@@ -351,44 +583,96 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Abrir popup de edição
     function openEditPopup(areaData = null) {
+        console.log('=== DEBUG openEditPopup ===');
+        console.log('Dados recebidos:', areaData);
+
         const popup = document.getElementById('edit-popup');
         const overlay = document.getElementById('popup-overlay');
-
-        if (!popup || !overlay) {
-            console.error('Elementos do popup não encontrados!');
-            return;
-        }
 
         popup.classList.add('active');
         overlay.classList.add('active');
 
-        // Se for edição de um polígono existente
         if (areaData) {
+            console.log('🔄 MODO EDIÇÃO para área:', areaData.nome);
+
+            // Preencher campos do formulário
             document.getElementById('area-name-popup').value = areaData.nome || '';
             document.getElementById('area-type-popup').value = areaData.tipo || 'bairro';
             document.getElementById('area-description-popup').value = areaData.descricao || '';
             document.getElementById('agente-id-popup').value = areaData.agente_saude_id || '';
             document.getElementById('streetview-link-popup').value = areaData.streetview_link || '';
 
-            selectedColor = areaData.cor || selectedColor;
+            // Definir cor correta
+            selectedColor = areaData.cor || '#3498db';
             updateColorPicker();
 
+            // Definir ID da área
             currentAreaId = areaData.id;
+            console.log('ID da área para edição:', currentAreaId);
 
-            // Atualizar título do popup
-            document.querySelector('.popup-header h3').innerHTML =
-                '<i class="fas fa-edit"></i> Editar Área: ' + (areaData.nome || 'Sem nome');
+            // Encontrar o layer no mapa
+            let foundLayer = false;
 
-            // Encontrar o layer correspondente
+            // Buscar pelo ID
             drawnItems.eachLayer(function (layer) {
                 if (layer.areaId === areaData.id) {
                     currentPolygonLayer = layer;
+                    foundLayer = true;
+                    console.log('✅ Layer encontrado pelo ID');
+                    return true;
                 }
             });
 
+            // Buscar pelo GeoJSON se não encontrou
+            if (!foundLayer && areaData.geojson) {
+                drawnItems.eachLayer(function (layer) {
+                    try {
+                        if (layer.toGeoJSON &&
+                            JSON.stringify(layer.toGeoJSON()) === JSON.stringify(areaData.geojson)) {
+                            currentPolygonLayer = layer;
+                            layer.areaId = areaData.id; // Atribuir ID
+                            layer.areaData = areaData; // Atribuir dados
+                            foundLayer = true;
+                            console.log('✅ Layer encontrado pelo GeoJSON');
+                            return true;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao comparar GeoJSON:', e);
+                    }
+                });
+            }
+
+            if (!foundLayer) {
+                console.warn('⚠️ Não encontrou layer, tentando criar novo...');
+                // Se não encontrou, criar um layer a partir do GeoJSON
+                try {
+                    currentPolygonLayer = L.geoJSON(areaData.geojson, {
+                        style: {
+                            color: 'transparent',
+                            fillColor: areaData.cor || '#3498db',
+                            fillOpacity: 0.4,
+                            weight: 0,
+                            opacity: 0
+                        }
+                    }).addTo(drawnItems);
+
+                    currentPolygonLayer.areaId = areaData.id;
+                    currentPolygonLayer.areaData = areaData;
+                    console.log('✅ Layer criado a partir do GeoJSON');
+                } catch (e) {
+                    console.error('❌ Erro ao criar layer:', e);
+                }
+            }
+
             isDrawing = false;
+
+            // Atualizar título
+            document.querySelector('.popup-header h3').innerHTML =
+                '<i class="fas fa-edit"></i> Editar Área: ' + (areaData.nome || 'Sem nome');
+
         } else {
-            // Novo desenho - limpar formulário
+            // NOVA CRIAÇÃO
+            console.log('🆕 MODO CRIAÇÃO');
             clearForm();
             currentAreaId = null;
             document.querySelector('.popup-header h3').innerHTML =
@@ -397,27 +681,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Focar no primeiro campo
         document.getElementById('area-name-popup').focus();
-    }
-
-    // Fechar popup de edição
-    function closeEditPopup() {
-        const popup = document.getElementById('edit-popup');
-        const overlay = document.getElementById('popup-overlay');
-
-        popup.classList.remove('active');
-        overlay.classList.remove('active');
-        closeAreaInfoCard();
-
-        // Se estava desenhando e fecha sem salvar, cancela o desenho
-        if (isDrawing && currentPolygonLayer) {
-            // Remove o polígono temporário se não foi salvo
-            drawnItems.removeLayer(currentPolygonLayer);
-            currentPolygonLayer = null;
-            isDrawing = false;
-
-            // REMOVER CURSOR DE DESENHO
-            document.getElementById('map').classList.remove('map-drawing-mode');
-        }
     }
 
     // Cancelar desenho
@@ -448,6 +711,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Mostrar card de informações da área
     function showAreaInfoCard(areaData) {
         selectedAreaForCard = areaData;
+
+        currentAreaId = areaData.id;
+
+        // Tentar encontrar o layer correspondente
+        drawnItems.eachLayer(function (layer) {
+            if (layer.areaId === areaData.id) {
+                currentPolygonLayer = layer;
+            }
+        });
 
         // Preencher informações no card
         document.getElementById('card-area-name').textContent = areaData.nome || 'Sem nome';
@@ -519,6 +791,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Salvar área atual
+    // Salvar área atual - VERSÃO CORRIGIDA
     async function saveCurrentArea() {
         if (!currentPolygonLayer) {
             showMessage('Não há área para salvar!', 'warning');
@@ -543,11 +816,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const agente = document.getElementById('agente-id-popup').value.trim();
         const streetview = document.getElementById('streetview-link-popup').value.trim();
 
-        // Preparar dados (nenhum campo é obrigatório)
+        // Preparar dados - CRÍTICO: diferenciar entre novo e edição
         let areaData = {
-            nome: nome || 'Mapa sem descrição', // Nome padrão
+            nome: nome || 'Mapa sem descrição',
             tipo: tipo,
-            cor: selectedColor, // Usa a cor padrão ou escolhida
+            cor: selectedColor,
             descricao: descricao,
             streetview_link: streetview || null,
             geojson: geojson,
@@ -556,9 +829,13 @@ document.addEventListener('DOMContentLoaded', function () {
             status: agente ? 'mapeada' : 'descoberta'
         };
 
-        // Se já existe ID (edição), adicionar
+        // *** ALTERAÇÃO IMPORTANTE: SEMPRE enviar o ID se existir ***
+        // O servidor deve usar este ID para identificar se é update (se ID existe) ou insert (se ID não existe)
         if (currentAreaId) {
             areaData.id = currentAreaId;
+            console.log('EDITANDO área existente. ID:', currentAreaId);
+        } else {
+            console.log('CRIANDO nova área (sem ID)');
         }
 
         console.log('Enviando dados para salvar:', areaData);
@@ -566,6 +843,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             showMessage('Salvando área...', 'info', 2000);
 
+            // *** ALTERAÇÃO: Enviar método POST sempre, mas o servidor deve tratar pelo ID ***
             const response = await fetch('/api/salvar-area', {
                 method: 'POST',
                 headers: {
@@ -587,7 +865,24 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Resposta do servidor:', result);
 
             if (result.status === 'sucesso') {
-                showMessage('Área salva com sucesso!', 'success');
+                showMessage(currentAreaId ? 'Área atualizada com sucesso!' : 'Área criada com sucesso!', 'success');
+
+                // *** NOVO CÓDIGO: Remover a versão antiga se for edição ***
+                if (currentAreaId) {
+                    // Procurar e remover TODAS as áreas com o mesmo ID (exceto a atual)
+                    const layersToRemove = [];
+                    drawnItems.eachLayer(function (layer) {
+                        if (layer.areaId === currentAreaId && layer !== currentPolygonLayer) {
+                            layersToRemove.push(layer);
+                        }
+                    });
+
+                    // Remover as áreas antigas
+                    layersToRemove.forEach(layer => {
+                        drawnItems.removeLayer(layer);
+                        console.log('Área duplicada removida:', currentAreaId);
+                    });
+                }
 
                 // Atualizar estilo para SEM BORDAS
                 currentPolygonLayer.setStyle({
@@ -598,24 +893,54 @@ document.addEventListener('DOMContentLoaded', function () {
                     opacity: 0
                 });
 
+                // Se for edição, remover versões duplicadas ***
+                if (currentAreaId && currentPolygonLayer) {
+                    drawnItems.eachLayer(function (layer) {
+                        // Remover qualquer outro layer com o mesmo ID (exceto o atual)
+                        if (layer.areaId === currentAreaId && layer !== currentPolygonLayer) {
+                            drawnItems.removeLayer(layer);
+                            console.log('Layer duplicado removido durante edição');
+                        }
+                    });
+                }
 
-                // Adicionar dados da área ao layer
-                //currentPolygonLayer.areaId = result.id || currentAreaId;
-                //currentPolygonLayer.areaData = areaData;
-                //currentPolygonLayer.areaData.id = result.id || currentAreaId;
+                // *** ALTERAÇÃO: Atualizar areaData no layer com o novo ID se for criação ***
+                if (!currentAreaId && result.id) {
+                    currentPolygonLayer.areaId = result.id;
+                    currentAreaId = result.id;
 
-                // Fechar popup
+                    // Atualizar também areaData se existir
+                    if (currentPolygonLayer.areaData) {
+                        currentPolygonLayer.areaData.id = result.id;
+                        currentPolygonLayer.areaData.nome = nome;
+                        currentPolygonLayer.areaData.tipo = tipo;
+                        currentPolygonLayer.areaData.cor = selectedColor;
+                        currentPolygonLayer.areaData.descricao = descricao;
+                        currentPolygonLayer.areaData.agente_saude_id = agente;
+                        currentPolygonLayer.areaData.streetview_link = streetview;
+                    }
+                } else if (currentAreaId && currentPolygonLayer.areaData) {
+                    // Se for edição, atualizar os dados no layer
+                    currentPolygonLayer.areaData.nome = nome;
+                    currentPolygonLayer.areaData.tipo = tipo;
+                    currentPolygonLayer.areaData.cor = selectedColor;
+                    currentPolygonLayer.areaData.descricao = descricao;
+                    currentPolygonLayer.areaData.agente_saude_id = agente;
+                    currentPolygonLayer.areaData.streetview_link = streetview;
+                }
+
                 closeEditPopup();
 
                 // Resetar estado
                 isDrawing = false;
-                currentAreaId = null;
 
                 // REMOVER CURSOR DE DESENHO
                 document.getElementById('map').classList.remove('map-drawing-mode');
 
-                // Limpar o polígono temporário
-                currentPolygonLayer = null;
+                // Limpar o polígono temporário se for nova criação
+                if (!areaData.id) {
+                    currentPolygonLayer = null;
+                }
 
                 // Remover ferramenta de desenho
                 if (polygonDrawer) {
@@ -638,7 +963,185 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    
+    // Deletar área atual a partir do popup - VERSÃO CORRIGIDA
+    async function deleteCurrentAreaFromPopup() {
+        console.log('=== DEBUG DELETAR ===');
+        console.log('currentAreaId:', currentAreaId);
+        console.log('currentPolygonLayer:', currentPolygonLayer);
+
+        // Se não tem ID mas tem layer, tentar pegar o ID do layer
+        if (!currentAreaId && currentPolygonLayer && currentPolygonLayer.areaId) {
+            currentAreaId = currentPolygonLayer.areaId;
+            console.log('DEBUG: ID recuperado do layer:', currentAreaId);
+        }
+
+        // Se ainda não tem ID mas tem layer com areaData
+        if (!currentAreaId && currentPolygonLayer && currentPolygonLayer.areaData) {
+            currentAreaId = currentPolygonLayer.areaData.id;
+            console.log('DEBUG: ID recuperado do areaData:', currentAreaId);
+        }
+
+        const hasAreaId = !!currentAreaId;
+        const hasPolygonLayer = !!currentPolygonLayer;
+
+        console.log('Verificações FINAIS: hasAreaId:', hasAreaId, 'hasPolygonLayer:', hasPolygonLayer);
+
+        if (!hasAreaId && !hasPolygonLayer) {
+            showMessage('Nenhuma área para deletar!', 'warning');
+            return;
+        }
+
+        // Confirmar antes de deletar
+        const areaName = document.getElementById('area-name-popup').value || 'esta área';
+        if (!confirm(`Tem certeza que deseja deletar "${areaName}"?\nEsta ação não pode ser desfeita.`)) {
+            return;
+        }
+
+        const deleteBtn = document.getElementById('btn-delete-popup');
+        const originalText = deleteBtn ? deleteBtn.innerHTML : '';
+
+        try {
+            // Se TEM ID (área já salva), deletar do servidor
+            if (currentAreaId) {
+                console.log('DEBUG: Deletando área do servidor. ID:', currentAreaId);
+
+                if (deleteBtn) {
+                    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deletando...';
+                    deleteBtn.disabled = true;
+                }
+
+                showMessage('Deletando área do servidor...', 'info', 2000);
+
+                // Chamar API para deletar
+                const response = await fetch(`/api/excluir-area/${currentAreaId}`, {
+                    method: 'DELETE'
+                });
+
+                console.log('DEBUG: Resposta do servidor - Status:', response.status);
+
+                const result = await response.json();
+                console.log('DEBUG: Resposta do servidor - JSON:', result);
+
+                if (result.status === 'sucesso') {
+                    showMessage('Área deletada com sucesso!', 'success');
+
+                    // Remover do mapa
+                    if (currentPolygonLayer) {
+                        drawnItems.removeLayer(currentPolygonLayer);
+                        console.log('DEBUG: Layer removido do mapa');
+                    } else {
+                        // Se não encontrou pelo layer, tentar remover pelo ID
+                        drawnItems.eachLayer(function (layer) {
+                            if (layer.areaId === currentAreaId) {
+                                drawnItems.removeLayer(layer);
+                                console.log('DEBUG: Layer removido pelo ID');
+                            }
+                        });
+                    }
+
+                    // Fechar popup
+                    closeEditPopup();
+
+                    // Resetar variáveis
+                    currentPolygonLayer = null;
+                    currentAreaId = null;
+                    isDrawing = false;
+
+                    // Recarregar áreas para atualizar do servidor
+                    setTimeout(() => {
+                        loadAreas();
+                        console.log('DEBUG: Áreas recarregadas após deleção');
+                    }, 500);
+
+                } else {
+                    throw new Error(result.mensagem || 'Erro desconhecido do servidor');
+                }
+
+            } else {
+                // Se NÃO TEM ID (área nova não salva), apenas remover visualmente
+                console.log('DEBUG: Removendo área não salva (sem ID)');
+                showMessage('Área removida!', 'success');
+
+                if (currentPolygonLayer) {
+                    drawnItems.removeLayer(currentPolygonLayer);
+                    console.log('DEBUG: Layer removido (área não salva)');
+                }
+
+                closeEditPopup();
+
+                // Resetar variáveis
+                currentPolygonLayer = null;
+                currentAreaId = null;
+                isDrawing = false;
+
+                // Se tinha ferramenta de desenho ativa, remover
+                if (polygonDrawer) {
+                    polygonDrawer.disable();
+                    polygonDrawer = null;
+                    console.log('DEBUG: Ferramenta de desenho removida');
+                }
+            }
+
+        } catch (error) {
+            console.error('Erro ao deletar área:', error);
+            showMessage('Erro ao deletar: ' + error.message, 'error');
+
+            // Restaurar botão
+            if (deleteBtn) {
+                deleteBtn.innerHTML = originalText;
+                deleteBtn.disabled = false;
+            }
+        }
+    }
+
+    // Fechar popup de edição
+    function closeEditPopup() {
+        console.log('Fechando popup de edição...');
+
+        const popup = document.getElementById('edit-popup');
+        const overlay = document.getElementById('popup-overlay');
+
+        if (popup) {
+            popup.classList.remove('active');
+            console.log('Popup removido');
+        } else {
+            console.error('Elemento edit-popup não encontrado!');
+        }
+
+        if (overlay) {
+            overlay.classList.remove('active');
+            console.log('Overlay removido');
+        } else {
+            console.error('Elemento popup-overlay não encontrado!');
+        }
+
+        // Se estava desenhando e fecha sem salvar, cancela o desenho
+        if (isDrawing && currentPolygonLayer) {
+            console.log('Cancelando desenho não salvo...');
+
+            // Remove o polígono temporário se não foi salvo
+            drawnItems.removeLayer(currentPolygonLayer);
+            currentPolygonLayer = null;
+            isDrawing = false;
+
+            // REMOVER CURSOR DE DESENHO
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                mapElement.classList.remove('map-drawing-mode');
+            }
+
+            // Remover ferramenta de desenho
+            if (polygonDrawer) {
+                polygonDrawer.disable();
+                polygonDrawer = null;
+            }
+
+            console.log('Desenho cancelado');
+        }
+
+        console.log('Popup fechado com sucesso');
+    }
+
 
     // Abrir Street View em popup do navegador
     function openStreetViewPopup(streetviewUrl) {
@@ -790,7 +1293,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Adicionar área ao mapa
     function addAreaToMap(area) {
-        try {
+        try {        // *** NOVO: Remover área existente com mesmo ID antes de adicionar ***
+            if (area.id) {
+                drawnItems.eachLayer(function (layer) {
+                    if (layer.areaId === area.id) {
+                        drawnItems.removeLayer(layer);
+                        console.log('Área existente removida para atualização:', area.id);
+                    }
+                });
+            }
             const layer = L.geoJSON(area.geojson, {
                 style: {
                     color: 'transparent', // BORDA TRANSPARENTE
@@ -810,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             layer.areaId = area.id;
             layer.areaData = area;
-            
+
 
             // Click para abrir card de informações
             layer.on('click', function (e) {
