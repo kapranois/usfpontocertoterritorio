@@ -822,23 +822,22 @@ body {
         display: flex !important;
         align-items: center;
         gap: 5px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(102, 126, 234, 0.08);
         padding: 4px 8px;
         border-radius: 6px;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
         max-width: 130px;
         overflow: hidden;
         flex-shrink: 0;
         margin: 0 !important;
-        color: white !important;
+        color: #475569 !important; 
         height: 28px;
+        border: 1px solid rgba(102, 126, 234, 0.1);
     }
     
     .equipe-info i {
         font-size: 0.8rem;
         flex-shrink: 0;
-        color: white;
+        color: #667eea;
     }
     
     .equipe-info span {
@@ -847,11 +846,11 @@ body {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: white;
+        color: #475569;
     }
     
     .equipe-info:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(102, 126, 234, 0.12);
         transform: none;
     }
     
@@ -865,9 +864,8 @@ body {
         min-width: auto !important;
         padding: 4px 8px !important;
         border-radius: 6px;
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        background: rgba(241, 245, 249, 0.8) !important;
+        border: 1px solid rgba(226, 232, 240, 0.6) !important;
         height: 28px;
         display: flex;
         align-items: center;
@@ -875,18 +873,18 @@ body {
     }
     
     .user-menu-trigger:hover {
-        background: rgba(255, 255, 255, 0.15) !important;
+        background: rgba(226, 232, 240, 0.9) !important;
         transform: none;
     }
     
     .user-info {
         gap: 5px;
-        color: white !important;
+        color: #475569 !important;
     }
     
     .user-info i {
         font-size: 1.1rem;
-        color: white !important;
+        color: #667eea !important;
     }
     
     .user-info span:not(.convidado-badge) {
@@ -898,6 +896,7 @@ body {
         padding: 1px 4px;
         margin-left: 2px;
     }
+    
     
     .dropdown-arrow {
         display: none;
@@ -927,9 +926,9 @@ body {
         font-size: 1.4rem;
         padding: 8px;
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(102, 126, 234, 0.08); /* Azul claro, não branco */
         margin-bottom: 3px;
-        color: white;
+        color: #667eea;
     }
     
     .logo h1 {
@@ -941,18 +940,18 @@ body {
         max-width: 200px;
         line-height: 1.1;
         margin: 0;
-        color: white;
+        color: #1e293b; /* Escuro, não branco */
     }
     
     .subtitle {
         font-size: 0.65rem;
-        opacity: 0.9;
+        opacity: 0.8;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 180px;
         margin: 1px 0 0 0;
-        color: rgba(255, 255, 255, 0.9);
+        color: #64748b; /* Cinza, não branco */
     }
     
     /* Esconde navbar desktop */
