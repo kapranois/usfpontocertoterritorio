@@ -550,80 +550,123 @@ function closeMobileMenu() {
 }
 
 // ============================================
-// INICIALIZAÇÃO DO SCROLL HEADER - CORRIGIDO
+// HEADER SCROLL SIMPLIFICADO - SÓ O ESSENCIAL
 // ============================================
 
-let scrollHeaderInstance = null;
+let lastScrollTop = 0;
+let scrollTimeout;
+let isMobile = window.innerWidth <= 768;
+let header = document.querySelector('.header');
 
 function initScrollHeader() {
-    // Remove instância anterior se existir
-    if (scrollHeaderInstance) {
-        // Limpa event listeners se existirem métodos de limpeza
-        scrollHeaderInstance.reset();
-        scrollHeaderInstance = null;
+    if (!header) return;
+    
+    isMobile = window.innerWidth <= 768;
+    
+    // Só ativa em mobile
+    if (!isMobile) {
+        header.classList.remove('hidden', 'compact');
+        document.body.classList.remove('header-hidden', 'header-compact');
+        return;
     }
+    
+    // Configura evento de scroll
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Configura redimensionamento
+    window.addEventListener('resize', handleResize);
+    
+    console.log('Scroll Header ativado (simplificado)');
+}
 
-    // Verifica se estamos em mobile
-    if (window.innerWidth <= 768) {
-        // Cria nova instância apenas se houver header
-        const header = document.querySelector('.header');
-        if (header) {
-            scrollHeaderInstance = new ScrollHeader();
+function handleScroll() {
+    if (!isMobile || !header) return;
+    
+    // Cancelar timeout anterior
+    clearTimeout(scrollTimeout);
+    
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    
+    // No topo da página
+    if (scrollTop < 10) {
+        header.classList.remove('hidden', 'compact');
+        document.body.classList.remove('header-hidden', 'header-compact');
+    }
+    // No final da página
+    else if (scrollTop > scrollHeight - 10) {
+        header.classList.remove('hidden');
+        header.classList.add('compact');
+        document.body.classList.add('header-compact');
+        document.body.classList.remove('header-hidden');
+    }
+    // Rolando para baixo
+    else if (scrollTop > lastScrollTop && scrollTop > 100) {
+        header.classList.add('hidden');
+        header.classList.remove('compact');
+        document.body.classList.add('header-hidden');
+        document.body.classList.remove('header-compact');
+    }
+    // Rolando para cima
+    else if (scrollTop < lastScrollTop) {
+        header.classList.remove('hidden');
+        header.classList.add('compact');
+        document.body.classList.add('header-compact');
+        document.body.classList.remove('header-hidden');
+    }
+    
+    // Salva posição atual
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    
+    // Timeout para mostrar header se parar de rolar
+    scrollTimeout = setTimeout(() => {
+        if (scrollTop > 50 && scrollTop < scrollHeight - 50) {
+            header.classList.remove('hidden');
+            header.classList.add('compact');
+            document.body.classList.add('header-compact');
+            document.body.classList.remove('header-hidden');
         }
+    }, 1500);
+}
+
+function handleResize() {
+    clearTimeout(scrollTimeout);
+    
+    const wasMobile = isMobile;
+    isMobile = window.innerWidth <= 768;
+    
+    if (!isMobile && wasMobile) {
+        // Mudou para desktop - remove classes
+        if (header) {
+            header.classList.remove('hidden', 'compact');
+        }
+        document.body.classList.remove('header-hidden', 'header-compact');
+        window.removeEventListener('scroll', handleScroll);
+    } else if (isMobile && !wasMobile) {
+        // Mudou para mobile - reinicia
+        lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        window.addEventListener('scroll', handleScroll, { passive: true });
     }
 }
 
-// Na função initGeneralUtilities(), ajuste a inicialização:
-function initGeneralUtilities() {
-    console.log('Inicializando utilitários gerais...');
-
-    // Atualizar data
-    atualizarData();
-
-    // Configurar para mobile
-    adjustForMobile();
-
-    // Configurar dropdown do usuário
-    setupUserDropdown();
-
-    // Inicializar Scroll Header (com delay para garantir DOM)
-    setTimeout(() => {
-        initScrollHeader();
-    }, 100);
-
-    // Inicializar Bottom Navigation
-    initBottomNavigation();
-
-    // Eventos para mostrar header em interações
-    document.addEventListener('click', function (e) {
-        if (scrollHeaderInstance && (
-            e.target.closest('.user-menu-trigger') ||
-            e.target.closest('.mobile-menu-panel') ||
-            e.target.closest('#mobileMenuBtn')
-        )) {
-            scrollHeaderInstance.forceShow();
-            
-            // Mantém visível por 3 segundos
-            setTimeout(() => {
-                if (scrollHeaderInstance && window.scrollY > 50) {
-                    scrollHeaderInstance.showCompactHeader();
-                }
-            }, 3000);
+// Mostrar header quando interagir
+function showHeaderTemporarily() {
+    if (!isMobile || !header) return;
+    
+    header.classList.remove('hidden');
+    header.classList.add('compact');
+    document.body.classList.add('header-compact');
+    document.body.classList.remove('header-hidden');
+    
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        if (lastScrollTop > 100) {
+            header.classList.add('hidden');
+            header.classList.remove('compact');
+            document.body.classList.add('header-hidden');
+            document.body.classList.remove('header-compact');
         }
-    });
-
-    // Ajustar ao redimensionar janela
-    let resizeTimer;
-    window.addEventListener('resize', function () {
-        adjustForMobile();
-
-        // Re-inicializa com debounce
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function () {
-            initScrollHeader();
-            initBottomNavigation();
-        }, 250);
-    });
+    }, 3000);
 }
 
 // ============================================
@@ -646,17 +689,30 @@ function initGeneralUtilities() {
     setupUserDropdown();
 
     // Inicializar Scroll Header
-    initScrollHeader();
+     setTimeout(() => {
+        initScrollHeader();
+    }, 100);
     
     // Inicializar Bottom Navigation
     initBottomNavigation();
 
-    // Eventos para mostrar header em interações
+    // Mostrar header temporariamente em interações
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.user-menu-trigger') || 
+        if (isMobile && (
+            e.target.closest('.user-menu-trigger') ||
             e.target.closest('.mobile-menu-panel') ||
-            e.target.closest('#mobileMenuBtn')) {
-            showHeaderForInteraction();
+            e.target.closest('#mobileMenuBtn') ||
+            e.target.closest('.bottom-nav') ||
+            e.target.closest('.navbar')
+        )) {
+            showHeaderTemporarily();
+        }
+    });
+
+        // Também mostrar ao tocar no topo da tela
+    document.addEventListener('touchstart', function(e) {
+        if (isMobile && e.touches[0].clientY < 80) {
+            showHeaderTemporarily();
         }
     });
     
@@ -672,7 +728,6 @@ function initGeneralUtilities() {
     window.addEventListener('resize', function() {
         adjustForMobile();
         
-        // Re-inicializa com debounce
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() {
             initScrollHeader();
