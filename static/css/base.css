@@ -897,7 +897,12 @@ body {
 /* ============================================
    MOBILE: USER E EQUIPE NO TOPO, LOGO CENTRALIZADO
    ============================================ */
-
+@media (max-width: 768px) {
+    /* Esconde a navbar original no header */
+    .header .navbar {
+        display: none;
+    }
+   
 @media (max-width: 768px) {
     /* HEADER COM LAYOUT EM DUAS LINHAS */
     .header {
@@ -1037,60 +1042,3 @@ body {
         display: none;
     }
     
-    /* ============================================
-       VERSÃO PARA TELAS PEQUENAS
-       ============================================ */
-    
-    @media (max-width: 375px) {
-        .header {
-            padding: 4px 10px 6px !important;
-            min-height: 60px !important;
-        }
-        
-        .equipe-info {
-            padding: 3px 6px;
-            max-width: 110px;
-        }
-        
-        .equipe-info i {
-            font-size: 0.75rem;
-        }
-        
-        .equipe-info span {
-            font-size: 0.6rem;
-        }
-        
-        .user-menu-trigger {
-            padding: 3px 6px !important;
-            height: 26px;
-        }
-        
-        .user-info i {
-            font-size: 1rem;
-        }
-        
-        .logo i {
-            font-size: 1.2rem;
-            padding: 6px;
-        }
-        
-        .logo h1 {
-            font-size: 0.85rem;
-            max-width: 160px;
-        }
-        
-        .subtitle {
-            font-size: 0.6rem;
-            max-width: 140px;
-        }
-    }
-    
-    /* ============================================
-       AJUSTE PARA CONTEÚDO
-       ============================================ */
-    
-    .content-wrapper {
-        padding-top: 5px; /* Menos espaço ainda */
-        padding-bottom: 60px;
-    }
-}
