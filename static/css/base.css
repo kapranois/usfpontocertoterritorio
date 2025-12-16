@@ -895,105 +895,64 @@ body {
 }
 
 /* ============================================
-   MOBILE: USER E EQUIPE NO TOPO, LOGO CENTRALIZADO
+   AJUSTES PARA MOBILE - LAYOUT CENTRALIZADO
    ============================================ */
 
 @media (max-width: 768px) {
-    /* HEADER COM LAYOUT EM DUAS LINHAS */
+    /* HEADER REORGANIZADO */
     .header {
-        padding: 5px 12px 8px !important; /* Menos padding no topo */
-        min-height: 65px !important; /* Um pouco mais alto para duas linhas */
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
+        padding: 8px 12px !important;
+        min-height: 50px !important;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas: "equipe logo usuario";
+        align-items: center;
+        gap: 10px;
         position: relative;
     }
     
-    /* PRIMEIRA LINHA: Equipe e Usuário no topo */
-    .header-top-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        width: 100%;
-        height: 30px;
-    }
-    
-    /* Equipe no topo esquerdo */
+    /* Equipe no canto esquerdo */
     .equipe-info {
-        display: flex !important;
+        grid-area: equipe;
+        display: flex !important; /* Mostra no mobile */
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         background: rgba(255, 255, 255, 0.1);
-        padding: 4px 8px;
+        padding: 5px 8px;
         border-radius: 6px;
         backdrop-filter: blur(5px);
         border: 1px solid rgba(255, 255, 255, 0.15);
-        max-width: 130px;
+        max-width: 120px;
         overflow: hidden;
         flex-shrink: 0;
-        margin-top: 0;
-        align-self: flex-start;
     }
     
     .equipe-info i {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         flex-shrink: 0;
     }
     
     .equipe-info span {
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         font-weight: 500;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex: 1;
     }
     
-    /* Usuário no topo direito */
-    .user-dropdown-container {
-        align-self: flex-start;
-        margin-top: 0;
-    }
-    
-    .user-menu-trigger {
-        min-width: auto !important;
-        padding: 4px 8px !important;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        height: 28px;
-        display: flex;
-        align-items: center;
-    }
-    
-    .user-info {
-        gap: 5px;
-    }
-    
-    .user-info i {
-        font-size: 1.1rem;
-    }
-    
-    .user-info span:not(.convidado-badge) {
-        display: none;
-    }
-    
-    .convidado-badge {
-        font-size: 0.5rem;
-        padding: 1px 4px;
-        margin-left: 2px;
-    }
-    
-    /* SEGUNDA LINHA: Logo centralizado */
+    /* Logo centralizado */
     .logo {
+        grid-area: logo;
+        justify-content: center;
+        margin: 0 auto;
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        width: 100%;
-        margin: 0 auto;
-        padding: 0;
-        flex: 1;
+        gap: 2px;
+        min-width: 0;
+        padding: 0 5px;
     }
     
     .logo > div {
@@ -1005,36 +964,203 @@ body {
     
     .logo i {
         font-size: 1.4rem;
-        padding: 8px;
+        padding: 7px;
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.15);
-        margin-bottom: 3px;
+        margin-bottom: 2px;
     }
     
     .logo h1 {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 200px;
+        max-width: 180px;
         line-height: 1.1;
-        margin: 0;
     }
     
     .subtitle {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
         opacity: 0.9;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 180px;
-        margin: 1px 0 0 0;
+        max-width: 150px;
+    }
+    
+    /* Usuário no canto direito */
+    .user-dropdown-container {
+        grid-area: usuario;
+        justify-self: end;
+    }
+    
+    .user-menu-trigger {
+        min-width: auto !important;
+        padding: 5px 8px !important;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .user-info {
+        gap: 6px;
+    }
+    
+    .user-info i {
+        font-size: 1.2rem;
+    }
+    
+    .user-info span:not(.convidado-badge) {
+        display: none; /* Esconde nome, mostra só ícone */
+    }
+    
+    .dropdown-arrow {
+        display: none; /* Remove seta no mobile */
+    }
+    
+    /* Convidado badge ajustado */
+    .convidado-badge {
+        font-size: 0.55rem;
+        padding: 1px 4px;
+        margin-left: 3px;
     }
     
     /* Remove background effect */
     .header-bg-effect {
         display: none;
     }
+    
+    /* ============================================
+       VERSÃO PARA TELAS PEQUENAS
+       ============================================ */
+    
+    @media (max-width: 375px) {
+        .header {
+            padding: 6px 8px !important;
+            min-height: 45px !important;
+            gap: 8px;
+        }
+        
+        .equipe-info {
+            padding: 4px 6px;
+            max-width: 100px;
+        }
+        
+        .equipe-info i {
+            font-size: 0.8rem;
+        }
+        
+        .equipe-info span {
+            font-size: 0.65rem;
+        }
+        
+        .logo i {
+            font-size: 1.2rem;
+            padding: 6px;
+        }
+        
+        .logo h1 {
+            font-size: 0.8rem;
+            max-width: 140px;
+        }
+        
+        .subtitle {
+            font-size: 0.55rem;
+            max-width: 120px;
+        }
+        
+        .user-menu-trigger {
+            padding: 4px 6px !important;
+        }
+        
+        .user-info i {
+            font-size: 1.1rem;
+        }
+        
+        /* Ajusta menu dropdown para mobile */
+        .user-dropdown-menu {
+            position: fixed;
+            top: 50px;
+            right: 10px;
+            left: 10px;
+            max-width: calc(100% - 20px);
+            transform: translateY(-10px);
+        }
+    }
+    
+    /* ============================================
+       BOTTOM NAV AJUSTADA
+       ============================================ */
+    
+    .bottom-nav {
+        padding: 5px 0 8px;
+        min-height: 55px;
+    }
+    
+    .bottom-nav .nav-item {
+        padding: 2px 0;
+        min-height: 45px;
+    }
+    
+    .bottom-nav .nav-item i {
+        font-size: 1.1rem;
+        margin-bottom: 2px;
+    }
+    
+    .bottom-nav .nav-item span {
+        font-size: 0.6rem;
+    }
+    
+    /* Espaço para conteúdo */
+    .content-wrapper {
+        padding-top: 10px;
+        padding-bottom: 60px;
+    }
+    
+    /* ============================================
+       DROPDOWN USER MENU PARA MOBILE
+       ============================================ */
+    
+    .user-dropdown-menu {
+        position: fixed !important;
+        top: 60px !important;
+        right: 10px !important;
+        left: auto !important;
+        width: 280px !important;
+        max-width: calc(100vw - 20px) !important;
+        transform: none !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Remove a seta do dropdown */
+    .user-dropdown-menu::before {
+        display: none;
+    }
+}
+
+/* ============================================
+   ANIMAÇÃO NO CLICK (FEEDBACK TÁTIL)
+   ============================================ */
+
+@media (max-width: 768px) {
+    .equipe-info:active,
+    .user-menu-trigger:active {
+        transform: scale(0.95);
+        transition: transform 0.1s;
+    }
+    
+    .equipe-info,
+    .user-menu-trigger {
+        transition: all 0.2s;
+    }
+    
+    .equipe-info:hover,
+    .user-menu-trigger:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+}
     
 
