@@ -46,7 +46,7 @@ body {
 }
 
 /* ============================================
-   CABEÇALHO
+   CABEÇALHO DESKTOP
    ============================================ */
 .header {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
@@ -66,7 +66,7 @@ body {
     height: 70px;
 }
 
-/* Logo */
+/* Logo Desktop */
 .logo {
     display: flex;
     align-items: center;
@@ -75,36 +75,36 @@ body {
     transition: all 0.3s ease;
 }
 
-    .logo i {
-        font-size: 1.8rem;
-        color: #667eea;
-        background: rgba(102, 126, 234, 0.08);
-        padding: 10px;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
+.logo i {
+    font-size: 1.8rem;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.08);
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
 
-    .logo:hover i {
-        background: rgba(102, 126, 234, 0.12);
-        transform: translateY(-2px);
-    }
+.logo:hover i {
+    background: rgba(102, 126, 234, 0.12);
+    transform: translateY(-2px);
+}
 
-    .logo h1 {
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin: 0;
-        letter-spacing: -0.5px;
-    }
+.logo h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
 
-    .logo .subtitle {
-        font-size: 0.75rem;
-        color: #64748b;
-        font-weight: 400;
-        opacity: 0.8;
-    }
+.logo .subtitle {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 400;
+    opacity: 0.8;
+}
 
-/* Header right */
+/* Header right Desktop */
 .header-right {
     display: flex;
     align-items: center;
@@ -112,7 +112,7 @@ body {
     z-index: 1;
 }
 
-/* Equipe info */
+/* Equipe info Desktop */
 .equipe-info {
     background: rgba(102, 126, 234, 0.08);
     padding: 6px 14px;
@@ -128,16 +128,16 @@ body {
     margin-right: 15px;
 }
 
-    .equipe-info:hover {
-        background: rgba(102, 126, 234, 0.12);
-        transform: translateY(-2px);
-        color: #667eea;
-    }
+.equipe-info:hover {
+    background: rgba(102, 126, 234, 0.12);
+    transform: translateY(-2px);
+    color: #667eea;
+}
 
-    .equipe-info i {
-        font-size: 0.85rem;
-        opacity: 0.9;
-    }
+.equipe-info i {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
 
 /* ============================================
    MENU DROPDOWN DO USUÁRIO
@@ -159,12 +159,12 @@ body {
     border: 1px solid rgba(226, 232, 240, 0.6) !important;
 }
 
-    .user-menu-trigger:hover {
-        background: rgba(226, 232, 240, 0.9) !important;
-        border-color: rgba(148, 163, 184, 0.5) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
+.user-menu-trigger:hover {
+    background: rgba(226, 232, 240, 0.9) !important;
+    border-color: rgba(148, 163, 184, 0.5) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
 
 /* User info */
 .user-info {
@@ -179,22 +179,22 @@ body {
     pointer-events: none;
 }
 
-    .user-info:hover {
-        background: transparent;
-        transform: none;
-    }
+.user-info:hover {
+    background: transparent;
+    transform: none;
+}
 
-    .user-info i {
-        font-size: 1rem;
-        color: #667eea;
-    }
+.user-info i {
+    font-size: 1rem;
+    color: #667eea;
+}
 
-    .user-info.convidado-user {
-        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 179, 0, 0.1));
-        border: 1px solid rgba(255, 193, 7, 0.2);
-        padding: 4px 10px;
-        border-radius: 6px;
-    }
+.user-info.convidado-user {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 179, 0, 0.1));
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
 
 .convidado-badge {
     background: linear-gradient(135deg, #ffc107, #ffb300);
@@ -231,11 +231,11 @@ body {
     overflow: hidden;
 }
 
-    .user-dropdown-menu.show {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
+.user-dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
 
 /* Rotação da seta quando menu está aberto */
 .user-dropdown-container.active .dropdown-arrow {
@@ -259,30 +259,30 @@ body {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-    .dropdown-user-info i {
-        font-size: 1.8rem;
-        color: #667eea;
-        background: white;
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-    }
+.dropdown-user-info i {
+    font-size: 1.8rem;
+    color: #667eea;
+    background: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
 
-    .dropdown-user-info strong {
-        color: #1e293b;
-        font-size: 0.95rem;
-        display: block;
-        margin-bottom: 4px;
-    }
+.dropdown-user-info strong {
+    color: #1e293b;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 4px;
+}
 
-    .dropdown-user-info small {
-        color: #64748b;
-        font-size: 0.8rem;
-    }
+.dropdown-user-info small {
+    color: #64748b;
+    font-size: 0.8rem;
+}
 
 .dropdown-divider {
     height: 1px;
@@ -301,30 +301,30 @@ body {
     border-bottom: 1px solid rgba(241, 245, 249, 0.8);
 }
 
-    .dropdown-item:hover {
-        background: linear-gradient(to right, rgba(102, 126, 234, 0.05), rgba(102, 126, 234, 0.02));
-        padding-left: 20px;
-        color: #667eea;
-    }
+.dropdown-item:hover {
+    background: linear-gradient(to right, rgba(102, 126, 234, 0.05), rgba(102, 126, 234, 0.02));
+    padding-left: 20px;
+    color: #667eea;
+}
 
-    .dropdown-item i {
-        color: #94a3b8;
-        width: 18px;
-        text-align: center;
-    }
+.dropdown-item i {
+    color: #94a3b8;
+    width: 18px;
+    text-align: center;
+}
 
-    .dropdown-item:hover i {
-        color: #667eea;
-    }
+.dropdown-item:hover i {
+    color: #667eea;
+}
 
-    .dropdown-item.logout-item {
-        color: #ef4444;
-    }
+.dropdown-item.logout-item {
+    color: #ef4444;
+}
 
-        .dropdown-item.logout-item:hover {
-            background: rgba(239, 68, 68, 0.04);
-            color: #dc2626;
-        }
+.dropdown-item.logout-item:hover {
+    background: rgba(239, 68, 68, 0.04);
+    color: #dc2626;
+}
 
 .dropdown-footer {
     padding: 12px 16px;
@@ -333,10 +333,10 @@ body {
     border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-    .dropdown-footer small {
-        color: #7f8c8d;
-        font-size: 0.75rem;
-    }
+.dropdown-footer small {
+    color: #7f8c8d;
+    font-size: 0.75rem;
+}
 
 /* Overlay para mobile */
 .user-dropdown-overlay {
@@ -353,13 +353,13 @@ body {
     transition: all 0.3s ease;
 }
 
-    .user-dropdown-overlay.show {
-        opacity: 1;
-        visibility: visible;
-    }
+.user-dropdown-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
 
 /* ============================================
-   NAVEGAÇÃO PRINCIPAL
+   NAVEGAÇÃO PRINCIPAL DESKTOP
    ============================================ */
 .navbar {
     display: flex;
@@ -372,58 +372,58 @@ body {
     height: 100%;
 }
 
-    .navbar a {
-        color: #64748b;
-        text-decoration: none;
-        padding: 0 20px;
-        border-radius: 0;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 500;
-        font-size: 0.85rem;
-        height: 100%;
-        position: relative;
-        border-bottom: 3px solid transparent;
-    }
+.navbar a {
+    color: #64748b;
+    text-decoration: none;
+    padding: 0 20px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    height: 100%;
+    position: relative;
+    border-bottom: 3px solid transparent;
+}
 
-        .navbar a::before {
-            display: none;
-        }
+.navbar a::before {
+    display: none;
+}
 
-        .navbar a:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.04);
-            transform: none;
-            box-shadow: none;
-        }
+.navbar a:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.04);
+    transform: none;
+    box-shadow: none;
+}
 
-        .navbar a.active {
-            color: #667eea;
-            background: transparent;
-            border-bottom: 3px solid #667eea;
-            font-weight: 600;
-        }
+.navbar a.active {
+    color: #667eea;
+    background: transparent;
+    border-bottom: 3px solid #667eea;
+    font-weight: 600;
+}
 
-            .navbar a.active:hover {
-                background: rgba(102, 126, 234, 0.04);
-                transform: none;
-                box-shadow: none;
-            }
+.navbar a.active:hover {
+    background: rgba(102, 126, 234, 0.04);
+    transform: none;
+    box-shadow: none;
+}
 
-        .navbar a i {
-            font-size: 1rem;
-            transition: transform 0.3s ease;
-        }
+.navbar a i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
 
-        .navbar a:hover i {
-            transform: translateY(-2px);
-        }
+.navbar a:hover i {
+    transform: translateY(-2px);
+}
 
-        .navbar a.active i {
-            color: #667eea;
-        }
+.navbar a.active i {
+    color: #667eea;
+}
 
 /* ============================================
    RODAPÉ HORIZONTAL SUPER LIMPO
@@ -455,37 +455,37 @@ body {
     justify-content: center;
 }
 
-    .logo-inline-wrapper img {
-        height: 40px;
-        width: auto;
-        max-width: 150px;
-        object-fit: contain;
-        opacity: 0.7;
-        filter: grayscale(10%);
-        transition: all 0.3s ease;
-    }
+.logo-inline-wrapper img {
+    height: 40px;
+    width: auto;
+    max-width: 150px;
+    object-fit: contain;
+    opacity: 0.7;
+    filter: grayscale(10%);
+    transition: all 0.3s ease;
+}
 
-        .logo-inline-wrapper img:hover {
-            opacity: 1;
-            filter: grayscale(0%);
-            transform: translateY(-2px);
-        }
+.logo-inline-wrapper img:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+    transform: translateY(-2px);
+}
 
-        /* Adicionar separadores entre logos */
-        .logo-inline-wrapper img:not(:last-child) {
-            position: relative;
-        }
+/* Adicionar separadores entre logos */
+.logo-inline-wrapper img:not(:last-child) {
+    position: relative;
+}
 
-            .logo-inline-wrapper img:not(:last-child)::after {
-                content: '';
-                position: absolute;
-                right: -20px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 1px;
-                height: 30px;
-                background: rgba(0, 0, 0, 0.08);
-            }
+.logo-inline-wrapper img:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.08);
+}
 
 /* ============================================
    RODAPÉ DA VERSÃO
@@ -538,10 +538,10 @@ body {
     padding: 20px;
 }
 
-    .modal.active {
-        opacity: 1;
-        visibility: visible;
-    }
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
 
 .modal-content {
     background: rgba(255, 255, 255, 0.95);
@@ -570,20 +570,20 @@ body {
     align-items: center;
 }
 
-    .modal-header h3 {
-        margin: 0;
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: #1e293b;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        .modal-header h3 i {
-            color: #667eea;
-            font-size: 1.3rem;
-        }
+.modal-header h3 i {
+    color: #667eea;
+    font-size: 1.3rem;
+}
 
 /* Botão de fechar elegante */
 .close {
@@ -601,14 +601,14 @@ body {
     font-size: 18px;
 }
 
-    .close:hover {
-        background: rgba(239, 68, 68, 0.2);
-        transform: rotate(90deg);
-    }
+.close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: rotate(90deg);
+}
 
-    .close:active {
-        transform: rotate(90deg) scale(0.95);
-    }
+.close:active {
+    transform: rotate(90deg) scale(0.95);
+}
 
 /* Corpo do modal */
 .modal-body {
@@ -617,24 +617,24 @@ body {
     overflow-y: auto;
 }
 
-    /* Scrollbar customizada */
-    .modal-body::-webkit-scrollbar {
-        width: 6px;
-    }
+/* Scrollbar customizada */
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
 
-    .modal-body::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.03);
-        border-radius: 3px;
-    }
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 3px;
+}
 
-    .modal-body::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.1);
-        border-radius: 3px;
-    }
+.modal-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
 
-        .modal-body::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.2);
-        }
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
 
 /* Footer do modal (se tiver) */
 .modal-footer {
@@ -644,124 +644,6 @@ body {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-}
-
-/* ============================================
-   RESPONSIVIDADE
-   ============================================ */
-@media (max-width: 992px) {
-.header {
-    background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-    color: white;
-    padding: 10px 15px; /* Reduzido de 15px */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
-    position: relative;
-    min-height: 60px; /* Altura fixa */
-}
-   .header-bg-effect {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.3;
-    background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
-    pointer-events: none;
-}
-
-    .logo {
-        padding: 0 15px;
-    }
-
-    .navbar {
-        width: 100%;
-        justify-content: center;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-        padding-top: 10px;
-    }
-
-        .navbar a {
-            padding: 0 15px;
-        }
-
-    .user-dropdown-container {
-        margin-right: 15px;
-    }
-}
-
-@media (max-width: 768px) {
-    .navbar {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 5px;
-        padding: 10px;
-    }
-
-        .navbar a {
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-        }
-
-            .navbar a.active {
-                border-bottom: 2px solid #667eea;
-            }
-
-    .equipe-info {
-        margin-right: 10px;
-        padding: 5px 10px;
-        font-size: 0.75rem;
-    }
-
-    .container, .content-wrapper {
-        padding: 0 15px;
-    }
-
-    .logo-inline-wrapper {
-        gap: 25px;
-    }
-
-        .logo-inline-wrapper img {
-            height: 35px;
-            max-width: 120px;
-        }
-
-    .footer-version-simple {
-        margin-top: 15px;
-        padding-top: 15px;
-    }
-
-        .footer-version-simple .version {
-            font-size: 0.8rem;
-            padding: 0 10px;
-        }
-}
-
-@media (max-width: 480px) {
-    .container, .content-wrapper {
-        padding: 0 10px;
-    }
-
-    .logo-inline-wrapper {
-        gap: 20px;
-    }
-
-        .logo-inline-wrapper img {
-            height: 30px;
-            max-width: 100px;
-        }
-
-    .footer-version-simple {
-        margin-top: 10px;
-        padding-top: 10px;
-    }
-
-        .footer-version-simple .version {
-            font-size: 0.75rem;
-        }
 }
 
 /* ============================================
@@ -910,30 +792,34 @@ body {
 }
 
 /* ============================================
-   AJUSTES PARA MOBILE
+   RESPONSIVIDADE - MOBILE (768px ou menos)
    ============================================ */
-
 @media (max-width: 768px) {
-    /* HEADER COM LAYOUT EM DUAS LINHAS */
+    /* HEADER COMPLETO PARA MOBILE */
     .header {
-        padding: 5px 12px 8px !important; /* Menos padding no topo */
-        min-height: 65px !important; /* Um pouco mais alto para duas linhas */
+        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+        color: white;
+        padding: 5px 12px 8px !important;
+        min-height: 65px !important;
         display: flex;
         flex-direction: column;
         gap: 5px;
         position: relative;
+        height: auto;
+        width: 100%;
     }
     
-    /* PRIMEIRA LINHA: Equipe e Usuário no topo */
+    /* Header com duas linhas */
     .header-top-row {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         width: 100%;
         height: 30px;
+        margin-top: 2px;
     }
     
-    /* Equipe no topo esquerdo */
+    /* Equipe no canto superior esquerdo */
     .equipe-info {
         display: flex !important;
         align-items: center;
@@ -946,13 +832,15 @@ body {
         max-width: 130px;
         overflow: hidden;
         flex-shrink: 0;
-        margin-top: 0;
-        align-self: flex-start;
+        margin: 0 !important;
+        color: white !important;
+        height: 28px;
     }
     
     .equipe-info i {
         font-size: 0.8rem;
         flex-shrink: 0;
+        color: white;
     }
     
     .equipe-info span {
@@ -961,32 +849,46 @@ body {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        color: white;
     }
     
-    /* Usuário no topo direito */
+    .equipe-info:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: none;
+    }
+    
+    /* Usuário no canto superior direito */
     .user-dropdown-container {
         align-self: flex-start;
-        margin-top: 0;
+        margin: 0 !important;
     }
     
     .user-menu-trigger {
         min-width: auto !important;
         padding: 4px 8px !important;
         border-radius: 6px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.1) !important;
         backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
         height: 28px;
         display: flex;
         align-items: center;
+        margin: 0;
+    }
+    
+    .user-menu-trigger:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+        transform: none;
     }
     
     .user-info {
         gap: 5px;
+        color: white !important;
     }
     
     .user-info i {
         font-size: 1.1rem;
+        color: white !important;
     }
     
     .user-info span:not(.convidado-badge) {
@@ -999,7 +901,11 @@ body {
         margin-left: 2px;
     }
     
-    /* SEGUNDA LINHA: Logo centralizado */
+    .dropdown-arrow {
+        display: none;
+    }
+    
+    /* Logo centralizado abaixo */
     .logo {
         display: flex;
         flex-direction: column;
@@ -1009,6 +915,7 @@ body {
         margin: 0 auto;
         padding: 0;
         flex: 1;
+        gap: 2px;
     }
     
     .logo > div {
@@ -1024,6 +931,7 @@ body {
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.15);
         margin-bottom: 3px;
+        color: white;
     }
     
     .logo h1 {
@@ -1035,6 +943,7 @@ body {
         max-width: 200px;
         line-height: 1.1;
         margin: 0;
+        color: white;
     }
     
     .subtitle {
@@ -1045,23 +954,239 @@ body {
         text-overflow: ellipsis;
         max-width: 180px;
         margin: 1px 0 0 0;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    /* Esconde navbar desktop */
+    .navbar {
+        display: none !important;
+    }
+    
+    /* Mostra bottom nav */
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        padding: 5px 0 8px;
+        min-height: 55px;
+    }
+    
+    /* Ajusta o conteúdo */
+    .content-wrapper {
+        padding-top: 5px;
+        padding-bottom: 60px;
+        max-width: 100%;
     }
     
     /* Remove background effect */
     .header-bg-effect {
         display: none;
     }
+    
+    /* Ajusta dropdown para mobile */
+    .user-dropdown-menu {
+        position: fixed !important;
+        top: 60px !important;
+        right: 10px !important;
+        left: auto !important;
+        width: 280px !important;
+        max-width: calc(100vw - 20px) !important;
+        transform: none !important;
+    }
+    
+    /* Container geral mobile */
+    .container, .content-wrapper {
+        padding: 0 15px;
+        width: 100%;
+    }
+    
+    /* Footer mobile */
+    .footer-simple-horizontal {
+        margin-bottom: 60px;
+        padding: 20px 0;
+    }
+    
+    .logo-inline-wrapper {
+        gap: 25px;
+    }
+    
+    .logo-inline-wrapper img {
+        height: 35px;
+        max-width: 120px;
+    }
+    
+    .footer-version-simple {
+        margin-top: 15px;
+        padding-top: 15px;
+    }
+    
+    .footer-version-simple .version {
+        font-size: 0.8rem;
+        padding: 0 10px;
+    }
+}
 
-@media (max-width: 576px) {
-    .logo h1 {
+/* ============================================
+   RESPONSIVIDADE - TELAS MUITO PEQUENAS (375px ou menos)
+   ============================================ */
+@media (max-width: 375px) {
+    .header {
+        padding: 4px 10px 6px !important;
+        min-height: 60px !important;
+    }
+    
+    .equipe-info {
+        padding: 3px 6px;
+        max-width: 110px;
+    }
+    
+    .equipe-info i {
+        font-size: 0.75rem;
+    }
+    
+    .equipe-info span {
+        font-size: 0.6rem;
+    }
+    
+    .user-menu-trigger {
+        padding: 3px 6px !important;
+        height: 26px;
+    }
+    
+    .user-info i {
         font-size: 1rem;
     }
-
+    
+    .logo i {
+        font-size: 1.2rem;
+        padding: 6px;
+    }
+    
+    .logo h1 {
+        font-size: 0.85rem;
+        max-width: 160px;
+    }
+    
+    .subtitle {
+        font-size: 0.6rem;
+        max-width: 140px;
+    }
+    
     .bottom-nav .nav-item span {
         font-size: 0.6rem;
     }
-
+    
     .bottom-nav .nav-item i {
         font-size: 1.1rem;
+    }
+    
+    .logo-inline-wrapper {
+        gap: 15px;
+    }
+    
+    .logo-inline-wrapper img {
+        height: 30px;
+        max-width: 100px;
+    }
+    
+    .footer-version-simple {
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+    
+    .footer-version-simple .version {
+        font-size: 0.75rem;
+    }
+}
+
+/* ============================================
+   RESPONSIVIDADE - TABLET (769px a 992px)
+   ============================================ */
+@media (min-width: 769px) and (max-width: 992px) {
+    .header {
+        padding: 0 20px;
+    }
+    
+    .logo {
+        padding: 0 20px;
+    }
+    
+    .navbar a {
+        padding: 0 15px;
+        font-size: 0.8rem;
+    }
+    
+    .user-dropdown-container {
+        margin-right: 20px;
+    }
+    
+    .container, .content-wrapper {
+        padding: 0 20px;
+    }
+}
+
+/* ============================================
+   AJUSTES FINAIS E CORREÇÕES
+   ============================================ */
+
+/* Remove margem extra do body */
+body {
+    padding-top: 0;
+}
+
+/* Corrige z-index do header */
+.header {
+    z-index: 1000;
+}
+
+/* Remove efeitos indesejados no mobile */
+@media (max-width: 768px) {
+    .logo:hover i {
+        transform: none;
+    }
+    
+    .equipe-info:hover {
+        transform: none;
+    }
+    
+    .user-menu-trigger:hover {
+        transform: none;
+    }
+    
+    /* Esconde header-right no mobile */
+    .header-right {
+        display: none;
+    }
+}
+
+/* ============================================
+   ANIMAÇÕES E TRANSITIONS
+   ============================================ */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Feedback visual para toques mobile */
+@media (max-width: 768px) {
+    .equipe-info:active,
+    .user-menu-trigger:active,
+    .bottom-nav .nav-item:active {
+        opacity: 0.7;
+        transform: scale(0.97);
+        transition: opacity 0.1s, transform 0.1s;
+    }
+    
+    .mobile-menu-panel .menu-item:active {
+        background: rgba(0, 0, 0, 0.05);
     }
 }
