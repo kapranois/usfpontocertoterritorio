@@ -33,24 +33,21 @@
     </script>
 </head>
 <body>
-    <!-- Cabeçalho -->
-    <header class="header">
-        <div class="header-bg-effect"></div>
-        <div class="logo">
-            <i class="fas fa-map-marked-alt"></i>
-            <div>
-                <h1>USF Ponto Certo</h1>
-                <p class="subtitle">Territorio</p>
-            </div>
-        </div>
+<!-- Cabeçalho -->
+<header class="header">
+    <div class="header-bg-effect"></div>
+    
+    <!-- PRIMEIRA LINHA: Equipe e Usuário no topo (MOBILE) / Lado a lado (DESKTOP) -->
+    <div class="header-top-row">
+        <!-- Equipe no canto superior esquerdo -->
         <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
             <div class="equipe-info">
                 <i class="fas fa-users"></i>
                 <span>{{ nome_equipe }}</span>
             </div>
         </a>
-
-        <!-- Menu dropdown do usuário -->
+        
+        <!-- Usuário no canto superior direito -->
         <div class="user-dropdown-container">
             <div class="user-menu-trigger" onclick="toggleUserMenu()">
                 {% if usuario_logado %}
@@ -69,7 +66,7 @@
                 {% endif %}
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
-
+            
             <!-- Menu dropdown -->
             <div class="user-dropdown-menu" id="userDropdown">
                 {% if usuario_logado %}
@@ -110,27 +107,39 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+    
+    <!-- SEGUNDA LINHA: Logo (MOBILE centralizado) / (DESKTOP lado esquerdo) -->
+    <div class="logo">
+        <i class="fas fa-map-marked-alt"></i>
+        <div>
+            <h1>USF Ponto Certo</h1>
+            <p class="subtitle">Territorio</p>
+        </div>
+    </div>
+    
+    <!-- Navbar (escondido no mobile) -->
+    <nav class="navbar">
+        <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
+            <i class="fas fa-home"></i>
+            <span>Início</span>
+        </a>
+        <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}" title="Mapa do Território">
+            <i class="fas fa-map"></i>
+            <span>Mapa</span>
+        </a>
+        <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}" title="Gerenciar Condomínios">
+            <i class="fas fa-building"></i>
+            <span>Condomínios</span>
+        </a>
+        <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}" title="Relatórios">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
+        </a>
+    </nav>
+</header>
 
-        <nav class="navbar">
-            <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
-                <i class="fas fa-home"></i>
-                <span>Início</span>
-            </a>
-            <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}" title="Mapa do Território">
-                <i class="fas fa-map"></i>
-                <span>Mapa</span>
-            </a>
-            <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}" title="Gerenciar Condomínios">
-                <i class="fas fa-building"></i>
-                <span>Condomínios</span>
-            </a>
-            <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}" title="Relatórios">
-                <i class="fas fa-chart-bar"></i>
-                <span>Relatórios</span>
-            </a>
-        </nav>
-    </header>
-    <!-- Bottom Navigation para Mobile -->
+<!-- Bottom Navigation para Mobile -->
 <div class="bottom-nav">
     <a href="/dashboard" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
         <i class="fas fa-home"></i>
