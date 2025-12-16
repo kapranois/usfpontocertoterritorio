@@ -1432,9 +1432,26 @@ body {
 }
 @media (max-width: 768px) {
     .header {
-        height: auto;
-        min-height: 68px;
-        padding: 10px 0;
+        padding: 8px 12px !important; 
+        min-height: 50px !important; 
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+       .logo {
+        gap: 8px;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+    }
+       .logo i {
+        font-size: 1.2rem !important;
+        padding: 6px !important;
+        border-radius: 6px !important;
+        min-width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .navbar a.active {
@@ -1442,13 +1459,20 @@ body {
         /* Linha mais fina em mobile */
     }
 
-    /* Ajuste no logo para mobile */
     .logo h1 {
-        font-size: 1.2rem;
+        font-size: 0.95rem !important; /* Bem pequeno */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px; /* Limita largura */
+        line-height: 1.2;
     }
 
-    .logo .subtitle {
-        font-size: 0.7rem;
+    .subtitle {
+        font-size: 0.65rem !important; /* Muito pequeno */
+        opacity: 0.8;
+        margin-top: 1px;
+        display: none; /* Pode esconder se quiser ainda mais compacto */
     }
 }
 
