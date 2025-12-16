@@ -809,11 +809,17 @@ body {
         transform: translateY(0);
         will-change: transform;
     }
-    
+        .header {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                    min-height 0.3s ease,
+                    padding 0.3s ease;
+        transform-origin: top;
+    }
     /* Header escondido (quando rola pra baixo) */
     .header.hidden {
         transform: translateY(-100%);
-        box-shadow: none;
+        opacity: 0;
+        pointer-events: none;
     }
     
     /* Header compacto (quando rola um pouco) */
@@ -830,6 +836,7 @@ body {
     .header.compact .equipe-info {
         padding: 2px 6px;
         max-width: 100px;
+        font-size: 0.7rem;
     }
     
     .header.compact .user-menu-trigger {
@@ -840,6 +847,11 @@ body {
     .header.compact .logo {
         opacity: 0.7;
         transform: scale(0.9);
+    }
+
+       .header.compact .logo i {
+        font-size: 1rem;
+        padding: 6px;
     }
     
     .header.compact .logo h1 {
