@@ -48,6 +48,24 @@ body {
 /* ============================================
    CABEÇALHO DESKTOP
    ============================================ */
+/* Logo como única imagem */
+.header-logo-full {
+    height: auto;
+    max-height: 120px; /* Ajuste conforme a altura do header */
+    width: auto;
+    max-width: 220px; /* Largura máxima */
+    /* Mantém proporção e centraliza verticalmente */
+    object-fit: contain;
+    object-position: center;
+    /* Suavidade */
+    transition: all 0.3s ease;
+}
+    /* Hover effect opcional */
+    .header-logo-full:hover {
+        transform: scale(1.05);
+        opacity: 0.95;
+    }
+
 .header {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
     color: #1e293b;
