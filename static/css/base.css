@@ -650,12 +650,27 @@ body {
    RESPONSIVIDADE
    ============================================ */
 @media (max-width: 992px) {
-    .header {
-        flex-direction: column;
-        height: auto;
-        padding: 15px 0;
-        gap: 15px;
-    }
+.header {
+    background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+    color: white;
+    padding: 10px 15px; /* Reduzido de 15px */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
+    position: relative;
+    min-height: 60px; /* Altura fixa */
+}
+   .header-bg-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
 
     .logo {
         padding: 0 15px;
@@ -899,70 +914,145 @@ body {
    ============================================ */
 
 @media (max-width: 768px) {
-    /* Esconde a navbar original */
-    .header .navbar {
-        display: none;
-    }
-    
-    /* Mostra a bottom nav */
-    .bottom-nav {
-        display: flex;
-        justify-content: space-around;
-    }
-    
-    /* Ajusta o conteúdo */
-    .content-wrapper {
-        padding-bottom: 60px; /* Espaço para a bottom nav */
-    }
-    
-    /* Ajusta o footer */
-    .footer-simple-horizontal {
-        margin-bottom: 60px;
-    }
-    
-    /* Header mais compacto */
+    /* HEADER SUPER COMPACTO PARA MOBILE */
     .header {
-        padding: 12px 15px;
+        padding: 8px 12px !important; /* Muito compacto */
+        min-height: 50px !important; /* Altura mínima reduzida */
         flex-wrap: nowrap;
+        gap: 8px;
     }
     
+    /* Logo ultra compacto */
     .logo {
+        gap: 8px;
         flex: 1;
         min-width: 0;
+        overflow: hidden;
+    }
+    
+    .logo i {
+        font-size: 1.2rem !important;
+        padding: 6px !important;
+        border-radius: 6px !important;
+        min-width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .logo h1 {
-        font-size: 1.1rem;
+        font-size: 0.95rem !important; /* Bem pequeno */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 150px; /* Limita largura */
+        line-height: 1.2;
     }
     
+    .subtitle {
+        font-size: 0.65rem !important; /* Muito pequeno */
+        opacity: 0.8;
+        margin-top: 1px;
+        display: none; /* Pode esconder se quiser ainda mais compacto */
+    }
+    
+    /* Esconde completamente a equipe-info no mobile */
     .equipe-info {
-        display: none; /* Esconde no mobile para mais espaço */
+        display: none !important;
     }
     
-    /* User menu ajustado */
+    /* User menu trigger compacto */
     .user-menu-trigger {
-        min-width: auto;
-        padding: 6px 10px;
+        min-width: auto !important;
+        padding: 5px 8px !important;
+        border-radius: 6px;
+        flex-shrink: 0;
+    }
+    
+    .user-info i {
+        font-size: 1.3rem !important;
+        margin-right: 0;
     }
     
     .user-info span:not(.convidado-badge) {
-        display: none; /* Esconde o nome no mobile */
+        display: none !important; /* Esconde nome do usuário */
     }
-}
-
-@media (max-width: 576px) {
-    .logo h1 {
-        font-size: 1rem;
+    
+    .dropdown-arrow {
+        font-size: 0.8rem;
+        margin-left: 4px;
+    }
+    
+    /* Convidado badge menor */
+    .convidado-badge {
+        font-size: 0.6rem;
+        padding: 1px 5px;
+        margin-left: 3px;
+    }
+    
+    /* Remove background effect para performance */
+    .header-bg-effect {
+        display: none;
+    }
+    
+    /* ============================================
+       VERSÃO SUPER COMPACTA (iPhone SE, telas pequenas)
+       ============================================ */
+    
+    @media (max-width: 375px) {
+        .header {
+            padding: 6px 10px !important;
+            min-height: 45px !important;
+        }
+        
+        .logo i {
+            font-size: 1rem !important;
+            padding: 5px !important;
+            min-width: 32px;
+            height: 32px;
+        }
+        
+        .logo h1 {
+            font-size: 0.85rem !important;
+            max-width: 120px;
+        }
+        
+        .user-menu-trigger {
+            padding: 4px 6px !important;
+        }
+        
+        .user-info i {
+            font-size: 1.1rem !important;
+        }
+    }
+    
+    /* ============================================
+       BOTTOM NAV COMPACTA
+       ============================================ */
+    
+    .bottom-nav {
+        padding: 5px 0 7px;
+        min-height: 55px;
+    }
+    
+    .bottom-nav .nav-item {
+        padding: 2px 0;
+        min-height: 45px;
+    }
+    
+    .bottom-nav .nav-item i {
+        font-size: 1.1rem;
+        margin-bottom: 2px;
     }
     
     .bottom-nav .nav-item span {
         font-size: 0.6rem;
     }
     
-    .bottom-nav .nav-item i {
-        font-size: 1.1rem;
+    /* Espaço para conteúdo */
+    .content-wrapper {
+        padding-top: 10px; /* Menos espaço no topo */
+        padding-bottom: 60px;
     }
 }
