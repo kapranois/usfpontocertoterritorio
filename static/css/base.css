@@ -88,9 +88,20 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0 25px;
+}
+
+.logo-img {
+    height: auto;
+    object-fit: contain;
     transition: all 0.3s ease;
+    
+    /* Tamanhos para DESKTOP (lado esquerdo) */
+    max-height: 80px; 
+    max-width: 250px;
+    
+    /* Para garantir qualidade */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
 
 .logo i {
@@ -1136,6 +1147,26 @@ body {
 
 /* Remove efeitos indesejados no mobile */
 @media (max-width: 768px) {
+       .logo {
+        justify-content: center; /* Centraliza no mobile */
+        width: 100%; /* Ocupa toda largura */
+        text-align: center;
+    }
+    
+    .logo-link {
+        justify-content: center;
+    }
+    
+    .logo-img {
+        /* Tamanho maior para mobile */
+        max-height: 70px; /* Um pouco menor que desktop, mas visível */
+        max-width: 220px;
+        
+        /* Centraliza perfeitamente */
+        margin: 0 auto;
+        display: block;
+    }
+}
     .logo:hover i {
         transform: none;
     }
