@@ -826,11 +826,11 @@ body {
 @media (max-width: 768px) {
     /* HEADER COMPLETO PARA MOBILE */
     .header {
-        padding: 5px 12px 8px !important;
-        min-height: 65px !important;
+        padding: 4px 12px 6px !important;
+        min-height: 50px !important;
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 4px;
         position: relative;
         height: auto;
         width: 100%;
