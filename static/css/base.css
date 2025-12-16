@@ -897,12 +897,7 @@ body {
 /* ============================================
    MOBILE: USER E EQUIPE NO TOPO, LOGO CENTRALIZADO
    ============================================ */
-@media (max-width: 768px) {
-    /* Esconde a navbar original no header */
-    .header .navbar {
-        display: none;
-    }
-   
+
 @media (max-width: 768px) {
     /* HEADER COM LAYOUT EM DUAS LINHAS */
     .header {
@@ -1042,3 +1037,4 @@ body {
         display: none;
     }
     
+
