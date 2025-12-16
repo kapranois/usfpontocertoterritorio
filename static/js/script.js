@@ -69,7 +69,7 @@ function adjustForMobile() {
 }
 
 // ============================================
-// HEADER HIDE/SHOW ON SCROLL (MOBILE) - CORRIGIDO
+// HEADER HIDE/SHOW ON SCROLL (MOBILE)
 // ============================================
 
 class ScrollHeader {
@@ -77,141 +77,106 @@ class ScrollHeader {
         this.header = document.querySelector('.header');
         this.lastScrollY = window.scrollY;
         this.scrollDirection = 'none';
-        this.scrollThreshold = 100; // Quantos pixels rolar antes de esconder
+        this.scrollThreshold = 50; // Quantos pixels rolar antes de esconder
         this.isMobile = window.innerWidth <= 768;
-        this.isHidden = false;
-        this.isCompact = false;
-
+        
         if (this.header && this.isMobile) {
             this.init();
         }
     }
-
+    
     init() {
-        // Configura o evento de scroll com throttle
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    this.handleScroll();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-
+        // Configura o evento de scroll
+        window.addEventListener('scroll', this.handleScroll.bind(this));
+        
         // Configura redimensionamento
         window.addEventListener('resize', this.handleResize.bind(this));
-
+        
         // Configura toque na tela para mostrar header
         document.addEventListener('touchstart', this.handleTouchStart.bind(this));
-
+        
         console.log('Scroll Header inicializado para mobile');
     }
-
+    
     handleScroll() {
-        if (!this.isMobile || !this.header) return;
-
+        if (!this.isMobile) return;
+        
         const currentScrollY = window.scrollY;
-        const scrollDiff = currentScrollY - this.lastScrollY;
-
-        // Determina direção do scroll (com deadzone)
-        if (Math.abs(scrollDiff) > 5) {
-            this.scrollDirection = scrollDiff > 0 ? 'down' : 'up';
+        
+        // Determina direção do scroll
+        if (currentScrollY > this.lastScrollY) {
+            this.scrollDirection = 'down';
+        } else if (currentScrollY < this.lastScrollY) {
+            this.scrollDirection = 'up';
         }
-
+        
         // Lógica de mostrar/esconder
         if (currentScrollY <= 10) {
             // No topo da página - mostra header completo
-            this.showFullHeader();
-        }
+            this.showHeader();
+            document.body.classList.remove('header-compact', 'header-hidden');
+        } 
         else if (this.scrollDirection === 'down' && currentScrollY > this.scrollThreshold) {
             // Rolando para baixo - esconde header
             this.hideHeader();
-        }
-        else if (this.scrollDirection === 'up' && currentScrollY > 50) {
+        } 
+        else if (this.scrollDirection === 'up') {
             // Rolando para cima - mostra header compacto
             this.showCompactHeader();
         }
         
         // Para scroll rápido, mostra header se estiver perto do topo
-        if (currentScrollY < 50) {
-            this.showFullHeader();
+        if (currentScrollY < 100) {
+            this.showHeader();
         }
-
+        
         this.lastScrollY = currentScrollY;
     }
-
+    
     handleResize() {
-        const wasMobile = this.isMobile;
         this.isMobile = window.innerWidth <= 768;
-
-        if (!this.isMobile && wasMobile) {
-            // Se mudou para desktop, remove todas as classes
-            this.showFullHeader();
+        
+        // Se mudou para desktop, remove todas as classes
+        if (!this.isMobile) {
+            this.showHeader();
             document.body.classList.remove('header-compact', 'header-hidden');
-        } else if (this.isMobile && !wasMobile) {
-            // Se mudou para mobile, recomeça
-            this.reset();
         }
     }
-
+    
     handleTouchStart(e) {
-        if (!this.isMobile) return;
-        
-        // Se tocar no topo da tela (50px), mostra o header
-        if (e.touches[0].clientY < 50 && this.isHidden) {
-            this.showFullHeader();
+        // Se tocar no topo da tela (10px), mostra o header
+        if (e.touches[0].clientY < 50 && this.header.classList.contains('hidden')) {
+            this.showHeader();
             setTimeout(() => {
-                this.showFullHeader();
+                this.showHeader();
             }, 100);
         }
     }
-
+    
     hideHeader() {
-        if (!this.isHidden) {
-            this.header.classList.add('hidden');
-            this.header.classList.remove('compact');
-            document.body.classList.add('header-hidden');
-            document.body.classList.remove('header-compact');
-            this.isHidden = true;
-            this.isCompact = false;
-        }
+        this.header.classList.add('hidden');
+        this.header.classList.remove('compact');
+        document.body.classList.add('header-hidden');
+        document.body.classList.remove('header-compact');
     }
-
-    showFullHeader() {
-        if (this.isHidden || this.isCompact) {
-            this.header.classList.remove('hidden', 'compact');
-            document.body.classList.remove('header-hidden', 'header-compact');
-            this.isHidden = false;
-            this.isCompact = false;
-        }
+    
+    showHeader() {
+        this.header.classList.remove('hidden', 'compact');
+        document.body.classList.remove('header-hidden', 'header-compact');
     }
-
+    
     showCompactHeader() {
-        if (!this.isCompact) {
-            this.header.classList.remove('hidden');
-            this.header.classList.add('compact');
-            document.body.classList.add('header-compact');
-            document.body.classList.remove('header-hidden');
-            this.isHidden = false;
-            this.isCompact = true;
-        }
+        this.header.classList.remove('hidden');
+        this.header.classList.add('compact');
+        document.body.classList.add('header-compact');
+        document.body.classList.remove('header-hidden');
     }
-
-    reset() {
-        this.lastScrollY = window.scrollY;
-        this.scrollDirection = 'none';
-        this.isHidden = false;
-        this.isCompact = false;
-        this.showFullHeader();
-    }
-
-    // Método público para forçar mostrar header
+    
+    // Método público para forçar mostrar header (útil para menus abertos)
     forceShow() {
-        this.showFullHeader();
+        this.showHeader();
     }
-
+    
     // Método público para forçar esconder
     forceHide() {
         this.hideHeader();
@@ -550,7 +515,7 @@ function closeMobileMenu() {
 }
 
 // ============================================
-// HEADER SCROLL SIMPLIFICADO - SÓ O ESSENCIAL
+// INICIALIZAÇÃO DO SCROLL HEADER
 // ============================================
 
 let scrollHeaderInstance = null;
@@ -562,7 +527,7 @@ function initScrollHeader() {
         window.removeEventListener('resize', scrollHeaderInstance.handleResize);
         document.removeEventListener('touchstart', scrollHeaderInstance.handleTouchStart);
     }
-
+    
     // Cria nova instância
     scrollHeaderInstance = new ScrollHeader();
 }
@@ -571,7 +536,7 @@ function initScrollHeader() {
 function showHeaderForInteraction() {
     if (scrollHeaderInstance) {
         scrollHeaderInstance.forceShow();
-
+        
         // Mantém visível por 2 segundos
         setTimeout(() => {
             if (scrollHeaderInstance && window.scrollY > 50) {
@@ -584,6 +549,10 @@ function showHeaderForInteraction() {
 // ============================================
 // INICIALIZAÇÃO GLOBAL
 // ============================================
+
+/**
+ * Inicializa utilitários gerais
+ */
 function initGeneralUtilities() {
     console.log('Inicializando utilitários gerais...');
 
@@ -598,25 +567,40 @@ function initGeneralUtilities() {
 
     // Inicializar Scroll Header
     initScrollHeader();
-
+    
     // Inicializar Bottom Navigation
     initBottomNavigation();
 
     // Eventos para mostrar header em interações
-    document.addEventListener('click', function (e) {
-        if (e.target.closest('.user-menu-trigger') ||
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.user-menu-trigger') || 
             e.target.closest('.mobile-menu-panel') ||
             e.target.closest('#mobileMenuBtn')) {
             showHeaderForInteraction();
         }
     });
-
+    
     // Fecha menu mobile ao pressionar ESC
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeMobileMenu();
         }
     });
+
+    // Ajustar ao redimensionar janela
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        adjustForMobile();
+        
+        // Re-inicializa com debounce
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            initScrollHeader();
+            initBottomNavigation();
+        }, 250);
+    });
+}
+
 // ============================================
 // EXPORTAÇÃO PARA USO GLOBAL
 // ============================================
