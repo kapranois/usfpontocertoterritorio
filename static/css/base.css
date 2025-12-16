@@ -895,44 +895,22 @@ body {
 }
 
 /* ============================================
-   AJUSTES PARA MOBILE
+   MOBILE: USER E EQUIPE NO TOPO, LOGO CENTRALIZADO
    ============================================ */
 
 @media (max-width: 768px) {
-    /* Esconde a navbar original */
-    .header .navbar {
-        display: none;
-    }
-    
-    /* Mostra a bottom nav */
-    .bottom-nav {
-        display: flex;
-        justify-content: space-around;
-    }
-    
-    /* Ajusta o conteúdo */
-    .content-wrapper {
-        padding-bottom: 60px; /* Espaço para a bottom nav */
-    }
-    
-    /* Ajusta o footer */
-    .footer-simple-horizontal {
-        margin-bottom: 60px;
-    }
-    
-    /* Header mais compacto */
+    /* HEADER COM LAYOUT EM DUAS LINHAS */
     .header {
-        padding: 5px 12px 8px !important;
-        min-height: 65px !important;
+        padding: 5px 12px 8px !important; /* Menos padding no topo */
+        min-height: 65px !important; /* Um pouco mais alto para duas linhas */
         display: flex;
         flex-direction: column;
-        grid-template-columns: auto 1fr auto;
-        grid-template-areas: "equipe logo usuario";
-        align-items: center;
         gap: 5px;
         position: relative;
     }
-       .header-top-row {
+    
+    /* PRIMEIRA LINHA: Equipe e Usuário no topo */
+    .header-top-row {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -940,6 +918,73 @@ body {
         height: 30px;
     }
     
+    /* Equipe no topo esquerdo */
+    .equipe-info {
+        display: flex !important;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        max-width: 130px;
+        overflow: hidden;
+        flex-shrink: 0;
+        margin-top: 0;
+        align-self: flex-start;
+    }
+    
+    .equipe-info i {
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+    
+    .equipe-info span {
+        font-size: 0.65rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Usuário no topo direito */
+    .user-dropdown-container {
+        align-self: flex-start;
+        margin-top: 0;
+    }
+    
+    .user-menu-trigger {
+        min-width: auto !important;
+        padding: 4px 8px !important;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        height: 28px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .user-info {
+        gap: 5px;
+    }
+    
+    .user-info i {
+        font-size: 1.1rem;
+    }
+    
+    .user-info span:not(.convidado-badge) {
+        display: none;
+    }
+    
+    .convidado-badge {
+        font-size: 0.5rem;
+        padding: 1px 4px;
+        margin-left: 2px;
+    }
+    
+    /* SEGUNDA LINHA: Logo centralizado */
     .logo {
         display: flex;
         flex-direction: column;
@@ -957,6 +1002,7 @@ body {
         align-items: center;
         text-align: center;
     }
+    
     .logo i {
         font-size: 1.4rem;
         padding: 8px;
@@ -985,90 +1031,66 @@ body {
         max-width: 180px;
         margin: 1px 0 0 0;
     }
-   
     
-    .equipe-info {
-        display: flex !important;
-        align-items: center;
-        gap: 5px;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 4px 8px;
-        border-radius: 6px;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        max-width: 130px;
-        overflow: hidden;
-        flex-shrink: 0;
-        margin-top: 0;
-        align-self: flex-start;
-    }
-       .equipe-info i {
-        font-size: 0.8rem;
-        flex-shrink: 0;
-    }
-    
-    .equipe-info span {
-        font-size: 0.65rem;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    /* User menu ajustado */
-    .user-dropdown-container {
-        align-self: flex-start;
-        margin-top: 0;
-    }
-    .user-menu-trigger {
-        min-width: auto !important;
-        padding: 4px 8px !important;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        height: 28px;
-        display: flex;
-        align-items: center;
-    }
-
-    .user-info {
-        gap: 5px;
-    }
-    
-    .user-info i {
-        font-size: 1.1rem;
-    }
-    
-    .user-info span:not(.convidado-badge) {
-        display: none;
-    }
-   
-       .dropdown-arrow {
-        display: none; /* Remove seta no mobile */
-    }
-    .convidado-badge {
-        font-size: 0.5rem;
-        padding: 1px 4px;
-        margin-left: 2px;
-    }
-    
-    /* Remove background effect para performance */
+    /* Remove background effect */
     .header-bg-effect {
         display: none;
     }
-}
-
-@media (max-width: 576px) {
-    .logo h1 {
-        font-size: 1rem;
+    
+    /* ============================================
+       VERSÃO PARA TELAS PEQUENAS
+       ============================================ */
+    
+    @media (max-width: 375px) {
+        .header {
+            padding: 4px 10px 6px !important;
+            min-height: 60px !important;
+        }
+        
+        .equipe-info {
+            padding: 3px 6px;
+            max-width: 110px;
+        }
+        
+        .equipe-info i {
+            font-size: 0.75rem;
+        }
+        
+        .equipe-info span {
+            font-size: 0.6rem;
+        }
+        
+        .user-menu-trigger {
+            padding: 3px 6px !important;
+            height: 26px;
+        }
+        
+        .user-info i {
+            font-size: 1rem;
+        }
+        
+        .logo i {
+            font-size: 1.2rem;
+            padding: 6px;
+        }
+        
+        .logo h1 {
+            font-size: 0.85rem;
+            max-width: 160px;
+        }
+        
+        .subtitle {
+            font-size: 0.6rem;
+            max-width: 140px;
+        }
     }
     
-    .bottom-nav .nav-item span {
-        font-size: 0.6rem;
-    }
+    /* ============================================
+       AJUSTE PARA CONTEÚDO
+       ============================================ */
     
-    .bottom-nav .nav-item i {
-        font-size: 1.1rem;
+    .content-wrapper {
+        padding-top: 5px; /* Menos espaço ainda */
+        padding-bottom: 60px;
     }
 }
