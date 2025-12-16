@@ -806,64 +806,6 @@ body {
         height: auto;
         width: 100%;
     }
-       .header {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        transform: translateY(0);
-        will-change: transform;
-    }
-   /* Header escondido (quando rola pra baixo) */
-    .header.hidden {
-        transform: translateY(-100%);
-        box-shadow: none;
-    }
-    
-    /* Header compacto (quando rola um pouco) */
-    .header.compact {
-        min-height: 50px !important;
-        padding: 3px 12px 5px !important;
-    }
-    
-    /* Ajusta elementos no modo compacto */
-    .header.compact .header-top-row {
-        height: 25px;
-    }
-    
-    .header.compact .equipe-info {
-        padding: 2px 6px;
-        max-width: 100px;
-    }
-    
-    .header.compact .user-menu-trigger {
-        padding: 2px 6px !important;
-        height: 24px;
-    }
-    
-    .header.compact .logo {
-        opacity: 0.7;
-        transform: scale(0.9);
-    }
-    
-    .header.compact .logo h1 {
-        font-size: 0.8rem;
-    }
-    
-    .header.compact .subtitle {
-        display: none; /* Esconde subtítulo no modo compacto */
-    }
-    
-    /* Ajusta conteúdo quando header está escondido/compacto */
-    .content-wrapper {
-        transition: padding-top 0.3s ease;
-    }
-    
-    body.header-hidden .content-wrapper {
-        padding-top: 5px;
-    }
-    
-    body.header-compact .content-wrapper {
-        padding-top: 8px;
-    }
-
        /* Header com duas linhas */
     .header-top-row {
         display: flex;
@@ -1143,5 +1085,71 @@ body {
     
     .mobile-menu-panel .menu-item:active {
         background: rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* ============================================
+   HEADER STICKY/HIDE ON SCROLL (MOBILE)
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Header com transição suave */
+    .header {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(0);
+        will-change: transform;
+    }
+    
+    /* Header escondido (quando rola pra baixo) */
+    .header.hidden {
+        transform: translateY(-100%);
+        box-shadow: none;
+    }
+    
+    /* Header compacto (quando rola um pouco) */
+    .header.compact {
+        min-height: 50px !important;
+        padding: 3px 12px 5px !important;
+    }
+    
+    /* Ajusta elementos no modo compacto */
+    .header.compact .header-top-row {
+        height: 25px;
+    }
+    
+    .header.compact .equipe-info {
+        padding: 2px 6px;
+        max-width: 100px;
+    }
+    
+    .header.compact .user-menu-trigger {
+        padding: 2px 6px !important;
+        height: 24px;
+    }
+    
+    .header.compact .logo {
+        opacity: 0.7;
+        transform: scale(0.9);
+    }
+    
+    .header.compact .logo h1 {
+        font-size: 0.8rem;
+    }
+    
+    .header.compact .subtitle {
+        display: none; /* Esconde subtítulo no modo compacto */
+    }
+    
+    /* Ajusta conteúdo quando header está escondido/compacto */
+    .content-wrapper {
+        transition: padding-top 0.3s ease;
+    }
+    
+    body.header-hidden .content-wrapper {
+        padding-top: 5px;
+    }
+    
+    body.header-compact .content-wrapper {
+        padding-top: 8px;
     }
 }
