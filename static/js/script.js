@@ -33,6 +33,40 @@ function formatarNumero(num) {
 // FUNÇÕES PARA MOBILE/RESPONSIVIDADE
 // ============================================
 
+/**
+ * Detecta dispositivo móvel
+ */
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+/**
+ * Ajusta interface para mobile
+ */
+function adjustForMobile() {
+    if (isMobileDevice()) {
+        document.body.classList.add('mobile-device');
+
+        // Ajusta modais
+        const modal = document.querySelector('.modal-content');
+        if (modal) {
+            modal.style.maxHeight = '90vh';
+            modal.style.overflowY = 'auto';
+        }
+
+        // Ajusta campos de formulário para evitar zoom
+        document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="tel"], input[type="password"]').forEach(el => {
+            el.style.fontSize = '16px'; // Previne zoom automático no iOS
+        });
+
+        // Ajusta selects
+        document.querySelectorAll('select').forEach(el => {
+            el.style.fontSize = '16px';
+        });
+
+        console.log('Modo mobile ativado');
+    }
+}
 
 // ============================================
 // HEADER HIDE/SHOW ON SCROLL (MOBILE)
@@ -146,42 +180,6 @@ class ScrollHeader {
     // Método público para forçar esconder
     forceHide() {
         this.hideHeader();
-    }
-}
-
-
-/**
- * Detecta dispositivo móvel
- */
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-/**
- * Ajusta interface para mobile
- */
-function adjustForMobile() {
-    if (isMobileDevice()) {
-        document.body.classList.add('mobile-device');
-
-        // Ajusta modais
-        const modal = document.querySelector('.modal-content');
-        if (modal) {
-            modal.style.maxHeight = '90vh';
-            modal.style.overflowY = 'auto';
-        }
-
-        // Ajusta campos de formulário para evitar zoom
-        document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="tel"], input[type="password"]').forEach(el => {
-            el.style.fontSize = '16px'; // Previne zoom automático no iOS
-        });
-
-        // Ajusta selects
-        document.querySelectorAll('select').forEach(el => {
-            el.style.fontSize = '16px';
-        });
-
-        console.log('Modo mobile ativado');
     }
 }
 
@@ -439,13 +437,18 @@ function setupUserDropdown() {
     });
 }
 
-// Mobile Navigation
-function initMobileNavigation() {
+// ============================================
+// BOTTOM NAV & MOBILE MENU
+// ============================================
+
+function initBottomNavigation() {
     const isMobile = window.innerWidth <= 768;
     
     if (isMobile) {
         // Adiciona botão de menu na bottom nav se não existir
         const bottomNav = document.querySelector('.bottom-nav');
+        if (!bottomNav) return;
+        
         const menuItems = bottomNav.querySelectorAll('.nav-item');
         
         // Se já tem 4 itens (sem menu), adiciona o botão de menu
@@ -480,6 +483,8 @@ function openMobileMenu() {
     const overlay = document.getElementById('mobileMenuOverlay');
     const panel = document.getElementById('mobileMenuPanel');
     
+    if (!overlay || !panel) return;
+    
     overlay.style.display = 'block';
     setTimeout(() => {
         overlay.style.opacity = '1';
@@ -500,6 +505,8 @@ function closeMobileMenu() {
     const overlay = document.getElementById('mobileMenuOverlay');
     const panel = document.getElementById('mobileMenuPanel');
     
+    if (!overlay || !panel) return;
+    
     panel.classList.remove('active');
     overlay.style.opacity = '0';
     setTimeout(() => {
@@ -507,25 +514,8 @@ function closeMobileMenu() {
     }, 300);
 }
 
-// Inicializa quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', function() {
-    initMobileNavigation();
-    
-    // Re-inicializa ao redimensionar
-    window.addEventListener('resize', function() {
-        initMobileNavigation();
-    });
-    
-    // Fecha menu ao pressionar ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeMobileMenu();
-        }
-    });
-});
-
 // ============================================
-// INICIALIZAÇÃO
+// INICIALIZAÇÃO DO SCROLL HEADER
 // ============================================
 
 let scrollHeaderInstance = null;
@@ -533,7 +523,6 @@ let scrollHeaderInstance = null;
 function initScrollHeader() {
     // Remove instância anterior se existir
     if (scrollHeaderInstance) {
-        // Limpa event listeners (simplificado)
         window.removeEventListener('scroll', scrollHeaderInstance.handleScroll);
         window.removeEventListener('resize', scrollHeaderInstance.handleResize);
         document.removeEventListener('touchstart', scrollHeaderInstance.handleTouchStart);
@@ -543,23 +532,7 @@ function initScrollHeader() {
     scrollHeaderInstance = new ScrollHeader();
 }
 
-// Inicializa quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', function() {
-    initScrollHeader();
-    
-    // Re-inicializa ao redimensionar (com debounce)
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(initScrollHeader, 250);
-    });
-});
-
-// ============================================
-// INICIALIZAÇÃO GLOBAL
-// ============================================
-
-/ Para mostrar header quando abrir um menu/modal
+// Função para forçar mostrar header
 function showHeaderForInteraction() {
     if (scrollHeaderInstance) {
         scrollHeaderInstance.forceShow();
@@ -573,15 +546,10 @@ function showHeaderForInteraction() {
     }
 }
 
-// Para menus mobile, dropdowns, etc
-document.addEventListener('click', function(e) {
-    // Se clicar em qualquer menu/dropdown, mostra header
-    if (e.target.closest('.user-menu-trigger') || 
-        e.target.closest('.mobile-menu-panel') ||
-        e.target.closest('#mobileMenuBtn')) {
-        showHeaderForInteraction();
-    }
-});
+// ============================================
+// INICIALIZAÇÃO GLOBAL
+// ============================================
+
 /**
  * Inicializa utilitários gerais
  */
@@ -597,8 +565,40 @@ function initGeneralUtilities() {
     // Configurar dropdown do usuário
     setupUserDropdown();
 
+    // Inicializar Scroll Header
+    initScrollHeader();
+    
+    // Inicializar Bottom Navigation
+    initBottomNavigation();
+
+    // Eventos para mostrar header em interações
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.user-menu-trigger') || 
+            e.target.closest('.mobile-menu-panel') ||
+            e.target.closest('#mobileMenuBtn')) {
+            showHeaderForInteraction();
+        }
+    });
+    
+    // Fecha menu mobile ao pressionar ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMobileMenu();
+        }
+    });
+
     // Ajustar ao redimensionar janela
-    window.addEventListener('resize', adjustForMobile);
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        adjustForMobile();
+        
+        // Re-inicializa com debounce
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            initScrollHeader();
+            initBottomNavigation();
+        }, 250);
+    });
 }
 
 // ============================================
