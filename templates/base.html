@@ -131,14 +131,6 @@
             </a>
         </nav>
     </header>
-
-    <!-- Conteúdo específico de cada página -->
-    <main class="content-wrapper">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- JavaScript específico da página -->
-    {% block extra_js %}{% endblock %}
     <!-- Bottom Navigation para Mobile -->
     <div class="bottom-nav">
         <a href="/dashboard" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
@@ -162,6 +154,14 @@
             <span>Menu</span>
         </a>
     </div>
+
+    <!-- Conteúdo específico de cada página -->
+    <main class="content-wrapper">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- JavaScript específico da página -->
+    {% block extra_js %}{% endblock %}
     <!-- JavaScript COMUM (sempre carregado) -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
