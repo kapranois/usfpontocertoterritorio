@@ -137,32 +137,8 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- RODAPÉ -->
-    <footer class="footer-simple-horizontal">
-        <div class="footer-simple-container">
-            <!-- Logos em linha contínua -->
-            <div class="logos-inline">
-                <div class="logo-inline-wrapper">
-                    <img src="{{ url_for('static', filename='img/acs.png') }}" alt="ACS" class="no-interaction">
-                    <img src="{{ url_for('static', filename='img/maissaudecomagente.png') }}" alt="msca">
-                    <img src="{{ url_for('static', filename='img/saudedafamilia.png') }}" alt="Saúde da Família">
-                    <img src="{{ url_for('static', filename='img/acs2.png') }}" alt="Agente de Saude">
-                </div>
-            </div>
-
-            <!-- Versão centralizada  -->
-            <div class="footer-version-simple">
-                <p class="version">Sistema desenvolvido por Agentes Comunitários de Saúde</p>
-            </div>
-        </div>
-    </footer>
-
     <!-- JavaScript específico da página -->
     {% block extra_js %}{% endblock %}
-
-    <!-- JavaScript COMUM (sempre carregado) -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
     <!-- Bottom Navigation para Mobile -->
     <div class="bottom-nav">
         <a href="/dashboard" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
@@ -186,6 +162,9 @@
             <span>Menu</span>
         </a>
     </div>
+    <!-- JavaScript COMUM (sempre carregado) -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
     <!-- Script de inicialização global -->
     <script>
         // Inicializar quando o DOM estiver pronto
