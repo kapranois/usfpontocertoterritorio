@@ -1153,3 +1153,123 @@ body {
         transform: translateY(0);
     }
 }
+
+// ============================================
+// HEADER SCROLL SIMPLIFICADO - SÓ O ESSENCIAL
+// ============================================
+
+let lastScrollTop = 0;
+let scrollTimeout;
+let isMobile = window.innerWidth <= 768;
+let header = document.querySelector('.header');
+
+function initScrollHeader() {
+    if (!header) return;
+    
+    isMobile = window.innerWidth <= 768;
+    
+    // Só ativa em mobile
+    if (!isMobile) {
+        header.classList.remove('hidden', 'compact');
+        document.body.classList.remove('header-hidden', 'header-compact');
+        return;
+    }
+    
+    // Configura evento de scroll
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Configura redimensionamento
+    window.addEventListener('resize', handleResize);
+    
+    console.log('Scroll Header ativado (simplificado)');
+}
+
+function handleScroll() {
+    if (!isMobile || !header) return;
+    
+    // Cancelar timeout anterior
+    clearTimeout(scrollTimeout);
+    
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    
+    // No topo da página
+    if (scrollTop < 10) {
+        header.classList.remove('hidden', 'compact');
+        document.body.classList.remove('header-hidden', 'header-compact');
+    }
+    // No final da página
+    else if (scrollTop > scrollHeight - 10) {
+        header.classList.remove('hidden');
+        header.classList.add('compact');
+        document.body.classList.add('header-compact');
+        document.body.classList.remove('header-hidden');
+    }
+    // Rolando para baixo
+    else if (scrollTop > lastScrollTop && scrollTop > 100) {
+        header.classList.add('hidden');
+        header.classList.remove('compact');
+        document.body.classList.add('header-hidden');
+        document.body.classList.remove('header-compact');
+    }
+    // Rolando para cima
+    else if (scrollTop < lastScrollTop) {
+        header.classList.remove('hidden');
+        header.classList.add('compact');
+        document.body.classList.add('header-compact');
+        document.body.classList.remove('header-hidden');
+    }
+    
+    // Salva posição atual
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    
+    // Timeout para mostrar header se parar de rolar
+    scrollTimeout = setTimeout(() => {
+        if (scrollTop > 50 && scrollTop < scrollHeight - 50) {
+            header.classList.remove('hidden');
+            header.classList.add('compact');
+            document.body.classList.add('header-compact');
+            document.body.classList.remove('header-hidden');
+        }
+    }, 1500);
+}
+
+function handleResize() {
+    clearTimeout(scrollTimeout);
+    
+    const wasMobile = isMobile;
+    isMobile = window.innerWidth <= 768;
+    
+    if (!isMobile && wasMobile) {
+        // Mudou para desktop - remove classes
+        if (header) {
+            header.classList.remove('hidden', 'compact');
+        }
+        document.body.classList.remove('header-hidden', 'header-compact');
+        window.removeEventListener('scroll', handleScroll);
+    } else if (isMobile && !wasMobile) {
+        // Mudou para mobile - reinicia
+        lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+}
+
+// Mostrar header quando interagir
+function showHeaderTemporarily() {
+    if (!isMobile || !header) return;
+    
+    header.classList.remove('hidden');
+    header.classList.add('compact');
+    document.body.classList.add('header-compact');
+    document.body.classList.remove('header-hidden');
+    
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        if (lastScrollTop > 100) {
+            header.classList.add('hidden');
+            header.classList.remove('compact');
+            document.body.classList.add('header-hidden');
+            document.body.classList.remove('header-compact');
+        }
+    }, 3000);
+}
