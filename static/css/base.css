@@ -895,272 +895,219 @@ body {
 }
 
 /* ============================================
-   AJUSTES PARA MOBILE - LAYOUT CENTRALIZADO
+   BOTTOM NAVIGATION (MOBILE)
+   ============================================ */
+
+.bottom-nav {
+    display: none; /* Escondido por padrão (desktop) */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e0e0e0;
+    padding: 8px 0;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-nav .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #666;
+    padding: 5px 2px;
+    font-size: 0.7rem;
+    min-height: 50px;
+}
+
+.bottom-nav .nav-item i {
+    font-size: 1.2rem;
+    margin-bottom: 3px;
+    transition: all 0.2s ease;
+}
+
+.bottom-nav .nav-item span {
+    font-size: 0.65rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.bottom-nav .nav-item.active {
+    color: #1a73e8;
+}
+
+.bottom-nav .nav-item.active i {
+    color: #1a73e8;
+}
+
+/* ============================================
+   MENU MOBILE
+   ============================================ */
+
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-menu-panel {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    padding: 0;
+    transition: bottom 0.3s ease;
+    z-index: 1000;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu-panel.active {
+    bottom: 0;
+}
+
+.mobile-menu-panel .menu-header {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mobile-menu-panel .menu-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.mobile-menu-panel .close-menu {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.mobile-menu-panel .menu-items {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.mobile-menu-panel .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.mobile-menu-panel .menu-item:active {
+    background: #f5f5f5;
+}
+
+.mobile-menu-panel .menu-item i {
+    width: 24px;
+    margin-right: 15px;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.mobile-menu-panel .logout-item {
+    color: #dc2626;
+}
+
+.mobile-menu-panel .logout-item i {
+    color: #dc2626;
+}
+
+/* ============================================
+   AJUSTES PARA MOBILE
    ============================================ */
 
 @media (max-width: 768px) {
-    /* HEADER REORGANIZADO */
-    .header {
-        padding: 8px 12px !important;
-        min-height: 50px !important;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        grid-template-areas: "equipe logo usuario";
-        align-items: center;
-        gap: 10px;
-        position: relative;
-    }
-    
-    /* Equipe no canto esquerdo */
-    .equipe-info {
-        grid-area: equipe;
-        display: flex !important; /* Mostra no mobile */
-        align-items: center;
-        gap: 6px;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 5px 8px;
-        border-radius: 6px;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        max-width: 120px;
-        overflow: hidden;
-        flex-shrink: 0;
-    }
-    
-    .equipe-info i {
-        font-size: 0.9rem;
-        flex-shrink: 0;
-    }
-    
-    .equipe-info span {
-        font-size: 0.7rem;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex: 1;
-    }
-    
-    /* Logo centralizado */
-    .logo {
-        grid-area: logo;
-        justify-content: center;
-        margin: 0 auto;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-        min-width: 0;
-        padding: 0 5px;
-    }
-    
-    .logo > div {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .logo i {
-        font-size: 1.4rem;
-        padding: 7px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.15);
-        margin-bottom: 2px;
-    }
-    
-    .logo h1 {
-        font-size: 0.9rem;
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 180px;
-        line-height: 1.1;
-    }
-    
-    .subtitle {
-        font-size: 0.6rem;
-        opacity: 0.9;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px;
-    }
-    
-    /* Usuário no canto direito */
-    .user-dropdown-container {
-        grid-area: usuario;
-        justify-self: end;
-    }
-    
-    .user-menu-trigger {
-        min-width: auto !important;
-        padding: 5px 8px !important;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    
-    .user-info {
-        gap: 6px;
-    }
-    
-    .user-info i {
-        font-size: 1.2rem;
-    }
-    
-    .user-info span:not(.convidado-badge) {
-        display: none; /* Esconde nome, mostra só ícone */
-    }
-    
-    .dropdown-arrow {
-        display: none; /* Remove seta no mobile */
-    }
-    
-    /* Convidado badge ajustado */
-    .convidado-badge {
-        font-size: 0.55rem;
-        padding: 1px 4px;
-        margin-left: 3px;
-    }
-    
-    /* Remove background effect */
-    .header-bg-effect {
+    /* Esconde a navbar original */
+    .header .navbar {
         display: none;
     }
     
-    /* ============================================
-       VERSÃO PARA TELAS PEQUENAS
-       ============================================ */
-    
-    @media (max-width: 375px) {
-        .header {
-            padding: 6px 8px !important;
-            min-height: 45px !important;
-            gap: 8px;
-        }
-        
-        .equipe-info {
-            padding: 4px 6px;
-            max-width: 100px;
-        }
-        
-        .equipe-info i {
-            font-size: 0.8rem;
-        }
-        
-        .equipe-info span {
-            font-size: 0.65rem;
-        }
-        
-        .logo i {
-            font-size: 1.2rem;
-            padding: 6px;
-        }
-        
-        .logo h1 {
-            font-size: 0.8rem;
-            max-width: 140px;
-        }
-        
-        .subtitle {
-            font-size: 0.55rem;
-            max-width: 120px;
-        }
-        
-        .user-menu-trigger {
-            padding: 4px 6px !important;
-        }
-        
-        .user-info i {
-            font-size: 1.1rem;
-        }
-        
-        /* Ajusta menu dropdown para mobile */
-        .user-dropdown-menu {
-            position: fixed;
-            top: 50px;
-            right: 10px;
-            left: 10px;
-            max-width: calc(100% - 20px);
-            transform: translateY(-10px);
-        }
-    }
-    
-    /* ============================================
-       BOTTOM NAV AJUSTADA
-       ============================================ */
-    
+    /* Mostra a bottom nav */
     .bottom-nav {
-        padding: 5px 0 8px;
-        min-height: 55px;
+        display: flex;
+        justify-content: space-around;
     }
     
-    .bottom-nav .nav-item {
-        padding: 2px 0;
-        min-height: 45px;
+    /* Ajusta o conteúdo */
+    .content-wrapper {
+        padding-bottom: 60px; /* Espaço para a bottom nav */
     }
     
-    .bottom-nav .nav-item i {
+    /* Ajusta o footer */
+    .footer-simple-horizontal {
+        margin-bottom: 60px;
+    }
+    
+    /* Header mais compacto */
+    .header {
+        padding: 12px 15px;
+        flex-wrap: nowrap;
+    }
+    
+    .logo {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .logo h1 {
         font-size: 1.1rem;
-        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .equipe-info {
+        display: none; /* Esconde no mobile para mais espaço */
+    }
+    
+    /* User menu ajustado */
+    .user-menu-trigger {
+        min-width: auto;
+        padding: 6px 10px;
+    }
+    
+    .user-info span:not(.convidado-badge) {
+        display: none; /* Esconde o nome no mobile */
+    }
+}
+
+@media (max-width: 576px) {
+    .logo h1 {
+        font-size: 1rem;
     }
     
     .bottom-nav .nav-item span {
         font-size: 0.6rem;
     }
     
-    /* Espaço para conteúdo */
-    .content-wrapper {
-        padding-top: 10px;
-        padding-bottom: 60px;
-    }
-    
-    /* ============================================
-       DROPDOWN USER MENU PARA MOBILE
-       ============================================ */
-    
-    .user-dropdown-menu {
-        position: fixed !important;
-        top: 60px !important;
-        right: 10px !important;
-        left: auto !important;
-        width: 280px !important;
-        max-width: calc(100vw - 20px) !important;
-        transform: none !important;
-        border-radius: 12px !important;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
-    }
-    
-    /* Remove a seta do dropdown */
-    .user-dropdown-menu::before {
-        display: none;
+    .bottom-nav .nav-item i {
+        font-size: 1.1rem;
     }
 }
-
-/* ============================================
-   ANIMAÇÃO NO CLICK (FEEDBACK TÁTIL)
-   ============================================ */
-
-@media (max-width: 768px) {
-    .equipe-info:active,
-    .user-menu-trigger:active {
-        transform: scale(0.95);
-        transition: transform 0.1s;
-    }
-    
-    .equipe-info,
-    .user-menu-trigger {
-        transition: all 0.2s;
-    }
-    
-    .equipe-info:hover,
-    .user-menu-trigger:hover {
-        background: rgba(255, 255, 255, 0.15);
-    }
-}
-    
-
