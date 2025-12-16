@@ -806,16 +806,6 @@ body {
         height: auto;
         width: 100%;
     }
-    
-    /* Header com duas linhas */
-    .header-top-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        width: 100%;
-        height: 30px;
-        margin-top: 2px;
-    }
    /* Header escondido (quando rola pra baixo) */
     .header.hidden {
         transform: translateY(-100%);
@@ -867,6 +857,16 @@ body {
     
     body.header-compact .content-wrapper {
         padding-top: 8px;
+    }
+
+       /* Header com duas linhas */
+    .header-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        height: 30px;
+        margin-top: 2px;
     }
     
     /* Equipe no canto superior esquerdo */
