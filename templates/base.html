@@ -110,13 +110,16 @@
     </div>
     
     <!-- SEGUNDA LINHA: Logo (MOBILE centralizado) / (DESKTOP lado esquerdo) -->
-    <div class="logo">
-        <i class="fas fa-map-marked-alt"></i>
-        <div>
-            <h1>USF Ponto Certo</h1>
-            <p class="subtitle">Territorio</p>
+    <header class="header">
+        <div class="header-bg-effect"></div>
+        <div class="logo-container">
+            <a href="/dashboard" class="logo-link">
+                <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}"
+                     alt="USF Ponto Certo"
+                     class="header-logo-full">
+            </a>
         </div>
-    </div>
+        </div>
     
     <!-- Navbar (escondido no mobile) -->
     <nav class="navbar">
