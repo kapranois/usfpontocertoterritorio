@@ -322,101 +322,88 @@ function setupUserDropdown() {
     });
 }
 
-// Bottom Navigation e Menu Mobile
+// Mobile Navigation
 function initMobileNavigation() {
     const isMobile = window.innerWidth <= 768;
-
-    if (!isMobile) return;
-
-    // Menu mobile expandido
-    const menuToggle = document.getElementById('mobile-menu-toggle');
-    const menuOverlay = document.createElement('div');
-    const menuPanel = document.createElement('div');
-
-    if (menuToggle) {
-        // Cria o menu expandido
-        menuOverlay.className = 'mobile-menu-overlay';
-        menuPanel.className = 'mobile-menu-panel';
-
-        // Conteúdo do menu (opções extras)
-        menuPanel.innerHTML = `
-            <div class="menu-item" onclick="window.location.href='/perfil'">
-                <i class="fas fa-user"></i>
-                <span>Meu Perfil</span>
-            </div>
-            <div class="menu-item" onclick="window.location.href='/configuracoes'">
-                <i class="fas fa-cog"></i>
-                <span>Configurações</span>
-            </div>
-            <div class="menu-item" onclick="window.location.href='/ajuda'">
-                <i class="fas fa-question-circle"></i>
-                <span>Ajuda</span>
-            </div>
-            <div class="menu-item" onclick="window.location.href='/sobre'">
-                <i class="fas fa-info-circle"></i>
-                <span>Sobre</span>
-            </div>
-            {% if usuario_logado %}
-            <div class="menu-item" onclick="window.location.href='/logout'" style="color: #dc2626;">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Sair</span>
-            </div>
-            {% else %}
-            <div class="menu-item" onclick="window.location.href='/login'">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>Fazer Login</span>
-            </div>
-            {% endif %}
-        `;
-
-        document.body.appendChild(menuOverlay);
-        document.body.appendChild(menuPanel);
-
-        // Eventos
-        menuToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            menuOverlay.style.display = 'block';
-            menuPanel.classList.add('active');
-            setTimeout(() => {
-                menuOverlay.style.opacity = '1';
-            }, 10);
-        });
-
-        menuOverlay.addEventListener('click', function () {
-            menuPanel.classList.remove('active');
-            setTimeout(() => {
-                menuOverlay.style.opacity = '0';
-                menuOverlay.style.display = 'none';
-            }, 300);
-        });
-
-        // Fecha menu ao clicar em item
-        menuPanel.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function () {
-                menuPanel.classList.remove('active');
-                menuOverlay.style.opacity = '0';
-                menuOverlay.style.display = 'none';
+    
+    if (isMobile) {
+        // Adiciona botão de menu na bottom nav se não existir
+        const bottomNav = document.querySelector('.bottom-nav');
+        const menuItems = bottomNav.querySelectorAll('.nav-item');
+        
+        // Se já tem 4 itens (sem menu), adiciona o botão de menu
+        if (menuItems.length === 4) {
+            const menuItem = document.createElement('a');
+            menuItem.href = '#';
+            menuItem.className = 'nav-item';
+            menuItem.id = 'mobileMenuBtn';
+            menuItem.innerHTML = `
+                <i class="fas fa-bars"></i>
+                <span>Menu</span>
+            `;
+            bottomNav.appendChild(menuItem);
+            
+            // Evento para abrir menu
+            menuItem.addEventListener('click', function(e) {
+                e.preventDefault();
+                openMobileMenu();
             });
-        });
-    }
-
-    // Previne o bounce no iOS
-    document.body.addEventListener('touchmove', function (e) {
-        if (e.target.closest('.mobile-menu-panel')) {
-            e.stopPropagation();
         }
-    }, { passive: false });
+        
+        // Remove o item "Menu" se já existir (quando redimensiona)
+        const existingMenuBtn = document.getElementById('mobileMenuBtn');
+        if (existingMenuBtn && !isMobile) {
+            existingMenuBtn.remove();
+        }
+    }
+}
+
+// Funções do menu mobile
+function openMobileMenu() {
+    const overlay = document.getElementById('mobileMenuOverlay');
+    const panel = document.getElementById('mobileMenuPanel');
+    
+    overlay.style.display = 'block';
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        panel.classList.add('active');
+    }, 10);
+    
+    // Fecha ao clicar no overlay
+    overlay.addEventListener('click', closeMobileMenu);
+    
+    // Fecha ao clicar no botão X
+    const closeBtn = document.getElementById('closeMobileMenu');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeMobileMenu);
+    }
+}
+
+function closeMobileMenu() {
+    const overlay = document.getElementById('mobileMenuOverlay');
+    const panel = document.getElementById('mobileMenuPanel');
+    
+    panel.classList.remove('active');
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, 300);
 }
 
 // Inicializa quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     initMobileNavigation();
-
+    
     // Re-inicializa ao redimensionar
-    let resizeTimer;
-    window.addEventListener('resize', function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(initMobileNavigation, 250);
+    window.addEventListener('resize', function() {
+        initMobileNavigation();
+    });
+    
+    // Fecha menu ao pressionar ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMobileMenu();
+        }
     });
 });
 // ============================================
