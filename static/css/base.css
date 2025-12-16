@@ -806,6 +806,11 @@ body {
         height: auto;
         width: 100%;
     }
+       .header {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(0);
+        will-change: transform;
+    }
    /* Header escondido (quando rola pra baixo) */
     .header.hidden {
         transform: translateY(-100%);
