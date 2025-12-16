@@ -914,59 +914,143 @@ body {
    ============================================ */
 
 @media (max-width: 768px) {
-    /* Esconde a navbar original */
-    .header .navbar {
+    /* HEADER COM LAYOUT EM DUAS LINHAS */
+    .header {
+        padding: 5px 12px 8px !important; /* Menos padding no topo */
+        min-height: 65px !important; /* Um pouco mais alto para duas linhas */
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        position: relative;
+    }
+    
+    /* PRIMEIRA LINHA: Equipe e Usuário no topo */
+    .header-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        height: 30px;
+    }
+    
+    /* Equipe no topo esquerdo */
+    .equipe-info {
+        display: flex !important;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        max-width: 130px;
+        overflow: hidden;
+        flex-shrink: 0;
+        margin-top: 0;
+        align-self: flex-start;
+    }
+    
+    .equipe-info i {
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+    
+    .equipe-info span {
+        font-size: 0.65rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Usuário no topo direito */
+    .user-dropdown-container {
+        align-self: flex-start;
+        margin-top: 0;
+    }
+    
+    .user-menu-trigger {
+        min-width: auto !important;
+        padding: 4px 8px !important;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        height: 28px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .user-info {
+        gap: 5px;
+    }
+    
+    .user-info i {
+        font-size: 1.1rem;
+    }
+    
+    .user-info span:not(.convidado-badge) {
         display: none;
     }
-
-    /* Mostra a bottom nav */
-    .bottom-nav {
-        display: flex;
-        justify-content: space-around;
+    
+    .convidado-badge {
+        font-size: 0.5rem;
+        padding: 1px 4px;
+        margin-left: 2px;
     }
-
-    /* Ajusta o conteúdo */
-    .content-wrapper {
-        padding-bottom: 60px; /* Espaço para a bottom nav */
-    }
-
-    /* Ajusta o footer */
-    .footer-simple-horizontal {
-        margin-bottom: 60px;
-    }
-
-    /* Header mais compacto */
-    .header {
-        padding: 12px 15px;
-        flex-wrap: nowrap;
-    }
-
+    
+    /* SEGUNDA LINHA: Logo centralizado */
     .logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0;
         flex: 1;
-        min-width: 0;
     }
-
-        .logo h1 {
-            font-size: 1.1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-    .equipe-info {
-        display: none; /* Esconde no mobile para mais espaço */
+    
+    .logo > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
-
-    /* User menu ajustado */
-    .user-menu-trigger {
-        min-width: auto;
-        padding: 6px 10px;
+    
+    .logo i {
+        font-size: 1.4rem;
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        margin-bottom: 3px;
     }
-
-    .user-info span:not(.convidado-badge) {
-        display: none; /* Esconde o nome no mobile */
+    
+    .logo h1 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+        line-height: 1.1;
+        margin: 0;
     }
-}
+    
+    .subtitle {
+        font-size: 0.65rem;
+        opacity: 0.9;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+        margin: 1px 0 0 0;
+    }
+    
+    /* Remove background effect */
+    .header-bg-effect {
+        display: none;
+    }
 
 @media (max-width: 576px) {
     .logo h1 {
