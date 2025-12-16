@@ -914,145 +914,70 @@ body {
    ============================================ */
 
 @media (max-width: 768px) {
-    /* HEADER SUPER COMPACTO PARA MOBILE */
-    .header {
-        padding: 8px 12px !important; /* Muito compacto */
-        min-height: 50px !important; /* Altura mínima reduzida */
-        flex-wrap: nowrap;
-        gap: 8px;
-    }
-    
-    /* Logo ultra compacto */
-    .logo {
-        gap: 8px;
-        flex: 1;
-        min-width: 0;
-        overflow: hidden;
-    }
-    
-    .logo i {
-        font-size: 1.2rem !important;
-        padding: 6px !important;
-        border-radius: 6px !important;
-        min-width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .logo h1 {
-        font-size: 0.95rem !important; /* Bem pequeno */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px; /* Limita largura */
-        line-height: 1.2;
-    }
-    
-    .subtitle {
-        font-size: 0.65rem !important; /* Muito pequeno */
-        opacity: 0.8;
-        margin-top: 1px;
-        display: none; /* Pode esconder se quiser ainda mais compacto */
-    }
-    
-    /* Esconde completamente a equipe-info no mobile */
-    .equipe-info {
-        display: none !important;
-    }
-    
-    /* User menu trigger compacto */
-    .user-menu-trigger {
-        min-width: auto !important;
-        padding: 5px 8px !important;
-        border-radius: 6px;
-        flex-shrink: 0;
-    }
-    
-    .user-info i {
-        font-size: 1.3rem !important;
-        margin-right: 0;
-    }
-    
-    .user-info span:not(.convidado-badge) {
-        display: none !important; /* Esconde nome do usuário */
-    }
-    
-    .dropdown-arrow {
-        font-size: 0.8rem;
-        margin-left: 4px;
-    }
-    
-    /* Convidado badge menor */
-    .convidado-badge {
-        font-size: 0.6rem;
-        padding: 1px 5px;
-        margin-left: 3px;
-    }
-    
-    /* Remove background effect para performance */
-    .header-bg-effect {
+    /* Esconde a navbar original */
+    .header .navbar {
         display: none;
     }
-    
-    /* ============================================
-       VERSÃO SUPER COMPACTA (iPhone SE, telas pequenas)
-       ============================================ */
-    
-    @media (max-width: 375px) {
-        .header {
-            padding: 6px 10px !important;
-            min-height: 45px !important;
-        }
-        
-        .logo i {
-            font-size: 1rem !important;
-            padding: 5px !important;
-            min-width: 32px;
-            height: 32px;
-        }
-        
-        .logo h1 {
-            font-size: 0.85rem !important;
-            max-width: 120px;
-        }
-        
-        .user-menu-trigger {
-            padding: 4px 6px !important;
-        }
-        
-        .user-info i {
-            font-size: 1.1rem !important;
-        }
-    }
-    
-    /* ============================================
-       BOTTOM NAV COMPACTA
-       ============================================ */
-    
+
+    /* Mostra a bottom nav */
     .bottom-nav {
-        padding: 5px 0 7px;
-        min-height: 55px;
+        display: flex;
+        justify-content: space-around;
     }
-    
-    .bottom-nav .nav-item {
-        padding: 2px 0;
-        min-height: 45px;
+
+    /* Ajusta o conteúdo */
+    .content-wrapper {
+        padding-bottom: 60px; /* Espaço para a bottom nav */
     }
-    
-    .bottom-nav .nav-item i {
-        font-size: 1.1rem;
-        margin-bottom: 2px;
+
+    /* Ajusta o footer */
+    .footer-simple-horizontal {
+        margin-bottom: 60px;
     }
-    
+
+    /* Header mais compacto */
+    .header {
+        padding: 12px 15px;
+        flex-wrap: nowrap;
+    }
+
+    .logo {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .logo h1 {
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .equipe-info {
+        display: none; /* Esconde no mobile para mais espaço */
+    }
+
+    /* User menu ajustado */
+    .user-menu-trigger {
+        min-width: auto;
+        padding: 6px 10px;
+    }
+
+    .user-info span:not(.convidado-badge) {
+        display: none; /* Esconde o nome no mobile */
+    }
+}
+
+@media (max-width: 576px) {
+    .logo h1 {
+        font-size: 1rem;
+    }
+
     .bottom-nav .nav-item span {
         font-size: 0.6rem;
     }
-    
-    /* Espaço para conteúdo */
-    .content-wrapper {
-        padding-top: 10px; /* Menos espaço no topo */
-        padding-bottom: 60px;
+
+    .bottom-nav .nav-item i {
+        font-size: 1.1rem;
     }
 }
