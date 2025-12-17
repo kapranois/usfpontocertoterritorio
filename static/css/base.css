@@ -840,11 +840,16 @@ body {
     z-index: 1000;
     width: 100%;
   }
-   .logo img {
-  height: 40px;       /* ajusta o tamanho do logo */
-  width: auto;        /* mantém proporção */
-  display: block;
-  margin: 0 auto;     /* centraliza no header */
+   .logo-img {
+    height: auto;
+    max-height: 120px; /* Ajuste conforme a altura do header */
+    width: auto;
+    max-width: 220px; /* Largura máxima */
+    /* Mantém proporção e centraliza verticalmente */
+    object-fit: contain;
+    object-position: center;
+    /* Suavidade */
+    transition: all 0.3s ease;
 }
 
   .logo .subtitle {
