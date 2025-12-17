@@ -279,6 +279,29 @@ function validarNumeroPositivo(campo, mensagem) {
 // FUNÇÕES DE NAVEGAÇÃO E UI
 // ============================================
 
+// BLOQUEIO DE ROTAÇÃO NO MOBILE
+
+// Verifica se é dispositivo móvel
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Detectar rotação
+let isPortrait = window.innerHeight > window.innerWidth;
+
+function handleOrientationChange() {
+    const newIsPortrait = window.innerHeight > window.innerWidth;
+    
+    // Se dispositivo for móvel e estiver em landscape
+    if (isMobileDevice() && !newIsPortrait) {
+        // Mostrar aviso
+        showRotationWarning();
+        
+        // Opcional: forçar para portrait
+        // lockToPortrait();
+    }
+}
+
 /**
  * Alterna visibilidade de elemento
  */
