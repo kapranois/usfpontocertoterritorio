@@ -850,6 +850,7 @@ body {
     object-position: center;
     /* Suavidade */
     transition: all 0.3s ease;
+    z-index: 1010;
 }
 
   .logo .subtitle {
