@@ -1155,3 +1155,60 @@ body {
         transform: scale(1.05);
         opacity: 0.95;
     }
+
+
+
+
+/* Adicione isso no seu base.css ou style.css existente */
+
+/* Classes para controle de versão */
+.desktop-version {
+    /* Estilos específicos para desktop serão aplicados via JavaScript */
+}
+
+.mobile-version {
+    /* Estilos específicos para mobile serão aplicados via JavaScript */
+}
+
+/* Para os dropdowns específicos */
+.desktop-dropdown {
+    /* Dropdown desktop */
+}
+
+.mobile-dropdown {
+    /* Dropdown mobile */
+}
+
+/* Media queries para controle básico */
+@media (max-width: 1023px) {
+    .desktop-version {
+        display: none !important;
+    }
+    
+    .mobile-version {
+        display: flex !important;
+    }
+    
+    .bottom-nav {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .desktop-version {
+        display: flex !important;
+    }
+    
+    .mobile-version {
+        display: none !important;
+    }
+    
+    .bottom-nav {
+        display: none !important;
+    }
+}
+
+/* Ajustes para o navbar mobile (escondido) */
+.mobile-version .navbar {
+    display: none;
+}
