@@ -57,65 +57,54 @@
         </a>
 
         <!-- Menu dropdown do usuário DESKTOP -->
-        <div class="user-dropdown-container">
-            <div class="user-menu-trigger" onclick="toggleUserMenu('desktop')">
-                {% if usuario_logado %}
-                <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
-                    <i class="fas fa-user-circle"></i>
-                    <span>{{ nome_usuario }}</span>
-                    {% if nivel_usuario == 'convidado' %}
-                    <span class="convidado-badge">Visitante</span>
-                    {% endif %}
-                </div>
-                {% else %}
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Visitante</span>
-                </div>
-                {% endif %}
-                <i class="fas fa-chevron-down dropdown-arrow"></i>
-            </div>
-
-            <!-- Menu dropdown DESKTOP -->
-            <div class="user-dropdown-menu desktop-dropdown" id="userDropdownDesktop">
-                {% if usuario_logado %}
-                <!-- Usuário logado -->
-                <div class="dropdown-user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <div>
-                        <strong>{{ nome_usuario }}</strong>
-                        <small>{{ nivel_usuario|capitalize }}</small>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-                <a href="/trocar-equipe" class="dropdown-item">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Trocar Equipe</span>
-                </a>
-                <a href="/logout" class="dropdown-item logout-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Sair</span>
-                </a>
-                {% else %}
-                <!-- Usuário não logado -->
-                <div class="dropdown-user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <div>
-                        <strong>Visitante</strong>
-                        <small>Modo de visualização</small>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-                <a href="/login" class="dropdown-item">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Fazer Login</span>
-                </a>
-                <div class="dropdown-footer">
-                    <small>Para editar dados, faça login</small>
-                </div>
-                {% endif %}
+<div class="user-icon-wrapper">
+    <div class="user-icon-trigger" onclick="toggleUserMenu('desktop')">
+        <i class="fas fa-user-circle user-icon"></i>
+        {% if nivel_usuario == 'convidado' %}
+        <span class="convidado-badge-icon">V</span>
+        {% endif %}
+    </div>
+    
+    <!-- Menu dropdown DESKTOP -->
+    <div class="user-dropdown-menu desktop-dropdown left-aligned" id="userDropdownDesktop">
+        {% if usuario_logado %}
+        <!-- Usuário logado -->
+        <div class="dropdown-user-info">
+            <i class="fas fa-user-circle"></i>
+            <div>
+                <strong>{{ nome_usuario }}</strong>
+                <small>{{ nivel_usuario|capitalize }}</small>
             </div>
         </div>
+        <div class="dropdown-divider"></div>
+        <a href="/trocar-equipe" class="dropdown-item">
+            <i class="fas fa-exchange-alt"></i>
+            <span>Trocar Equipe</span>
+        </a>
+        <a href="/logout" class="dropdown-item logout-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+        </a>
+        {% else %}
+        <!-- Usuário não logado -->
+        <div class="dropdown-user-info">
+            <i class="fas fa-user-circle"></i>
+            <div>
+                <strong>Visitante</strong>
+                <small>Modo de visualização</small>
+            </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <a href="/login" class="dropdown-item">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Fazer Login</span>
+        </a>
+        <div class="dropdown-footer">
+            <small>Para editar dados, faça login</small>
+        </div>
+        {% endif %}
+    </div>
+</div>
 
         <!-- Navbar DESKTOP -->
         <nav class="navbar">
@@ -165,45 +154,55 @@
             </div>
             
             <!-- Menu dropdown MOBILE -->
-            <div class="user-dropdown-menu mobile-dropdown" id="userDropdownMobile">
-                {% if usuario_logado %}
-                <!-- Usuário logado -->
-                <div class="dropdown-user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <div>
-                        <strong>{{ nome_usuario }}</strong>
-                        <small>{{ nivel_usuario|capitalize }}</small>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-                <a href="/trocar-equipe" class="dropdown-item">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Trocar Equipe</span>
-                </a>
-                <a href="/logout" class="dropdown-item logout-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Sair</span>
-                </a>
-                {% else %}
-                <!-- Usuário não logado -->
-                <div class="dropdown-user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <div>
-                        <strong>Visitante</strong>
-                        <small>Modo de visualização</small>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-                <a href="/login" class="dropdown-item">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Fazer Login</span>
-                </a>
-                <div class="dropdown-footer">
-                    <small>Para editar dados, faça login</small>
-                </div>
-                {% endif %}
+<!-- Usuário (ESQUERDA) - apenas ícone -->
+<div class="user-icon-wrapper">
+    <div class="user-icon-trigger" onclick="toggleUserMenu('mobile')">
+        <i class="fas fa-user-circle user-icon"></i>
+        {% if nivel_usuario == 'convidado' %}
+        <span class="convidado-badge-icon">V</span>
+        {% endif %}
+    </div>
+    
+    <!-- Menu dropdown MOBILE -->
+    <div class="user-dropdown-menu mobile-dropdown left-aligned" id="userDropdownMobile">
+        {% if usuario_logado %}
+        <!-- Usuário logado -->
+        <div class="dropdown-user-info">
+            <i class="fas fa-user-circle"></i>
+            <div>
+                <strong>{{ nome_usuario }}</strong>
+                <small>{{ nivel_usuario|capitalize }}</small>
             </div>
         </div>
+        <div class="dropdown-divider"></div>
+        <a href="/trocar-equipe" class="dropdown-item">
+            <i class="fas fa-exchange-alt"></i>
+            <span>Trocar Equipe</span>
+        </a>
+        <a href="/logout" class="dropdown-item logout-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+        </a>
+        {% else %}
+        <!-- Usuário não logado -->
+        <div class="dropdown-user-info">
+            <i class="fas fa-user-circle"></i>
+            <div>
+                <strong>Visitante</strong>
+                <small>Modo de visualização</small>
+            </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <a href="/login" class="dropdown-item">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Fazer Login</span>
+        </a>
+        <div class="dropdown-footer">
+            <small>Para editar dados, faça login</small>
+        </div>
+        {% endif %}
+    </div>
+</div>
         <!-- FIM user-dropdown-container -->
 
         <!-- Logo (CENTRO) -->
