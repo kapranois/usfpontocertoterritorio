@@ -91,12 +91,389 @@
 }
 
 /* ============================================
+   MÉTRICAS - ESTRUTURA BÁSICA APENAS
+   ============================================ */
+.metrics {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+    .metrics h2 {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+/* Cards de métricas - estrutura básica */
+.metric-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f5f5f5;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--card-color), transparent);
+        opacity: 0.8;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border-color: #e8e8e8;
+    }
+
+        .metric-card:hover .metric-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+/* Metric header */
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: white;
+    background: var(--card-color);
+    box-shadow: 0 6px 15px var(--card-shadow);
+    transition: all 0.4s ease;
+}
+
+.metric-title {
+    flex: 1;
+}
+
+    .metric-title h3 {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+
+.metric-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--card-color);
+    line-height: 1;
+    margin: 10px 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Progress bar básica */
+.metric-progress {
+    margin-top: 15px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.progress-percent {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--card-color);
+}
+
+.progress-bar-container {
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--card-color), var(--card-light));
+    border-radius: 5px;
+    transition: width 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+    .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Cores dos cards */
+.card-total {
+    --card-color: #3498db;
+    --card-light: #5dade2;
+    --card-shadow: rgba(52, 152, 219, 0.3);
+}
+
+.card-hipertensos {
+    --card-color: #e74c3c;
+    --card-light: #ec7063;
+    --card-shadow: rgba(231, 76, 60, 0.3);
+}
+
+.card-diabeticos {
+    --card-color: #f39c12;
+    --card-light: #f5b041;
+    --card-shadow: rgba(243, 156, 18, 0.3);
+}
+
+.card-gestantes {
+    --card-color: #9b59b6;
+    --card-light: #af7ac5;
+    --card-shadow: rgba(155, 89, 182, 0.3);
+}
+
+.card-cobertura {
+    --card-color: #2ecc71;
+    --card-light: #58d68d;
+    --card-shadow: rgba(46, 204, 113, 0.3);
+}
+
+.card-status {
+    --card-color: #95a5a6;
+    --card-light: #bdc3c7;
+    --card-shadow: rgba(149, 165, 166, 0.3);
+}
+
+    .card-status:first-of-type {
+        --card-color: #2ecc71;
+        --card-light: #58d68d;
+        --card-shadow: rgba(46, 204, 113, 0.3);
+    }
+
+    .card-status:nth-of-type(2) {
+        --card-color: #f39c12;
+        --card-light: #f5b041;
+        --card-shadow: rgba(243, 156, 18, 0.3);
+    }
+
+    .card-status:last-of-type {
+        --card-color: #e74c3c;
+        --card-light: #ec7063;
+        --card-shadow: rgba(231, 76, 60, 0.3);
+    }
+
+/* ============================================
    RESPONSIVIDADE
    ============================================ */
 
-@media (max-width: 768px) {
-    .footer-simple-container {
+@media (max-width: 992px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px 0;
+        gap: 15px;
+    }
+
+    .logo {
         padding: 0 15px;
+    }
+
+    .navbar {
+        width: 100%;
+        justify-content: center;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 10px;
+    }
+
+        .navbar a {
+            padding: 0 15px;
+        }
+
+    .user-dropdown-container {
+        margin-right: 15px;
+    }
+}
+@media (max-width: 768px) {
+    .header {
+        height: auto;
+        min-height: 68px;
+        padding: 10px 0;
+    }
+
+    .navbar a.active {
+        border-bottom: 2px solid #667eea;
+        /* Linha mais fina em mobile */
+    }
+
+    /* Ajuste no logo para mobile */
+    .logo h1 {
+        font-size: 1.2rem;
+    }
+
+    .logo .subtitle {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px;
+    }
+
+        .navbar a {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+            .navbar a.active {
+                border-bottom: 2px solid #667eea;
+            }
+
+    .equipe-info {
+        margin-right: 10px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .metrics-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .section-header-premium {
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .section-stats {
+        width: 100%;
+        justify-content: space-around;
+    }
+}
+
+@media (max-width: 992px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .equipe-grid-premium {
+        grid-template-columns: 1fr;
+    }
+
+    .equipe-premium-section {
+        padding: 30px;
+    }
+
+    .section-stats {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .container, .content-wrapper {
+        padding: 0 15px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .equipe-premium-section {
+        padding: 25px;
+        border-radius: 20px;
+    }
+
+    .section-title-container h2 {
+        font-size: 1.6rem;
+    }
+
+    .card-header-premium {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .card-icon-premium {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+    }
+
+    .card-metric {
+        text-align: center;
+    }
+
+    .profissional-detalhes-premium {
+        flex-direction: column;
+        gap: 8px;
     }
 
     .logo-inline-wrapper {
@@ -120,8 +497,32 @@
 }
 
 @media (max-width: 480px) {
-    .footer-simple-container {
+    .container, .content-wrapper {
         padding: 0 10px;
+    }
+
+    .equipe-premium-section {
+        padding: 20px;
+    }
+
+    .section-title-container h2 {
+        font-size: 1.4rem;
+    }
+
+        .section-title-container h2 i {
+            width: 50px;
+            height: 50px;
+            font-size: 1.4rem;
+        }
+
+    .stat-number {
+        font-size: 1.6rem;
+    }
+
+    .stat-item i {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
     }
 
     .logo-inline-wrapper {
@@ -142,11 +543,7 @@
             font-size: 0.75rem;
         }
 }
-
-/* ============================================
-   ANIMAÇÕES GERAIS
-   ============================================ */
-
+/* Animações para mensagens */
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
