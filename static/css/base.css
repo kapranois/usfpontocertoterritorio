@@ -842,9 +842,10 @@ body {
   }
    .logo-img {
     height: auto;
+    margin-top: -10px;
     max-height: 120px; /* Ajuste conforme a altura do header */
     width: auto;
-    max-width: 220px; /* Largura máxima */
+    max-width: 120px; /* Largura máxima */
     /* Mantém proporção e centraliza verticalmente */
     object-fit: contain;
     object-position: center;
