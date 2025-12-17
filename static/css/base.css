@@ -854,23 +854,25 @@ body {
   }
 
   /* INFO DA EQUIPE */
+.equipe-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .equipe-info {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 4px 8px;
+  padding: 3px 8px;
   border-radius: 6px;
-  background: rgba(102, 126, 234, 0.06); /* mais leve */
-  font-size: 0.85rem;                    /* um pouco maior p/ legibilidade */
-  font-weight: 600;                      /* mais destaque */
-  color: #1e293b;                        /* tom escuro elegante */
-  letter-spacing: 0.3px;                 /* espaçamento suave */
-  margin-top: 6px;
-  border: none;                          /* remove borda para ficar clean */
+  background: rgba(102, 126, 234, 0.06);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e293b;
+  transition: background 0.2s ease;
 }
 
-.equipe-info span {
-  font-family: 'Nunito', sans-serif;     /* fonte arredondada e acolhedora */
+.equipe-info:hover {
+  background: rgba(102, 126, 234, 0.12);
 }
 
 
