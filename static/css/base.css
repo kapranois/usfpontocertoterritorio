@@ -878,8 +878,8 @@ body {
 
   /* DROPDOWN DO USUÁRIO */
   .user-dropdown-container {
-    margin-left: 40px;
-    margin-top: 20px;
+    margin-left: 100px;
+    margin-bottom: 20px
     width: 100%;
     display: flex;
     justify-content: center;
