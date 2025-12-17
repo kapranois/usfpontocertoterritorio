@@ -36,29 +36,31 @@
     <!-- =========================================== -->
     <!-- CABEÇALHO DESKTOP (visível apenas em telas grandes) -->
     <!-- =========================================== -->
-    <header class="header desktop-header">
+    <header class="header desktop-version">
         <div class="header-bg-effect"></div>
         
-        <div class="logo-container">
+        <!-- Logo desktop (à esquerda) -->
+        <div class="logo">
             <a href="/dashboard" class="logo-link">
                 <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}"
                      alt="USF Ponto Certo"
-                     class="header-logo-full">
+                     class="logo-img">
             </a>
         </div>
 
-        <a href="/equipe" class="equipe-link-desktop">
-            <div class="equipe-info-desktop">
+        <!-- Equipe info desktop -->
+        <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
+            <div class="equipe-info">
                 <i class="fas fa-users"></i>
                 <span>{{ nome_equipe }}</span>
             </div>
         </a>
 
         <!-- Menu dropdown do usuário DESKTOP -->
-        <div class="user-dropdown-container-desktop">
-            <div class="user-menu-trigger" onclick="toggleUserMenuDesktop()">
+        <div class="user-dropdown-container">
+            <div class="user-menu-trigger" onclick="toggleUserMenu('desktop')">
                 {% if usuario_logado %}
-                <div class="user-info-desktop {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
+                <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
                     <i class="fas fa-user-circle"></i>
                     <span>{{ nome_usuario }}</span>
                     {% if nivel_usuario == 'convidado' %}
@@ -66,7 +68,7 @@
                     {% endif %}
                 </div>
                 {% else %}
-                <div class="user-info-desktop">
+                <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Visitante</span>
                 </div>
@@ -75,7 +77,7 @@
             </div>
 
             <!-- Menu dropdown DESKTOP -->
-            <div class="user-dropdown-menu-desktop" id="userDropdownDesktop">
+            <div class="user-dropdown-menu desktop-dropdown" id="userDropdownDesktop">
                 {% if usuario_logado %}
                 <!-- Usuário logado -->
                 <div class="dropdown-user-info">
@@ -116,7 +118,7 @@
         </div>
 
         <!-- Navbar DESKTOP -->
-        <nav class="navbar-desktop">
+        <nav class="navbar">
             <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
                 <i class="fas fa-home"></i>
                 <span>Início</span>
@@ -139,24 +141,24 @@
     <!-- =========================================== -->
     <!-- CABEÇALHO MOBILE (visível apenas em telas pequenas) -->
     <!-- =========================================== -->
-    <header class="header mobile-header">
+    <header class="header mobile-version">
         <div class="header-bg-effect"></div>
         
         <!-- PRIMEIRA LINHA: Equipe e Usuário no topo -->
         <div class="header-top-row">
             <!-- Equipe no canto superior esquerdo -->
-            <a href="/equipe" class="equipe-link-mobile">
-                <div class="equipe-info-mobile">
+            <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
+                <div class="equipe-info">
                     <i class="fas fa-users"></i>
                     <span>{{ nome_equipe }}</span>
                 </div>
             </a>
             
             <!-- Usuário no canto superior direito -->
-            <div class="user-dropdown-container-mobile">
-                <div class="user-menu-trigger" onclick="toggleUserMenuMobile()">
+            <div class="user-dropdown-container">
+                <div class="user-menu-trigger" onclick="toggleUserMenu('mobile')">
                     {% if usuario_logado %}
-                    <div class="user-info-mobile {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
+                    <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
                         <i class="fas fa-user-circle"></i>
                         <span>{{ nome_usuario }}</span>
                         {% if nivel_usuario == 'convidado' %}
@@ -164,7 +166,7 @@
                         {% endif %}
                     </div>
                     {% else %}
-                    <div class="user-info-mobile">
+                    <div class="user-info">
                         <i class="fas fa-user-circle"></i>
                         <span>Visitante</span>
                     </div>
@@ -173,7 +175,7 @@
                 </div>
                 
                 <!-- Menu dropdown MOBILE -->
-                <div class="user-dropdown-menu-mobile" id="userDropdownMobile">
+                <div class="user-dropdown-menu mobile-dropdown" id="userDropdownMobile">
                     {% if usuario_logado %}
                     <!-- Usuário logado -->
                     <div class="dropdown-user-info">
@@ -215,16 +217,16 @@
         </div>
         
         <!-- SEGUNDA LINHA: Logo centralizada -->
-        <div class="logo-mobile">
+        <div class="logo">
             <a href="/dashboard" class="logo-link">
                 <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}" 
                      alt="USF Ponto Certo" 
-                     class="logo-img-mobile">
+                     class="logo-img">
             </a>
         </div>
         
         <!-- Navbar MOBILE (escondido, apenas para marcação) -->
-        <nav class="navbar-mobile">
+        <nav class="navbar mobile-navbar">
             <!-- Links serão mostrados na bottom-nav -->
         </nav>
     </header>
@@ -316,8 +318,8 @@
     <script>
         // Função para alternar entre cabeçalhos baseado no tamanho da tela
         function gerenciarCabecalhos() {
-            const desktopHeader = document.querySelector('.desktop-header');
-            const mobileHeader = document.querySelector('.mobile-header');
+            const desktopHeader = document.querySelector('.desktop-version');
+            const mobileHeader = document.querySelector('.mobile-version');
             const bottomNav = document.querySelector('.bottom-nav');
             
             if (window.innerWidth >= 1024) {
@@ -325,30 +327,103 @@
                 if (desktopHeader) desktopHeader.style.display = 'flex';
                 if (mobileHeader) mobileHeader.style.display = 'none';
                 if (bottomNav) bottomNav.style.display = 'none';
-            } else if (window.innerWidth >= 768) {
-                // TABLET - Decida o que fazer (pode mostrar mobile ou desktop)
-                // Aqui você pode customizar para tablet
-                if (desktopHeader) desktopHeader.style.display = 'none';
-                if (mobileHeader) mobileHeader.style.display = 'flex';
-                if (bottomNav) bottomNav.style.display = 'flex';
+                
+                // Ajusta layout desktop
+                ajustarLayoutDesktop();
             } else {
-                // MOBILE - Mostra header mobile e bottom-nav, esconde desktop
+                // MOBILE/TABLET - Mostra header mobile e bottom-nav, esconde desktop
                 if (desktopHeader) desktopHeader.style.display = 'none';
                 if (mobileHeader) mobileHeader.style.display = 'flex';
                 if (bottomNav) bottomNav.style.display = 'flex';
+                
+                // Ajusta layout mobile
+                ajustarLayoutMobile();
+            }
+        }
+
+        // Ajusta layout para desktop
+        function ajustarLayoutDesktop() {
+            const header = document.querySelector('.desktop-version');
+            if (!header) return;
+            
+            // Aplica estilos específicos para desktop
+            header.style.flexDirection = 'row';
+            header.style.alignItems = 'center';
+            header.style.justifyContent = 'space-between';
+            header.style.padding = '15px 30px';
+            
+            // Logo à esquerda
+            const logo = header.querySelector('.logo');
+            if (logo) {
+                logo.style.flex = '0 0 auto';
+                logo.style.marginRight = '20px';
+            }
+            
+            // Equipe info no meio
+            const equipeInfo = header.querySelector('.equipe-info');
+            if (equipeInfo) {
+                equipeInfo.parentElement.style.order = '1';
+                equipeInfo.style.margin = '0 20px';
+            }
+            
+            // User dropdown à direita
+            const userDropdown = header.querySelector('.user-dropdown-container');
+            if (userDropdown) {
+                userDropdown.style.marginLeft = 'auto';
+                userDropdown.style.marginRight = '30px';
+            }
+            
+            // Navbar no centro
+            const navbar = header.querySelector('.navbar');
+            if (navbar) {
+                navbar.style.display = 'flex';
+                navbar.style.gap = '20px';
+                navbar.style.background = 'rgba(255, 255, 255, 0.1)';
+                navbar.style.padding = '10px 20px';
+                navbar.style.borderRadius = '25px';
+            }
+        }
+
+        // Ajusta layout para mobile
+        function ajustarLayoutMobile() {
+            const header = document.querySelector('.mobile-version');
+            if (!header) return;
+            
+            // Aplica estilos específicos para mobile
+            header.style.flexDirection = 'column';
+            header.style.padding = '10px 15px';
+            
+            // Header top row
+            const headerTopRow = header.querySelector('.header-top-row');
+            if (headerTopRow) {
+                headerTopRow.style.display = 'flex';
+                headerTopRow.style.justifyContent = 'space-between';
+                headerTopRow.style.alignItems = 'center';
+                headerTopRow.style.width = '100%';
+                headerTopRow.style.marginBottom = '10px';
+            }
+            
+            // Logo centralizada
+            const logo = header.querySelector('.logo');
+            if (logo) {
+                logo.style.display = 'flex';
+                logo.style.justifyContent = 'center';
+                logo.style.alignItems = 'center';
+                logo.style.width = '100%';
+                logo.style.padding = '10px 0';
+            }
+            
+            // Navbar escondido no mobile
+            const navbar = header.querySelector('.navbar');
+            if (navbar) {
+                navbar.style.display = 'none';
             }
         }
 
         // Funções para menus dropdown
-        function toggleUserMenuDesktop() {
-            const menu = document.getElementById('userDropdownDesktop');
-            if (menu) {
-                menu.classList.toggle('show');
-            }
-        }
-
-        function toggleUserMenuMobile() {
-            const menu = document.getElementById('userDropdownMobile');
+        function toggleUserMenu(version) {
+            const menuId = version === 'desktop' ? 'userDropdownDesktop' : 'userDropdownMobile';
+            const menu = document.getElementById(menuId);
             if (menu) {
                 menu.classList.toggle('show');
             }
@@ -358,21 +433,22 @@
         document.addEventListener('click', function(event) {
             const userDropdownDesktop = document.getElementById('userDropdownDesktop');
             const userDropdownMobile = document.getElementById('userDropdownMobile');
-            const userTriggerDesktop = document.querySelector('.user-dropdown-container-desktop .user-menu-trigger');
-            const userTriggerMobile = document.querySelector('.user-dropdown-container-mobile .user-menu-trigger');
+            const userTriggers = document.querySelectorAll('.user-menu-trigger');
             
             // Fechar dropdown desktop
-            if (userDropdownDesktop && userDropdownDesktop.classList.contains('show') && 
-                !userDropdownDesktop.contains(event.target) && 
-                !userTriggerDesktop.contains(event.target)) {
-                userDropdownDesktop.classList.remove('show');
+            if (userDropdownDesktop && userDropdownDesktop.classList.contains('show')) {
+                const desktopTrigger = document.querySelector('.desktop-version .user-menu-trigger');
+                if (desktopTrigger && !desktopTrigger.contains(event.target) && !userDropdownDesktop.contains(event.target)) {
+                    userDropdownDesktop.classList.remove('show');
+                }
             }
             
             // Fechar dropdown mobile
-            if (userDropdownMobile && userDropdownMobile.classList.contains('show') && 
-                !userDropdownMobile.contains(event.target) && 
-                !userTriggerMobile.contains(event.target)) {
-                userDropdownMobile.classList.remove('show');
+            if (userDropdownMobile && userDropdownMobile.classList.contains('show')) {
+                const mobileTrigger = document.querySelector('.mobile-version .user-menu-trigger');
+                if (mobileTrigger && !mobileTrigger.contains(event.target) && !userDropdownMobile.contains(event.target)) {
+                    userDropdownMobile.classList.remove('show');
+                }
             }
         });
 
@@ -420,6 +496,9 @@
         window.addEventListener('orientationchange', function() {
             setTimeout(gerenciarCabecalhos, 100);
         });
+        
+        // Inicializar também quando a página carregar completamente
+        window.addEventListener('load', gerenciarCabecalhos);
     </script>
 </body>
 </html>
