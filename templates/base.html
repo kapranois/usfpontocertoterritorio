@@ -151,15 +151,13 @@
                 {% if usuario_logado %}
                 <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
                     <i class="fas fa-user-circle"></i>
-                    <span>{{ nome_usuario }}</span>
                     {% if nivel_usuario == 'convidado' %}
                     <span class="convidado-badge">Visitante</span>
                     {% endif %}
                 </div>
                 {% else %}
                 <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Visitante</span>
+                     <i class="fas fa-user-circle"></i>
                 </div>
                 {% endif %}
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
