@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
-
     <!-- CSS ESPECÍFICO DA PÁGINA -->
     {% block extra_css %}{% endblock %}
 
@@ -34,25 +33,32 @@
     </script>
 </head>
 <body>
-<!-- Cabeçalho -->
-<header class="header">
-    <div class="header-bg-effect"></div>
-    
-    <!-- PRIMEIRA LINHA: Equipe e Usuário no topo (MOBILE) / Lado a lado (DESKTOP) -->
-    <div class="header-top-row">
-        <!-- Equipe no canto superior esquerdo -->
-        <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
-            <div class="equipe-info">
+    <!-- =========================================== -->
+    <!-- CABEÇALHO DESKTOP (visível apenas em telas grandes) -->
+    <!-- =========================================== -->
+    <header class="header desktop-header">
+        <div class="header-bg-effect"></div>
+        
+        <div class="logo-container">
+            <a href="/dashboard" class="logo-link">
+                <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}"
+                     alt="USF Ponto Certo"
+                     class="header-logo-full">
+            </a>
+        </div>
+
+        <a href="/equipe" class="equipe-link-desktop">
+            <div class="equipe-info-desktop">
                 <i class="fas fa-users"></i>
                 <span>{{ nome_equipe }}</span>
             </div>
         </a>
-        
-        <!-- Usuário no canto superior direito -->
-        <div class="user-dropdown-container">
-            <div class="user-menu-trigger" onclick="toggleUserMenu()">
+
+        <!-- Menu dropdown do usuário DESKTOP -->
+        <div class="user-dropdown-container-desktop">
+            <div class="user-menu-trigger" onclick="toggleUserMenuDesktop()">
                 {% if usuario_logado %}
-                <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
+                <div class="user-info-desktop {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
                     <i class="fas fa-user-circle"></i>
                     <span>{{ nome_usuario }}</span>
                     {% if nivel_usuario == 'convidado' %}
@@ -60,16 +66,16 @@
                     {% endif %}
                 </div>
                 {% else %}
-                <div class="user-info">
+                <div class="user-info-desktop">
                     <i class="fas fa-user-circle"></i>
                     <span>Visitante</span>
                 </div>
                 {% endif %}
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
-            
-            <!-- Menu dropdown -->
-            <div class="user-dropdown-menu" id="userDropdown">
+
+            <!-- Menu dropdown DESKTOP -->
+            <div class="user-dropdown-menu-desktop" id="userDropdownDesktop">
                 {% if usuario_logado %}
                 <!-- Usuário logado -->
                 <div class="dropdown-user-info">
@@ -108,118 +114,311 @@
                 {% endif %}
             </div>
         </div>
-    </div>
-    
-    <!-- SEGUNDA LINHA: Logo (MOBILE centralizado) / (DESKTOP lado esquerdo) -->
-<div class="logo">
-    <a href="/dashboard" class="logo-link">
-        <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}" 
-             alt="USF Ponto Certo" 
-             class="logo-img">
-    </a>
-</div>
-    
-    <!-- Navbar (escondido no mobile) -->
-    <nav class="navbar">
-        <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
-            <i class="fas fa-home"></i>
-            <span>Início</span>
-        </a>
-        <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}" title="Mapa do Território">
-            <i class="fas fa-map"></i>
-            <span>Mapa</span>
-        </a>
-        <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}" title="Gerenciar Condomínios">
-            <i class="fas fa-building"></i>
-            <span>Condomínios</span>
-        </a>
-        <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}" title="Relatórios">
-            <i class="fas fa-chart-bar"></i>
-            <span>Relatórios</span>
-        </a>
-    </nav>
-</header>
 
-<!-- Bottom Navigation para Mobile -->
-<div class="bottom-nav">
-    <a href="/dashboard" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
-        <i class="fas fa-home"></i>
-        <span>Início</span>
-    </a>
-    <a href="/mapa" class="nav-item {% if request.endpoint == 'mapa' %}active{% endif %}">
-        <i class="fas fa-map"></i>
-        <span>Mapa</span>
-    </a>
-    <a href="/condominios" class="nav-item {% if request.endpoint == 'condominios' %}active{% endif %}">
-        <i class="fas fa-building"></i>
-        <span>Condomínios</span>
-    </a>
-    <a href="/relatorios" class="nav-item {% if request.endpoint == 'relatorios' %}active{% endif %}">
-        <i class="fas fa-chart-bar"></i>
-        <span>Relatórios</span>
-    </a>
-</div>
+        <!-- Navbar DESKTOP -->
+        <nav class="navbar-desktop">
+            <a href="/dashboard" class="{% if request.endpoint == 'dashboard' %}active{% endif %}" title="Dashboard">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
+            </a>
+            <a href="/mapa" class="{% if request.endpoint == 'mapa' %}active{% endif %}" title="Mapa do Território">
+                <i class="fas fa-map"></i>
+                <span>Mapa</span>
+            </a>
+            <a href="/condominios" class="{% if request.endpoint == 'condominios' %}active{% endif %}" title="Gerenciar Condomínios">
+                <i class="fas fa-building"></i>
+                <span>Condomínios</span>
+            </a>
+            <a href="/relatorios" class="{% if request.endpoint == 'relatorios' %}active{% endif %}" title="Relatórios">
+                <i class="fas fa-chart-bar"></i>
+                <span>Relatórios</span>
+            </a>
+        </nav>
+    </header>
 
-<!-- Menu Mobile Overlay (inicialmente escondido) -->
-<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-<div class="mobile-menu-panel" id="mobileMenuPanel">
-    <div class="menu-header">
-        <h4>Menu</h4>
-        <button class="close-menu" id="closeMobileMenu">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    <div class="menu-items">
-        <a href="/perfil" class="menu-item">
-            <i class="fas fa-user"></i>
-            <span>Meu Perfil</span>
-        </a>
-        <a href="/configuracoes" class="menu-item">
-            <i class="fas fa-cog"></i>
-            <span>Configurações</span>
-        </a>
-        <a href="/ajuda" class="menu-item">
-            <i class="fas fa-question-circle"></i>
-            <span>Ajuda</span>
-        </a>
-        <a href="/sobre" class="menu-item">
-            <i class="fas fa-info-circle"></i>
-            <span>Sobre</span>
-        </a>
-        {% if usuario_logado %}
-        <a href="/logout" class="menu-item logout-item">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Sair</span>
-        </a>
-        {% else %}
-        <a href="/login" class="menu-item">
-            <i class="fas fa-sign-in-alt"></i>
-            <span>Fazer Login</span>
-        </a>
-        {% endif %}
-    </div>
-</div>
+    <!-- =========================================== -->
+    <!-- CABEÇALHO MOBILE (visível apenas em telas pequenas) -->
+    <!-- =========================================== -->
+    <header class="header mobile-header">
+        <div class="header-bg-effect"></div>
+        
+        <!-- PRIMEIRA LINHA: Equipe e Usuário no topo -->
+        <div class="header-top-row">
+            <!-- Equipe no canto superior esquerdo -->
+            <a href="/equipe" class="equipe-link-mobile">
+                <div class="equipe-info-mobile">
+                    <i class="fas fa-users"></i>
+                    <span>{{ nome_equipe }}</span>
+                </div>
+            </a>
+            
+            <!-- Usuário no canto superior direito -->
+            <div class="user-dropdown-container-mobile">
+                <div class="user-menu-trigger" onclick="toggleUserMenuMobile()">
+                    {% if usuario_logado %}
+                    <div class="user-info-mobile {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
+                        <i class="fas fa-user-circle"></i>
+                        <span>{{ nome_usuario }}</span>
+                        {% if nivel_usuario == 'convidado' %}
+                        <span class="convidado-badge">Visitante</span>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="user-info-mobile">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Visitante</span>
+                    </div>
+                    {% endif %}
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                </div>
+                
+                <!-- Menu dropdown MOBILE -->
+                <div class="user-dropdown-menu-mobile" id="userDropdownMobile">
+                    {% if usuario_logado %}
+                    <!-- Usuário logado -->
+                    <div class="dropdown-user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <div>
+                            <strong>{{ nome_usuario }}</strong>
+                            <small>{{ nivel_usuario|capitalize }}</small>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="/trocar-equipe" class="dropdown-item">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Trocar Equipe</span>
+                    </a>
+                    <a href="/logout" class="dropdown-item logout-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Sair</span>
+                    </a>
+                    {% else %}
+                    <!-- Usuário não logado -->
+                    <div class="dropdown-user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <div>
+                            <strong>Visitante</strong>
+                            <small>Modo de visualização</small>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="/login" class="dropdown-item">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Fazer Login</span>
+                    </a>
+                    <div class="dropdown-footer">
+                        <small>Para editar dados, faça login</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- SEGUNDA LINHA: Logo centralizada -->
+        <div class="logo-mobile">
+            <a href="/dashboard" class="logo-link">
+                <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}" 
+                     alt="USF Ponto Certo" 
+                     class="logo-img-mobile">
+            </a>
+        </div>
+        
+        <!-- Navbar MOBILE (escondido, apenas para marcação) -->
+        <nav class="navbar-mobile">
+            <!-- Links serão mostrados na bottom-nav -->
+        </nav>
+    </header>
 
     <!-- Conteúdo específico de cada página -->
     <main class="content-wrapper">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- =========================================== -->
+    <!-- Bottom Navigation para Mobile -->
+    <!-- =========================================== -->
+    <div class="bottom-nav">
+        <a href="/dashboard" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <i class="fas fa-home"></i>
+            <span>Início</span>
+        </a>
+        <a href="/mapa" class="nav-item {% if request.endpoint == 'mapa' %}active{% endif %}">
+            <i class="fas fa-map"></i>
+            <span>Mapa</span>
+        </a>
+        <a href="/condominios" class="nav-item {% if request.endpoint == 'condominios' %}active{% endif %}">
+            <i class="fas fa-building"></i>
+            <span>Condomínios</span>
+        </a>
+        <a href="/relatorios" class="nav-item {% if request.endpoint == 'relatorios' %}active{% endif %}">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
+        </a>
+        <a href="/menu" class="nav-item" id="mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+            <span>Menu</span>
+        </a>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- Menu Mobile Overlay -->
+    <!-- =========================================== -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-panel" id="mobileMenuPanel">
+        <div class="menu-header">
+            <h4>Menu</h4>
+            <button class="close-menu" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="menu-items">
+            <a href="/perfil" class="menu-item">
+                <i class="fas fa-user"></i>
+                <span>Meu Perfil</span>
+            </a>
+            <a href="/configuracoes" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </a>
+            <a href="/ajuda" class="menu-item">
+                <i class="fas fa-question-circle"></i>
+                <span>Ajuda</span>
+            </a>
+            <a href="/sobre" class="menu-item">
+                <i class="fas fa-info-circle"></i>
+                <span>Sobre</span>
+            </a>
+            {% if usuario_logado %}
+            <a href="/logout" class="menu-item logout-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sair</span>
+            </a>
+            {% else %}
+            <a href="/login" class="menu-item">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Fazer Login</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- =========================================== -->
     <!-- JavaScript específico da página -->
+    <!-- =========================================== -->
     {% block extra_js %}{% endblock %}
+    
     <!-- JavaScript COMUM (sempre carregado) -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-    <!-- Script de inicialização global -->
+    <!-- =========================================== -->
+    <!-- Script para alternar entre cabeçalhos -->
+    <!-- =========================================== -->
     <script>
-        // Inicializar quando o DOM estiver pronto
+        // Função para alternar entre cabeçalhos baseado no tamanho da tela
+        function gerenciarCabecalhos() {
+            const desktopHeader = document.querySelector('.desktop-header');
+            const mobileHeader = document.querySelector('.mobile-header');
+            const bottomNav = document.querySelector('.bottom-nav');
+            
+            if (window.innerWidth >= 1024) {
+                // DESKTOP - Mostra header desktop, esconde mobile e bottom-nav
+                if (desktopHeader) desktopHeader.style.display = 'flex';
+                if (mobileHeader) mobileHeader.style.display = 'none';
+                if (bottomNav) bottomNav.style.display = 'none';
+            } else if (window.innerWidth >= 768) {
+                // TABLET - Decida o que fazer (pode mostrar mobile ou desktop)
+                // Aqui você pode customizar para tablet
+                if (desktopHeader) desktopHeader.style.display = 'none';
+                if (mobileHeader) mobileHeader.style.display = 'flex';
+                if (bottomNav) bottomNav.style.display = 'flex';
+            } else {
+                // MOBILE - Mostra header mobile e bottom-nav, esconde desktop
+                if (desktopHeader) desktopHeader.style.display = 'none';
+                if (mobileHeader) mobileHeader.style.display = 'flex';
+                if (bottomNav) bottomNav.style.display = 'flex';
+            }
+        }
+
+        // Funções para menus dropdown
+        function toggleUserMenuDesktop() {
+            const menu = document.getElementById('userDropdownDesktop');
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+        }
+
+        function toggleUserMenuMobile() {
+            const menu = document.getElementById('userDropdownMobile');
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+        }
+
+        // Fechar menus dropdown ao clicar fora
+        document.addEventListener('click', function(event) {
+            const userDropdownDesktop = document.getElementById('userDropdownDesktop');
+            const userDropdownMobile = document.getElementById('userDropdownMobile');
+            const userTriggerDesktop = document.querySelector('.user-dropdown-container-desktop .user-menu-trigger');
+            const userTriggerMobile = document.querySelector('.user-dropdown-container-mobile .user-menu-trigger');
+            
+            // Fechar dropdown desktop
+            if (userDropdownDesktop && userDropdownDesktop.classList.contains('show') && 
+                !userDropdownDesktop.contains(event.target) && 
+                !userTriggerDesktop.contains(event.target)) {
+                userDropdownDesktop.classList.remove('show');
+            }
+            
+            // Fechar dropdown mobile
+            if (userDropdownMobile && userDropdownMobile.classList.contains('show') && 
+                !userDropdownMobile.contains(event.target) && 
+                !userTriggerMobile.contains(event.target)) {
+                userDropdownMobile.classList.remove('show');
+            }
+        });
+
+        // Menu mobile overlay
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Sistema inicializado - Página: {{ request.endpoint }}');
-
+            
+            // Gerenciar cabeçalhos inicialmente
+            gerenciarCabecalhos();
+            
             // Debug (remova em produção)
             if (window.location.search.includes('debug')) {
                 console.log('APP_CONFIG:', window.APP_CONFIG);
             }
+            
+            // Menu mobile toggle
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const closeMobileMenu = document.getElementById('closeMobileMenu');
+            
+            if (mobileMenuToggle && mobileMenuPanel && mobileMenuOverlay) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mobileMenuPanel.classList.add('show');
+                    mobileMenuOverlay.classList.add('show');
+                });
+                
+                if (closeMobileMenu) {
+                    closeMobileMenu.addEventListener('click', function() {
+                        mobileMenuPanel.classList.remove('show');
+                        mobileMenuOverlay.classList.remove('show');
+                    });
+                }
+                
+                mobileMenuOverlay.addEventListener('click', function() {
+                    mobileMenuPanel.classList.remove('show');
+                    mobileMenuOverlay.classList.remove('show');
+                });
+            }
+        });
+
+        // Regerenciar ao redimensionar a janela
+        window.addEventListener('resize', gerenciarCabecalhos);
+        window.addEventListener('orientationchange', function() {
+            setTimeout(gerenciarCabecalhos, 100);
         });
     </script>
 </body>
