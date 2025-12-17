@@ -853,6 +853,7 @@ body {
   
   /* USUÁRIO (ESQUERDA) */
   .user-dropdown-container {
+    margin-right: -30px;
     flex: 1;
     display: flex;
     justify-content: flex-start;
