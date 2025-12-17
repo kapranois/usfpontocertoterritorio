@@ -842,7 +842,7 @@ body {
   }
    .logo-img {
     height: auto;
-    margin-top: -60px;
+    margin-top: -50px;
     max-height: 120px; /* Ajuste conforme a altura do header */
     width: auto;
     max-width: 120px; /* Largura máxima */
@@ -861,6 +861,7 @@ body {
   min-width: 80px;              /* deixa mais largo */
   height: 24px;                  /* controla a altura */
   padding: 2px 12px;             /* menos altura, mais largura */
+  margin-right: -10px
   border-radius: 6px;
   border: 1px solid rgba(102, 126, 234, 0.1);
   color: #475569;
