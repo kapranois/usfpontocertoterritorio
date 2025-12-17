@@ -854,24 +854,25 @@ body {
   }
 
   /* INFO DA EQUIPE */
-  .equipe-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(102, 126, 234, 0.08);
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: #475569;
-    border: 1px solid rgba(102, 126, 234, 0.1);
-    margin-top: 10px;
-  }
+.equipe-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(102, 126, 234, 0.06); /* mais leve */
+  font-size: 0.85rem;                    /* um pouco maior p/ legibilidade */
+  font-weight: 600;                      /* mais destaque */
+  color: #1e293b;                        /* tom escuro elegante */
+  letter-spacing: 0.3px;                 /* espaçamento suave */
+  margin-top: 6px;
+  border: none;                          /* remove borda para ficar clean */
+}
 
-  .equipe-info i {
-    font-size: 0.8rem;
-    color: #667eea;
-  }
+.equipe-info span {
+  font-family: 'Nunito', sans-serif;     /* fonte arredondada e acolhedora */
+}
+
 
   /* DROPDOWN DO USUÁRIO */
   .user-dropdown-container {
