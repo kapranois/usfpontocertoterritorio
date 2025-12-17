@@ -1094,8 +1094,16 @@ body {
     
     .logo-img {
         /* Tamanho maior para mobile */
-        max-height: 70px; /* Um pouco menor que desktop, mas visível */
-        max-width: 220px;
+    height: auto;
+    max-height: 120px; /* Ajuste conforme a altura do header */
+    width: auto;
+    max-width: 220px; /* Largura máxima */
+    /* Mantém proporção e centraliza verticalmente */
+    object-fit: contain;
+    object-position: center;
+    /* Suavidade */
+    transition: all 0.3s ease;
+}
         
         /* Centraliza perfeitamente */
         margin: 0 auto;
