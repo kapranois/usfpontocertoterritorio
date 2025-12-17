@@ -840,29 +840,12 @@ body {
     z-index: 1000;
     width: 100%;
   }
-
-  /* LOGO CENTRALIZADO */
-  .logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    text-align: center;
-  }
-
-  .logo i {
-    font-size: 1.6rem;
-    padding: 10px;
-    border-radius: 12px;
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-  }
-
-  .logo h1 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1e293b;
-  }
+   .logo img {
+  height: 40px;       /* ajusta o tamanho do logo */
+  width: auto;        /* mantém proporção */
+  display: block;
+  margin: 0 auto;     /* centraliza no header */
+}
 
   .logo .subtitle {
     font-size: 0.75rem;
