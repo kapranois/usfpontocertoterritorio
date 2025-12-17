@@ -860,23 +860,24 @@ body {
 }
 
 .equipe-info {
-  display: inline;              /* não precisa ser flex */
-  background: none;             /* remove fundo */
-  border: none;                 /* remove borda */
-  padding: 0;                   /* remove espaçamento interno */
-  margin-top: 0;                /* ajusta margem */
-  font-size: 0.8rem;            /* tamanho menor */
-  font-weight: 500;             /* peso leve */
-  color: #1e293b;               /* cor escura elegante */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;              /* deixa mais largo */
+  height: 24px;                  /* controla a altura */
+  padding: 2px 12px;             /* menos altura, mais largura */
+  border-radius: 6px;
+  background: rgba(102, 126, 234, 0.06);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1e293b;
 }
 
 .equipe-info span {
-  font-family: 'Poppins', sans-serif;   /* ou outra fonte moderna */
-  font-size: 0.75rem;                   /* menor e mais discreto */
-  font-weight: 500;                     /* leve, sem exagero */
-  color: #1e293b;                       /* tom escuro elegante */
-  letter-spacing: 0.3px;                /* espaçamento suave */
+  font-family: 'Poppins', sans-serif;
+  line-height: 1;                /* reduz altura da linha */
 }
+
 
 .equipe-info:hover {
   background: rgba(102, 126, 234, 0.12);
