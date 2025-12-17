@@ -135,24 +135,6 @@
     <!-- LINHA ÚNICA COM OS 3 ELEMENTOS -->
     <div class="header-top-row">
         <!-- Usuário (ESQUERDA) -->
-        <div class="user-dropdown-container">
-            <div class="user-menu-trigger" onclick="toggleUserMenu()">
-                {% if usuario_logado %}
-                <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
-                    <i class="fas fa-user-circle"></i>
-                    {% if nivel_usuario == 'convidado' %}
-                    <span class="convidado-badge">Visitante</span>
-                    {% endif %}
-                </div>
-                {% else %}
-                <div class="user-info">
-                     <i class="fas fa-user-circle"></i>
-                </div>
-                {% endif %}
-                <i class="fas fa-chevron-down dropdown-arrow"></i>
-            </div>
-            
-            <!-- Menu dropdown MOBILE -->
 <!-- Usuário (ESQUERDA) - apenas ícone -->
 <div class="user-icon-wrapper">
     <div class="user-icon-trigger" onclick="toggleUserMenu('mobile')">
