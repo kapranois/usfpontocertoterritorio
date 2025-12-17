@@ -1431,12 +1431,7 @@ body {
     }
 }
 @media (max-width: 768px) {
-    .header {
-        padding: 8px 12px !important; 
-        min-height: 50px !important; 
-        flex-wrap: nowrap;
-        gap: 8px;
-    }
+
        .logo {
         gap: 8px;
         flex: 1;
@@ -1493,12 +1488,6 @@ body {
             .navbar a.active {
                 border-bottom: 2px solid #667eea;
             }
-
-    .equipe-info {
-        margin-right: 10px;
-        padding: 5px 10px;
-        font-size: 0.75rem;
-    }
 }
 
 @media (max-width: 1200px) {
