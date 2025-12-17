@@ -5,347 +5,394 @@
 
 {% block extra_css %}
 <style>
+/* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+:root {
+    --primary: #4f46e5;
+    --primary-light: #818cf8;
+    --primary-bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #334155;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    --radius: 12px;
+    --radius-lg: 16px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--primary-bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* ===== LAYOUT DA PÁGINA ===== */
+.equipe-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* ===== CABEÇALHO LEVE ===== */
+.equipe-header {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.equipe-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.equipe-header h1 i {
+    color: var(--primary);
+    font-size: 24px;
+}
+
+.equipe-header > p {
+    color: var(--text-light);
+    margin: 0;
+    font-size: 15px;
+}
+
+/* ===== ESTATÍSTICAS MINIMALISTAS ===== */
+.equipe-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    margin-top: 32px;
+}
+
+.equipe-stat {
+    text-align: center;
+    padding: 20px;
+    background: var(--primary-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.equipe-stat .number {
+    display: block;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.equipe-stat .label {
+    font-size: 14px;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* ===== GRID DE PROFISSIONAIS MODERNO ===== */
+.equipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* ===== CARDS LIMPOS ===== */
+.equipe-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 0;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+
+.equipe-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* Cabeçalho do Card */
+.card-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--primary-bg);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.card-icon.acs { background: #e0f2fe; color: #0369a1; }
+.card-icon.enfermeiro { background: #f0f9ff; color: #0c4a6e; }
+.card-icon.medico { background: #f5f3ff; color: #5b21b6; }
+
+.card-title h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.card-title .subtitle {
+    color: var(--text-light);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* ===== LISTA DE PROFISSIONAIS ===== */
+.profissionais-lista {
+    padding: 20px 24px;
+}
+
+.profissional-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+
+.profissional-item:hover {
+    background: var(--primary-bg);
+    border-color: var(--primary-light);
+}
+
+.profissional-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.profissional-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profissional-info p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.badge:not(.inativo) {
+    background: #10b981;
+    color: white;
+}
+
+.badge.inativo {
+    background: #94a3b8;
+    color: white;
+}
+
+/* ===== PROFISSIONAL DESTAQUE (Versão Minimalista) ===== */
+.profissional-destaque {
+    padding: 24px;
+    text-align: center;
+    background: var(--primary-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.destaque-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+}
+
+.profissional-destaque h4 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.profissional-destaque p {
+    margin: 6px 0;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+/* ===== ESTADO VAZIO ELEGANTE ===== */
+.empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.empty-state i {
+    font-size: 40px;
+    margin-bottom: 16px;
+    color: #cbd5e1;
+    opacity: 0.6;
+}
+
+.empty-state p {
+    margin: 0 0 20px 0;
+    font-size: 15px;
+}
+
+/* ===== BOTÕES MODERNOS ===== */
+.card-actions {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    background: var(--primary-bg);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+.btn-action.secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-action.secondary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* ===== BOTÃO DE VOLTA DISCRETO ===== */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 24px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background: var(--primary-bg);
+    text-decoration: none;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
     .equipe-container {
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
+        padding: 16px;
     }
 
-    /* Header da Equipe */
     .equipe-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 15px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        padding: 24px;
+        margin-bottom: 24px;
     }
-
-        .equipe-header h1 {
-            margin: 0;
-            font-size: 2.2em;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-            .equipe-header h1 i {
-                font-size: 1.2em;
-            }
 
     .equipe-stats {
-        display: flex;
-        gap: 20px;
-        margin-top: 25px;
-        flex-wrap: wrap;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 
-    .equipe-stat {
-        background: rgba(255, 255, 255, 0.15);
-        padding: 15px 20px;
-        border-radius: 10px;
-        min-width: 140px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-        .equipe-stat .number {
-            font-size: 1.8em;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .equipe-stat .label {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-    /* Grid de Profissionais */
     .equipe-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 25px;
-        margin-bottom: 40px;
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
-
-    /* Cards */
-    .equipe-card {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        border: 1px solid #eaeaea;
-    }
-
-        .equipe-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
 
     .card-header {
-        display: flex;
+        flex-direction: column;
         align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .card-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 15px;
-        font-size: 1.3em;
-    }
-
-        .card-icon.acs {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .card-icon.enfermeiro {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        .card-icon.medico {
-            background: #f3e5f5;
-            color: #7b1fa2;
-        }
-
-    .card-title h3 {
-        margin: 0;
-        color: #333;
-        font-size: 1.3em;
-    }
-
-    .card-title .subtitle {
-        color: #666;
-        font-size: 0.9em;
-        margin-top: 5px;
-    }
-
-    /* Lista de Profissionais */
-    .profissionais-lista {
-        margin-bottom: 20px;
+        text-align: center;
+        gap: 12px;
     }
 
     .profissional-item {
-        display: flex;
-        align-items: center;
-        padding: 12px 15px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        transition: all 0.3s ease;
-        border-left: 3px solid #667eea;
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
     }
 
-        .profissional-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-
     .profissional-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #667eea;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 12px;
-        font-size: 1em;
+        margin-right: 0;
+        margin-bottom: 12px;
     }
 
     .profissional-info h4 {
-        margin: 0;
-        color: #333;
-        font-size: 1em;
-    }
-
-    .profissional-info p {
-        margin: 4px 0 0 0;
-        color: #666;
-        font-size: 0.85em;
-    }
-
-    .badge {
-        display: inline-block;
-        background: #28a745;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 0.75em;
-        margin-left: 5px;
-    }
-
-        .badge.inativo {
-            background: #6c757d;
-        }
-
-    /* Destaque (Enfermeiro/Médico) */
-    .profissional-destaque {
-        background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        border: 2px solid #667eea20;
-    }
-
-    .destaque-avatar {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
         justify-content: center;
-        margin: 0 auto 15px;
-        font-size: 1.5em;
+        flex-wrap: wrap;
     }
-
-    .profissional-destaque h4 {
-        margin: 0 0 10px 0;
-        color: #333;
-        font-size: 1.2em;
-    }
-
-    .profissional-destaque p {
-        margin: 5px 0;
-        color: #666;
-        font-size: 0.9em;
-    }
-
-    /* Vazio */
-    .empty-state {
-        text-align: center;
-        padding: 30px 20px;
-        color: #999;
-    }
-
-        .empty-state i {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #ced4da;
-        }
-
-        .empty-state p {
-            margin: 10px 0;
-            font-style: italic;
-        }
-
-    /* Botões de Ação */
-    .card-actions {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 20px;
-        padding-top: 15px;
-        border-top: 1px solid #f0f0f0;
-    }
-
-    .btn-action {
-        background: #667eea;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9em;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.3s ease;
-    }
-
-        .btn-action:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-
-        .btn-action.secondary {
-            background: transparent;
-            color: #667eea;
-            border: 1px solid #667eea;
-        }
-
-            .btn-action.secondary:hover {
-                background: #667eea;
-                color: white;
-            }
-
-    /* Botão de Voltar */
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 600;
-        margin-bottom: 20px;
-        padding: 8px 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-        .back-button:hover {
-            background: #e9ecef;
-            transform: translateX(-3px);
-        }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-        .equipe-container {
-            padding: 15px;
-        }
-
-        .equipe-header {
-            padding: 20px;
-        }
-
-            .equipe-header h1 {
-                font-size: 1.8em;
-            }
-
-        .equipe-stats {
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .equipe-stat {
-            min-width: 100%;
-        }
-
-        .equipe-grid {
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        .card-header {
-            flex-direction: column;
-            text-align: center;
-            gap: 10px;
-        }
-
-        .card-icon {
-            margin-right: 0;
-        }
-    }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-
-    <!-- Cabeçalho -->
+<div class="equipe-container">
+    <!-- Cabeçalho Leve -->
     <div class="equipe-header">
         <h1><i class="fas fa-users-medical"></i> Equipe {{ nome_equipe }}</h1>
         <p>Equipe multiprofissional de saúde da família</p>
@@ -381,7 +428,7 @@
         </div>
     </div>
 
-    <!-- Grid de Profissionais -->
+    <!-- Grid de Profissionais Moderno -->
     <div class="equipe-grid">
         <!-- Agentes Comunitários de Saúde -->
         <div class="equipe-card">
@@ -540,35 +587,33 @@
             {% endif %}
         </div>
     </div>
-
-    
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Configuração da página
     document.addEventListener('DOMContentLoaded', function () {
-        console.log('Página da equipe carregada');
-
-        // Configurar eventos dos cards de ACS
+        console.log('📋 Página da equipe carregada - Design Leve');
+        
+        // Melhorar interação dos itens de profissional
         document.querySelectorAll('.profissional-item').forEach(item => {
             item.addEventListener('click', function () {
-                if (typeof dashboard !== 'undefined' && typeof dashboard.mostrarDetalhesACS === 'function') {
-                    const acsNome = this.querySelector('h4').textContent.split(' ')[0];
-                    // Você pode implementar uma lógica para buscar os dados do ACS
-                }
+                // Suavizar o clique
+                this.style.transform = 'scale(0.99)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
         });
-
-        // Verificar se é modo convidado
+        
+        // Modo convidado - feedback mais amigável
         if (window.APP_CONFIG?.nivel_usuario === 'convidado') {
             document.querySelectorAll('.btn-action').forEach(btn => {
-                btn.style.opacity = '0.6';
+                btn.style.opacity = '0.7';
                 btn.style.cursor = 'not-allowed';
                 btn.onclick = function (e) {
                     e.preventDefault();
-                    alert('🔒 Modo Visitante\n\nPara realizar esta ação, faça login como usuário cadastrado.');
+                    alert('👤 Modo Visitante\n\nEsta ação requer autenticação. Faça login para acessar todas as funcionalidades.');
                 }
             });
         }
