@@ -858,7 +858,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 100px;              /* deixa mais largo */
+  min-width: 80px;              /* deixa mais largo */
   height: 24px;                  /* controla a altura */
   padding: 2px 12px;             /* menos altura, mais largura */
   border-radius: 6px;
