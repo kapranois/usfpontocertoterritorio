@@ -840,67 +840,96 @@ body {
     z-index: 1000;
     width: 100%;
   }
-   .logo-img {
-    height: auto;
-    margin-top: -50px;
-    max-height: 120px; /* Ajuste conforme a altura do header */
-    width: auto;
-    max-width: 120px; /* Largura máxima */
-    display: block;
-    /* Mantém proporção e centraliza verticalmente */
-    object-fit: contain;
-    object-position: center;
-    /* Suavidade */
-    transition: all 0.3s ease;
-}
-   .logo a {
-  display: inline-block;   /* garante que o link só envolva o conteúdo interno */
-  line-height: 0;          /* remove espaço extra em volta da imagem */
-}
-
-  /* INFO DA EQUIPE */
-.equipe-info {
-   margin-top: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 80px;              /* deixa mais largo */
-  height: 24px;                  /* controla a altura */
-  padding: 2px 12px;             /* menos altura, mais largura */
-  border-radius: 6px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-  color: #475569;
-  background: rgba(102, 126, 234, 0.06);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #1e293b;
-}
-
-  /* DROPDOWN DO USUÁRIO */
-  .user-dropdown-container {
-    margin-left: 100px;
-    margin-bottom: 20px
-    width: 100%;
+  
+  /* Container para os 3 elementos em uma linha */
+  .header-top-row {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    margin-bottom: 8px;
   }
-
+  
+  /* USUÁRIO (ESQUERDA) */
+  .user-dropdown-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0;
+  }
+  
+  /* Ajusta o trigger para ocupar menos espaço */
   .user-menu-trigger {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    background: rgba(241, 245, 249, 0.8);
-    border: 1px solid rgba(226, 232, 240, 0.6);
-    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  
+  /* Nome do usuário mais curto no mobile */
+  .user-info span:first-child {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* LOGO (CENTRO) */
+  .logo-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .logo-img {
+    height: auto;
+    max-height: 70px; /* Reduzido para mobile */
+    width: auto;
+    max-width: 110px;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+    transition: all 0.3s ease;
+  }
+  
+  /* INFO DA EQUIPE (DIREITA) */
+  .equipe-info-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .equipe-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;              /* ajustado */
+    height: 28px;                  /* altura controlada */
+    padding: 4px 12px;             /* padding equilibrado */
+    border-radius: 6px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
     color: #475569;
+    background: rgba(102, 126, 234, 0.06);
+    font-size: 0.75rem;            /* ligeiramente menor */
+    font-weight: 500;
+    color: #1e293b;
+    white-space: nowrap;
   }
-
-  .user-info i {
-    font-size: 1rem;
-    color: #667eea;
+  
+  /* Nome da equipe truncado se for muito longo */
+  .equipe-info span {
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
+  
+  /* Navbar escondida no mobile (substituída pelo bottom-nav) */
+  .navbar {
+    display: none;
+  }
+}
 
   .convidado-badge {
     font-size: 0.1rem;
