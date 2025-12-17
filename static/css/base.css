@@ -862,14 +862,21 @@ body {
 .equipe-info {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 3px 8px;
   border-radius: 6px;
   background: rgba(102, 126, 234, 0.06);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #1e293b;
-  transition: background 0.2s ease;
+  margin-top: 6px;
 }
+
+.equipe-info span {
+  font-family: 'Poppins', sans-serif;   /* fonte moderna e clean */
+  font-size: 0.75rem;                   /* menor que o padrão */
+  font-weight: 500;                     /* leve, sem exagero */
+  color: #1e293b;                       /* tom escuro elegante */
+  letter-spacing: 0.3px;                /* espaçamento suave */
+}
+
 
 .equipe-info:hover {
   background: rgba(102, 126, 234, 0.12);
