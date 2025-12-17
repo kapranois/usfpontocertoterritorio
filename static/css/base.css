@@ -854,33 +854,21 @@ body {
   }
 
   /* INFO DA EQUIPE */
-.equipe-link {
-  text-decoration: none;
-  color: inherit;
-}
+
 
 .equipe-info {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 160px;              /* deixa mais largo */
-  height: 24px;                  /* controla a altura */
-  padding: 2px 12px;             /* menos altura, mais largura */
-  border-radius: 6px;
-  background: rgba(102, 126, 234, 0.06);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #1e293b;
-}
-
-.equipe-info span {
-  font-family: 'Poppins', sans-serif;
-  line-height: 1;                /* reduz altura da linha */
-}
-
-
-.equipe-info:hover {
-  background: rgba(102, 126, 234, 0.12);
+    background: rgba(102, 126, 234, 0.08);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #475569;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    margin-right: 15px;
 }
 
 
