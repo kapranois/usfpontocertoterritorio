@@ -846,11 +846,16 @@ body {
     max-height: 120px; /* Ajuste conforme a altura do header */
     width: auto;
     max-width: 120px; /* Largura máxima */
+    display: block;
     /* Mantém proporção e centraliza verticalmente */
     object-fit: contain;
     object-position: center;
     /* Suavidade */
     transition: all 0.3s ease;
+}
+   .logo a {
+  display: inline-block;   /* garante que o link só envolva o conteúdo interno */
+  line-height: 0;          /* remove espaço extra em volta da imagem */
 }
 
   /* INFO DA EQUIPE */
