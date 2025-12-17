@@ -142,34 +142,28 @@
     <!-- =========================================== -->
     <header class="header">
         <div class="header-bg-effect"></div>
-        
-        <!-- PRIMEIRA LINHA: Equipe e Usuário no topo -->
-<div class="header-top-row">
-    <!-- Equipe no canto superior esquerdo -->
-    <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
-        <div class="equipe-info">
-            <span>{{ nome_equipe }}</span>
-        </div>
-    </a> 
-    <!-- Usuário no canto superior direito -->
-            <div class="user-dropdown-container">
-                <div class="user-menu-trigger" onclick="toggleUserMenu('mobile')">
-                    {% if usuario_logado %}
-                    <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
-                        <i class="fas fa-user-circle"></i>
-                        {% if nivel_usuario == 'convidado' %}
-                        <span class="convidado-badge"></span>
-                        {% endif %}
-                    </div>
-                    {% else %}
-                    <div class="user-info">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
+
+         <div class="header-top-row">
+        <!-- Usuário (ESQUERDA) -->
+        <div class="user-dropdown-container">
+            <div class="user-menu-trigger" onclick="toggleUserMenu()">
+                {% if usuario_logado %}
+                <div class="user-info {% if nivel_usuario == 'convidado' %}convidado-user{% endif %}">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ nome_usuario }}</span>
+                    {% if nivel_usuario == 'convidado' %}
+                    <span class="convidado-badge">Visitante</span>
                     {% endif %}
-                    <i class="fas fa-chevron-down dropdown-arrow"></i>
                 </div>
-                
-                <!-- Menu dropdown MOBILE -->
+                {% else %}
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Visitante</span>
+                </div>
+                {% endif %}
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </div>
+                            <!-- Menu dropdown MOBILE -->
                 <div class="user-dropdown-menu mobile-dropdown" id="userDropdownMobile">
                     {% if usuario_logado %}
                     <!-- Usuário logado -->
@@ -210,15 +204,26 @@
                 </div>
             </div>
         </div>
-        
-        <!-- SEGUNDA LINHA: Logo centralizada -->
-        <div class="logo">
-            <a href="/dashboard" >
-                <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}" 
-                     alt="Agente de Saúde" 
-                     class="logo-img">
+
+                <!-- SEGUNDA LINHA: Logo centralizada -->
+        <div class="logo-container">
+            <a href="/dashboard" class="logo-link">
+                <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}"
+                     alt="USF Ponto Certo"
+                     class="header-logo-full logo-img">
             </a>
         </div>
+        
+        <!-- Equipe -->
+        <div class="equipe-info-container">
+            <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
+                <div class="equipe-info">
+                    <i class="fas fa-users"></i>
+                    <span>{{ nome_equipe }}</span>
+                </div>
+            </a>
+        </div>
+    </div>
         
         <!-- Navbar MOBILE (escondido, apenas para marcação) -->
         <nav class="navbar mobile-navbar">
