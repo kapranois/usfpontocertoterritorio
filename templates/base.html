@@ -140,10 +140,11 @@
     <!-- =========================================== -->
     <!-- CABEÇALHO MOBILE (visível apenas em telas pequenas) -->
     <!-- =========================================== -->
-    <header class="header">
-        <div class="header-bg-effect"></div>
+<header class="header">
+    <div class="header-bg-effect"></div>
 
-         <div class="header-top-row">
+    <!-- LINHA ÚNICA COM OS 3 ELEMENTOS -->
+    <div class="header-top-row">
         <!-- Usuário (ESQUERDA) -->
         <div class="user-dropdown-container">
             <div class="user-menu-trigger" onclick="toggleUserMenu()">
@@ -163,49 +164,50 @@
                 {% endif %}
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
-                            <!-- Menu dropdown MOBILE -->
-                <div class="user-dropdown-menu mobile-dropdown" id="userDropdownMobile">
-                    {% if usuario_logado %}
-                    <!-- Usuário logado -->
-                    <div class="dropdown-user-info">
-                        <i class="fas fa-user-circle"></i>
-                        <div>
-                            <strong>{{ nome_usuario }}</strong>
-                            <small>{{ nivel_usuario|capitalize }}</small>
-                        </div>
+            
+            <!-- Menu dropdown MOBILE -->
+            <div class="user-dropdown-menu mobile-dropdown" id="userDropdownMobile">
+                {% if usuario_logado %}
+                <!-- Usuário logado -->
+                <div class="dropdown-user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <strong>{{ nome_usuario }}</strong>
+                        <small>{{ nivel_usuario|capitalize }}</small>
                     </div>
-                    <div class="dropdown-divider"></div>
-                    <a href="/trocar-equipe" class="dropdown-item">
-                        <i class="fas fa-exchange-alt"></i>
-                        <span>Trocar Equipe</span>
-                    </a>
-                    <a href="/logout" class="dropdown-item logout-item">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Sair</span>
-                    </a>
-                    {% else %}
-                    <!-- Usuário não logado -->
-                    <div class="dropdown-user-info">
-                        <i class="fas fa-user-circle"></i>
-                        <div>
-                            <strong>Visitante</strong>
-                            <small>Modo de visualização</small>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a href="/login" class="dropdown-item">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span>Fazer Login</span>
-                    </a>
-                    <div class="dropdown-footer">
-                        <small>Para editar dados, faça login</small>
-                    </div>
-                    {% endif %}
                 </div>
+                <div class="dropdown-divider"></div>
+                <a href="/trocar-equipe" class="dropdown-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Trocar Equipe</span>
+                </a>
+                <a href="/logout" class="dropdown-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </a>
+                {% else %}
+                <!-- Usuário não logado -->
+                <div class="dropdown-user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <strong>Visitante</strong>
+                        <small>Modo de visualização</small>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="/login" class="dropdown-item">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Fazer Login</span>
+                </a>
+                <div class="dropdown-footer">
+                    <small>Para editar dados, faça login</small>
+                </div>
+                {% endif %}
             </div>
         </div>
+        <!-- FIM user-dropdown-container -->
 
-                <!-- SEGUNDA LINHA: Logo centralizada -->
+        <!-- Logo (CENTRO) -->
         <div class="logo-container">
             <a href="/dashboard" class="logo-link">
                 <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}"
@@ -213,8 +215,8 @@
                      class="header-logo-full logo-img">
             </a>
         </div>
-        
-        <!-- Equipe -->
+
+        <!-- Equipe (DIREITA) -->
         <div class="equipe-info-container">
             <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
                 <div class="equipe-info">
@@ -224,12 +226,13 @@
             </a>
         </div>
     </div>
-        
-        <!-- Navbar MOBILE (escondido, apenas para marcação) -->
-        <nav class="navbar mobile-navbar">
-            <!-- Links serão mostrados na bottom-nav -->
-        </nav>
-    </header>
+    <!-- FIM header-top-row -->
+
+    <!-- Navbar MOBILE (escondido, apenas para marcação) -->
+    <nav class="navbar mobile-navbar">
+        <!-- Links serão mostrados na bottom-nav -->
+    </nav>
+</header>
 
     <!-- Conteúdo específico de cada página -->
     <main class="content-wrapper">
