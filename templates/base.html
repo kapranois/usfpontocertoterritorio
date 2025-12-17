@@ -129,9 +129,8 @@
     <!-- =========================================== -->
     <!-- CABEÇALHO MOBILE (visível apenas em telas pequenas) -->
     <!-- =========================================== -->
-<header class="header">
+<header class= header MOBILE-version>
     <div class="header-bg-effect"></div>
-
     <!-- LINHA ÚNICA COM OS 3 ELEMENTOS -->
     <div class="header-top-row">
         <!-- Usuário (ESQUERDA) -->
@@ -142,8 +141,7 @@
         {% if nivel_usuario == 'convidado' %}
         <span class="convidado-badge-icon">V</span>
         {% endif %}
-    </div>
-    
+    </div>   
     <!-- Menu dropdown MOBILE -->
     <div class="user-dropdown-menu mobile-dropdown left-aligned" id="userDropdownMobile">
         {% if usuario_logado %}
@@ -184,23 +182,21 @@
         {% endif %}
     </div>
 </div>
-        <!-- FIM user-dropdown-container -->
-
+  <!-- FIM user-dropdown-container -->
         <!-- Logo (CENTRO) -->
-        <div class="logo-container">
-            <a href="/dashboard" class="logo-link">
-                <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}"
-                     alt="USF Ponto Certo"
-                     class="header-logo-full logo-img">
-            </a>
-        </div>
-
+<div class="logo-container">
+   <a href="/dashboard" class="logo-link">
+     <img src="{{ url_for('static', filename='img/logoacspontocerto.png') }}"
+       alt="USF Ponto Certo"
+       class="header-logo-full logo-img">
+   </a>
+</div>
         <!-- Equipe (DIREITA) -->
-        <div class="equipe-info-container">
-            <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
-                <div class="equipe-info">
-                    <i class="fas fa-users"></i>
-                    <span>{{ nome_equipe }}</span>
+  <div class="equipe-info-container">
+     <a href="/equipe" style="text-decoration: none; color: inherit; display: inline-block;">
+         <div class="equipe-info">
+           <i class="fas fa-users"></i>
+              <span>{{ nome_equipe }}</span>
                 </div>
             </a>
         </div>
