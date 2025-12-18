@@ -339,7 +339,27 @@ function scrollToElement(elementId, offset = 100) {
         });
     }
 }
+function gerenciarCabecalhos() {
+    const desktopHeader = document.querySelector('.desktop-version');
+    const mobileHeader = document.querySelector('.mobile-version');
+    const bottomNav = document.querySelector('.bottom-nav');
+    
+    if (window.innerWidth >= 769) {
+        // DESKTOP
+        if (desktopHeader) desktopHeader.style.display = 'flex';
+        if (mobileHeader) mobileHeader.style.display = 'none';
+        if (bottomNav) bottomNav.style.display = 'none';
+    } else {
+        // MOBILE
+        if (desktopHeader) desktopHeader.style.display = 'none';
+        if (mobileHeader) mobileHeader.style.display = 'flex';
+        if (bottomNav) bottomNav.style.display = 'flex';
+    }
+}
 
+// Executar ao carregar e ao redimensionar
+window.addEventListener('load', gerenciarCabecalhos);
+window.addEventListener('resize', gerenciarCabecalhos);
 // ============================================
 // FUNÇÕES DE DROPDOWN DO USUÁRIO - SIMPLIFICADAS
 // ============================================
