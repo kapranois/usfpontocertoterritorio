@@ -51,12 +51,15 @@ body {
 /* Logo como única imagem */
 .header-logo-full {
     height: auto;
-    max-height: 120px;
     width: auto;
-    max-width: 220px;
     object-fit: contain;
     object-position: center;
     transition: all 0.3s ease;
+}
+/* Desktop herda da base o logo full */
+.header-logo-full.desktop {
+    max-height: 120px;
+    max-width: 220px;
 }
 
 .header-logo-full:hover {
@@ -844,7 +847,13 @@ body {
         position: relative;
         margin-bottom: 8px;
     }
-    
+
+   /* Mobile herda da base o logofull */
+.header-logo-full.mobile {
+    max-height: 70px;
+    max-width: 150px;
+   }
+     
     /* USUÁRIO (ESQUERDA) */
     .user-dropdown-container {
         margin-right: 0;
@@ -1032,6 +1041,18 @@ body {
         object-position: center;
         margin: 0 auto;
         display: block;
+    }
+}
+
+@media (min-width: 769px) {
+    .header-logo-full.mobile {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-logo-full.desktop {
+        display: none !important;
     }
 }
 
