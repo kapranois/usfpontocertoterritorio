@@ -95,9 +95,8 @@ body {
     height: auto;
     object-fit: contain;
     transition: all 0.3s ease;
-    max-height: 80px;
+    max-height: 110px;
     max-width: 250px;
-    image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
 }
 
