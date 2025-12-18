@@ -888,9 +888,9 @@ body {
     
     .logo-img {
         height: auto;
-        max-height: 70px;
+        max-height: 50px;
         width: auto;
-        max-width: 110px;
+        max-width: 80px;
         display: block;
         object-fit: contain;
         object-position: center;
