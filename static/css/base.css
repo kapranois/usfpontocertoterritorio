@@ -850,8 +850,8 @@ body {
 
    /* Mobile herda da base o logofull */
 .header-logo-full.mobile {
-    max-height: 70px;
-    max-width: 150px;
+    max-height: 10px;
+    max-width: 50px;
    }
      
     /* USUÁRIO (ESQUERDA) */
