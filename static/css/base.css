@@ -49,23 +49,6 @@ body {
    CABEÇALHO DESKTOP
    ============================================ */
 /* Logo como única imagem */
-.header-logo-full {
-    height: auto;
-    width: auto;
-    object-fit: contain;
-    object-position: center;
-    transition: all 0.3s ease;
-}
-/* Desktop herda da base o logo full */
-.header-logo-full.desktop {
-    max-height: 120px;
-    max-width: 220px;
-}
-
-.header-logo-full:hover {
-    transform: scale(1.05);
-    opacity: 0.95;
-}
 
 .header {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
@@ -846,12 +829,6 @@ body {
         position: relative;
         margin-bottom: 8px;
     }
-
-   /* Mobile herda da base o logofull */
-.header-logo-full.mobile {
-    max-height: 10px;
-    max-width: 50px;
-   }
      
     /* USUÁRIO (ESQUERDA) */
     .user-dropdown-container {
@@ -1040,18 +1017,6 @@ body {
         object-position: center;
         margin: 0 auto;
         display: block;
-    }
-}
-
-@media (min-width: 769px) {
-    .header-logo-full.mobile {
-        display: none !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .header-logo-full.desktop {
-        display: none !important;
     }
 }
 
