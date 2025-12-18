@@ -2,17 +2,17 @@
    RESET E CONFIGURAÇÕES GERAIS
    ============================================ */
 
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
 * {
     user-select: none;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 html {
@@ -51,20 +51,18 @@ body {
 /* Logo como única imagem */
 .header-logo-full {
     height: auto;
-    max-height: 120px; /* Ajuste conforme a altura do header */
+    max-height: 120px;
     width: auto;
-    max-width: 220px; /* Largura máxima */
-    /* Mantém proporção e centraliza verticalmente */
+    max-width: 220px;
     object-fit: contain;
     object-position: center;
-    /* Suavidade */
     transition: all 0.3s ease;
 }
-    /* Hover effect opcional */
-    .header-logo-full:hover {
-        transform: scale(1.05);
-        opacity: 0.95;
-    }
+
+.header-logo-full:hover {
+    transform: scale(1.05);
+    opacity: 0.95;
+}
 
 .header {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
@@ -94,12 +92,8 @@ body {
     height: auto;
     object-fit: contain;
     transition: all 0.3s ease;
-    
-    /* Tamanhos para DESKTOP (lado esquerdo) */
-    max-height: 80px; 
+    max-height: 80px;
     max-width: 250px;
-    
-    /* Para garantir qualidade */
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
 }
@@ -680,7 +674,7 @@ body {
    ============================================ */
 
 .bottom-nav {
-    display: none; /* Escondido por padrão (desktop) */
+    display: none;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -824,237 +818,187 @@ body {
    RESPONSIVIDADE - MOBILE (768px ou menos)
    ============================================ */
 @media (max-width: 768px) {
-  /* HEADER MOBILE */
-  .header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    width: 100%;
-  }
-  
-  /* Container para os 3 elementos em uma linha */
-  .header-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    position: relative;
-    margin-bottom: 8px;
-  }
-  
-  /* USUÁRIO (ESQUERDA) */
-  .user-dropdown-container {
-    margin-right: -30px;
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
-    margin: 0;
-  }
-  
-  /* Ajusta o trigger para ocupar menos espaço */
-  .user-menu-trigger {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-  }
-  
-  /* Nome do usuário mais curto no mobile */
-  .user-info span:first-child {
-    max-width: 80px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  /* LOGO (CENTRO) */
-  .logo-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .logo-img {
-    height: auto;
-    max-height: 70px; /* Reduzido para mobile */
-    width: auto;
-    max-width: 110px;
-    display: block;
-    object-fit: contain;
-    object-position: center;
-    transition: all 0.3s ease;
-  }
-  
-  /* INFO DA EQUIPE (DIREITA) */
-  .equipe-info-container {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .equipe-info {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 100px;              /* ajustado */
-    height: 28px;                  /* altura controlada */
-    padding: 4px 12px;             /* padding equilibrado */
-    border-radius: 6px;
-    border: 1px solid rgba(102, 126, 234, 0.1);
-    color: #475569;
-    background: rgba(102, 126, 234, 0.06);
-    font-size: 0.75rem;            /* ligeiramente menor */
-    font-weight: 500;
-    color: #1e293b;
-    white-space: nowrap;
-  }
-  
-  /* Nome da equipe truncado se for muito longo */
-  .equipe-info span {
-    max-width: 70px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  /* Navbar escondida no mobile (substituída pelo bottom-nav) */
-  .navbar {
-    display: none;
-  }
-}
-
-  .convidado-badge {
-    font-size: 0.1rem;
-    padding: 2px 6px;
-    background: #ffc107;
-    color: white;
-    border-radius: 10px;
-  }
-
-  /* NAVBAR DESKTOP OCULTA */
-  .navbar {
-    display: none;
-  }
-
-  /* BOTTOM NAV MOBILE */
-  .bottom-nav {
-    display: flex;
-    justify-content: space-around;
-    background: white;
-    border-top: 1px solid #e0e0e0;
-    padding: 8px 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  }
-
-  .bottom-nav .nav-item {
-    flex: 1;
-    text-align: center;
-    font-size: 0.75rem;
-    color: #475569;
-  }
-
-  .bottom-nav .nav-item i {
-    font-size: 1.2rem;
-    margin-bottom: 3px;
-    color: #667eea;
-  }
-
-  .bottom-nav .nav-item.active {
-    color: #1a73e8;
-  }
-
-  /* CONTEÚDO AJUSTADO */
-  .content-wrapper {
-    padding: 16px;
-    padding-bottom: 80px;
-  }
-
-  /* FOOTER AJUSTADO */
-  .footer-simple-horizontal {
-    margin-bottom: 80px;
-    padding: 20px 0;
-    text-align: center;
-    font-size: 0.8rem;
-    color: #6c757d;
-  }
-
-  .logo-inline-wrapper {
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .logo-inline-wrapper img {
-    height: 30px;
-    max-width: 100px;
-    opacity: 0.7;
-    transition: all 0.3s ease;
-  }
-
-  .logo-inline-wrapper img:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-  }
-}
-
-/* ============================================
-   AJUSTES FINAIS E CORREÇÕES
-   ============================================ */
-
-/* Remove margem extra do body */
-body {
-    padding-top: 0;
-}
-
-/* Corrige z-index do header */
-.header {
-    z-index: 1000;
-}
-
-/* Remove efeitos indesejados no mobile */
-@media (max-width: 768px) {
-       .logo {
-        justify-content: center; /* Centraliza no mobile */
-        width: 100%; /* Ocupa toda largura */
-        text-align: center;
+    /* HEADER MOBILE */
+    .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        width: 100%;
     }
     
-    .logo-link {
+    /* Container para os 3 elementos em uma linha */
+    .header-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        position: relative;
+        margin-bottom: 8px;
+    }
+    
+    /* USUÁRIO (ESQUERDA) */
+    .user-dropdown-container {
+        margin-right: 0;
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+    }
+    
+    /* Ajusta o trigger para ocupar menos espaço */
+    .user-menu-trigger {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        padding: 4px 10px;
+    }
+    
+    /* Nome do usuário mais curto no mobile */
+    .user-info span:first-child {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    /* LOGO (CENTRO) */
+    .logo-container {
+        flex: 1;
+        display: flex;
         justify-content: center;
     }
     
     .logo-img {
-        /* Tamanho maior para mobile */
-    height: auto;
-    max-height: 120px; /* Ajuste conforme a altura do header */
-    width: auto;
-    max-width: 220px; /* Largura máxima */
-    /* Mantém proporção e centraliza verticalmente */
-    object-fit: contain;
-    object-position: center;
-    /* Suavidade */
-    transition: all 0.3s ease;
-}
-        
-        /* Centraliza perfeitamente */
-        margin: 0 auto;
+        height: auto;
+        max-height: 70px;
+        width: auto;
+        max-width: 110px;
         display: block;
+        object-fit: contain;
+        object-position: center;
+        transition: all 0.3s ease;
     }
-}
+    
+    /* INFO DA EQUIPE (DIREITA) */
+    .equipe-info-container {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .equipe-info {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 100px;
+        height: 28px;
+        padding: 4px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        color: #475569;
+        background: rgba(102, 126, 234, 0.06);
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #1e293b;
+        white-space: nowrap;
+    }
+    
+    /* Nome da equipe truncado se for muito longo */
+    .equipe-info span {
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    /* Navbar escondida no mobile */
+    .navbar {
+        display: none;
+    }
+    
+    .convidado-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        background: #ffc107;
+        color: white;
+        border-radius: 10px;
+    }
+    
+    /* BOTTOM NAV MOBILE */
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        background: white;
+        border-top: 1px solid #e0e0e0;
+        padding: 8px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .bottom-nav .nav-item {
+        flex: 1;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #475569;
+    }
+    
+    .bottom-nav .nav-item i {
+        font-size: 1.2rem;
+        margin-bottom: 3px;
+        color: #667eea;
+    }
+    
+    .bottom-nav .nav-item.active {
+        color: #1a73e8;
+    }
+    
+    /* CONTEÚDO AJUSTADO */
+    .content-wrapper {
+        padding: 16px;
+        padding-bottom: 80px;
+    }
+    
+    /* FOOTER AJUSTADO */
+    .footer-simple-horizontal {
+        margin-bottom: 80px;
+        padding: 20px 0;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .logo-inline-wrapper {
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .logo-inline-wrapper img {
+        height: 30px;
+        max-width: 100px;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+    
+    .logo-inline-wrapper img:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+    
+    /* Remove efeitos indesejados no mobile */
     .logo:hover i {
         transform: none;
     }
@@ -1071,6 +1015,38 @@ body {
     .header-right {
         display: none;
     }
+    
+    /* Centraliza logo no mobile */
+    .logo {
+        justify-content: center;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .logo-img {
+        height: auto;
+        max-height: 120px;
+        width: auto;
+        max-width: 220px;
+        object-fit: contain;
+        object-position: center;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+/* ============================================
+   AJUSTES FINAIS E CORREÇÕES
+   ============================================ */
+
+/* Remove margem extra do body */
+body {
+    padding-top: 0;
+}
+
+/* Corrige z-index do header */
+.header {
+    z-index: 1000;
 }
 
 /* ============================================
@@ -1090,16 +1066,6 @@ body {
         transform: translateY(0);
     }
 }
-    /* Hover effect opcional */
-    .header-logo-full:hover {
-        transform: scale(1.05);
-        opacity: 0.95;
-    }
-
-
-
-
-/* Adicione isso no seu base.css ou style.css existente */
 
 /* Classes para controle de versão */
 .desktop-version {
@@ -1227,7 +1193,7 @@ body {
 /* Menu dropdown alinhado à esquerda */
 .user-dropdown-menu.left-aligned {
     position: fixed;
-    top: 65px; /* Abaixo do ícone */
+    top: 65px;
     left: 15px;
     right: auto;
     width: 280px;
@@ -1244,7 +1210,8 @@ body {
         left: 15px;
         transform: translateY(-50%);
         z-index: 1;
-   }
+    }
+    
     .user-icon-trigger {
         width: 38px;
         height: 38px;
@@ -1268,24 +1235,10 @@ body {
         top: -1px;
         right: -1px;
     }
-}
-
-/* Ajuste para quando o dropdown está aberto */
-.user-icon-wrapper.active .user-icon-trigger {
-    background: rgba(102, 126, 234, 0.15);
-    border-color: rgba(102, 126, 234, 0.4);
-    transform: scale(1);
-}
-
-/* Ajuste do header para acomodar o ícone fixo */
-.header.desktop-version {
-    padding-left: 70px; /* Espaço para o ícone */
-}
-
-@media (max-width: 768px) {
+    
     .header-top-row {
         position: relative;
-        padding-left: 50px; /* Espaço para o ícone no mobile */
+        padding-left: 50px;
     }
     
     .logo-container {
@@ -1298,4 +1251,16 @@ body {
     .equipe-info-container {
         margin-left: auto;
     }
+}
+
+/* Ajuste para quando o dropdown está aberto */
+.user-icon-wrapper.active .user-icon-trigger {
+    background: rgba(102, 126, 234, 0.15);
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: scale(1);
+}
+
+/* Ajuste do header para acomodar o ícone fixo */
+.header.desktop-version {
+    padding-left: 70px;
 }
