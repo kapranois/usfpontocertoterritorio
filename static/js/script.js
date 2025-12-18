@@ -69,6 +69,32 @@ function adjustForMobile() {
 }
 
 // ============================================
+// REMOVER FEEDBACK DE TOQUE NO MOBILE
+// ============================================
+
+function removeTouchFeedback() {
+    // Apenas em dispositivos móveis
+    if (!isMobileDevice()) return;
+    
+    // Adiciona classe ao body
+    document.body.classList.add('no-touch-highlight');
+    
+    // Remove highlight de todos os elementos clicáveis
+    const elements = document.querySelectorAll(
+        'a, button, .nav-item, .dropdown-item, .menu-item, ' +
+        '.user-menu-trigger, .user-icon-trigger, ' +
+        '[onclick], [href], [role="button"]'
+    );
+    
+    elements.forEach(el => {
+        el.style.webkitTapHighlightColor = 'transparent';
+        el.style.tapHighlightColor = 'transparent';
+    });
+    
+    console.log('Touch feedback removido para mobile');
+}
+
+// ============================================
 // FUNÇÃO PRINCIPAL PARA GERENCIAR CABEÇALHOS
 // ============================================
 
@@ -618,6 +644,9 @@ function initGeneralUtilities() {
     
     // Inicializar Bottom Navigation
     initBottomNavigation();
+
+    // Remover feedback de toque
+    removeTouchFeedback();
 
     // Eventos para mostrar header em interações
     document.addEventListener('click', function(e) {
